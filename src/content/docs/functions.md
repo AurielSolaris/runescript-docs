@@ -41,8 +41,8 @@ public void main() {
 | `private` | Usable only in the same file |
 | `protected` | Usable only in the same package |
 
-> Programs are single files for now, so these rules aren't enforced yet.
-> They take effect once `use` supports files and packages.
+> These rules are enforced when a program has several files; see
+> [Packages and files](/docs/packages-and-files).
 
 `return;` exits a `void` function early.
 

@@ -110,8 +110,8 @@ public void main() {
 ## Returning from every path
 
 A function that returns a value must return on every path. The compiler
-accepts a body that ends with `return`, or with an `if`/`else` chain whose
-every branch returns:
+accepts a body that ends with `return` (or `throw`, see [Errors](/docs/errors)),
+or with an `if`/`else` chain whose every branch returns:
 
 ```actionscript
 package main;

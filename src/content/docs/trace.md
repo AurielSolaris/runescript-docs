@@ -1,6 +1,6 @@
 ---
 title: "Output with trace"
-description: "There's no string concatenation in v0.1, so pass several arguments instead of building one string."
+description: "There's no string concatenation yet, so pass several arguments instead of building one string."
 summary: ""
 section: Guide
 order: 7
@@ -24,11 +24,13 @@ public void main() {
 | Value | Printed as |
 |---|---|
 | `int`, `sint`, `uint` | decimal, e.g. `-42` |
+| `float`, `float32`, `float64` | as ActionScript prints numbers: `64`, `0.5`, `1e+21`, `NaN` ([chapter 13](/docs/floats-and-conversions)) |
 | `bool` | `true` / `false` |
 | `string` | the text itself, with no quotes |
+| an error | its name and message, e.g. `RangeError: too big` ([chapter 14](/docs/errors)) |
 
-There's no string concatenation in v0.1, so pass several arguments instead
-of building one string.
+There's no string concatenation yet, so pass several arguments instead of
+building one string.
 
 `trace` is a reserved built-in. You can't declare a function or variable
 named `trace`.

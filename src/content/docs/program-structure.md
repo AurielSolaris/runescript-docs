@@ -1,6 +1,6 @@
 ---
 title: "Program structure"
-description: "Program structure in RuneScript: Packages, comments, main. Package names are dotted identifiers. Each program is currently a single file."
+description: "Program structure in RuneScript: Packages, comments, main. Package names are dotted identifiers."
 summary: "Packages, comments, main."
 section: Guide
 order: 2
@@ -18,8 +18,8 @@ public void main() {
 }
 ```
 
-Package names are dotted identifiers. Each program is currently a single
-file.
+Package names are dotted identifiers. A program can span several files
+(see [Packages and files](/docs/packages-and-files)).
 
 ## Using packages: `use`
 
