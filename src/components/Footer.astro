@@ -57,15 +57,15 @@ const groups = [
   @use "../styles/mixins" as *;
 
   .footer {
-    margin-top: var(--ds-space-1000);
-    border-top: 1px solid var(--ds-border);
-    background: var(--ds-surface-sunken);
-    padding-block: var(--ds-space-600) calc(var(--ds-space-600) + env(safe-area-inset-bottom));
+    margin-top: var(--rs-space-20);
+    border-top: 1px solid var(--rs-border);
+    background: var(--rs-bg-sunken);
+    padding-block: var(--rs-space-12) calc(var(--rs-space-12) + env(safe-area-inset-bottom));
   }
 
   .footer__inner {
     display: grid;
-    gap: var(--ds-space-400);
+    gap: var(--rs-space-8);
     grid-template-columns: repeat(2, minmax(0, 1fr));
     @include up(m) { grid-template-columns: 2fr repeat(3, 1fr); }
   }
@@ -73,27 +73,27 @@ const groups = [
   .footer__brand {
     grid-column: 1 / -1;
     display: grid;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     align-content: start;
     max-width: 22rem;
-    color: var(--ds-text-subtle);
+    color: var(--rs-text-muted);
     @include up(m) { grid-column: auto; }
   }
 
   .footer__logo {
     display: inline-flex;
     align-items: center;
-    gap: var(--ds-space-100);
-    color: var(--ds-text);
-    font: var(--ds-font-heading-small);
+    gap: var(--rs-space-2);
+    color: var(--rs-text);
+    font: var(--rs-font-h4);
     &:hover { text-decoration: none; }
   }
 
-  .footer__meta { font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
+  .footer__meta { font: var(--rs-font-caption); color: var(--rs-text-faint); }
 
   .footer__group {
-    h2 { font: var(--ds-font-heading-xxsmall); color: var(--ds-text-subtlest); margin-bottom: var(--ds-space-150); }
-    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ds-space-100); }
-    a { color: var(--ds-text-subtle); &:hover { color: var(--ds-text); } }
+    h2 { font: var(--rs-font-h6); color: var(--rs-text-faint); margin-bottom: var(--rs-space-3); }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--rs-space-2); }
+    a { color: var(--rs-text-muted); &:hover { color: var(--rs-text); } }
   }
 </style>

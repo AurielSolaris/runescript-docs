@@ -44,7 +44,7 @@ const checkIcon = svg('<path d="M20 6 9 17l-5-5"/>');
 function makeCopyButton(getText: () => string): HTMLButtonElement {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "btn btn--default btn--compact code-block__copy";
+  btn.className = "btn btn--secondary btn--compact code-block__copy";
   btn.setAttribute("aria-label", "Copy code");
   btn.innerHTML = copyIcon;
   btn.addEventListener("click", async () => {

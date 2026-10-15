@@ -2,29 +2,29 @@
 
 // Rendered Markdown from the RuneScript docs.
 .prose {
-  font: var(--ds-font-body-large);
-  color: var(--ds-text);
+  font: var(--rs-font-body);
+  color: var(--rs-text);
   overflow-wrap: break-word;
 
-  > * + * { margin-top: var(--ds-space-200); }
+  > * + * { margin-top: var(--rs-space-4); }
 
   h2 {
-    font: var(--ds-font-heading-large);
-    margin-top: var(--ds-space-600);
-    padding-bottom: var(--ds-space-100);
-    border-bottom: 1px solid var(--ds-border);
+    font: var(--rs-font-h2);
+    margin-top: var(--rs-space-12);
+    padding-bottom: var(--rs-space-2);
+    border-bottom: 1px solid var(--rs-border);
   }
-  h3 { font: var(--ds-font-heading-medium); margin-top: var(--ds-space-400); }
-  h4 { font: var(--ds-font-heading-small); margin-top: var(--ds-space-300); }
-  h2 + *, h3 + *, h4 + * { margin-top: var(--ds-space-150); }
+  h3 { font: var(--rs-font-h3); margin-top: var(--rs-space-8); }
+  h4 { font: var(--rs-font-h4); margin-top: var(--rs-space-6); }
+  h2 + *, h3 + *, h4 + * { margin-top: var(--rs-space-3); }
   > :first-child { margin-top: 0; }
 
   // Heading anchor links
   :is(h2, h3, h4)[id] { position: relative; }
   .heading-anchor {
-    margin-inline-start: var(--ds-space-100);
-    color: var(--ds-text-subtlest);
-    font-weight: var(--ds-font-weight-regular);
+    margin-inline-start: var(--rs-space-2);
+    color: var(--rs-text-faint);
+    font-weight: var(--rs-weight-regular);
     opacity: 0;
     text-decoration: none;
     &:focus-visible { opacity: 1; }
@@ -32,12 +32,12 @@
   }
   :is(h2, h3, h4):hover .heading-anchor { opacity: 1; }
 
-  strong { font-weight: var(--ds-font-weight-semibold); }
+  strong { font-weight: var(--rs-weight-semibold); }
 
   ul, ol {
-    padding-inline-start: var(--ds-space-300);
-    li + li { margin-top: var(--ds-space-050); }
-    li > ul, li > ol { margin-top: var(--ds-space-050); }
+    padding-inline-start: var(--rs-space-6);
+    li + li { margin-top: var(--rs-space-1); }
+    li > ul, li > ol { margin-top: var(--rs-space-1); }
   }
 
   // Roadmap task lists
@@ -49,7 +49,7 @@
   }
   input[type="checkbox"] {
     position: absolute;
-    left: calc(-1 * var(--ds-space-300));
+    left: calc(-1 * var(--rs-space-6));
     top: 0.25rem;
     width: 1rem;
     height: 1rem;
@@ -58,47 +58,47 @@
     appearance: none;
     border: 0;
     // A status graphic: needs 3:1 against the page (WCAG 1.4.11).
-    background: var(--ds-icon-subtle);
+    background: var(--rs-icon-muted);
     -webkit-mask: var(--icon-box) center / contain no-repeat;
     mask: var(--icon-box) center / contain no-repeat;
     pointer-events: none;
 
     &:checked {
-      background: var(--ds-icon-success);
+      background: var(--rs-icon-success);
       -webkit-mask-image: var(--icon-box-checked);
       mask-image: var(--icon-box-checked);
     }
   }
 
   :not(pre) > code {
-    padding: 0.125em var(--ds-space-050);
-    border-radius: var(--ds-radius-small);
-    background: var(--ds-background-neutral);
-    font: var(--ds-font-code);
+    padding: 0.125em var(--rs-space-1);
+    border-radius: var(--rs-radius-2);
+    background: var(--rs-bg-neutral);
+    font: var(--rs-font-code);
     font-size: 0.875em;
-    color: var(--ds-text);
+    color: var(--rs-text);
   }
-  a code { color: var(--ds-link); }
+  a code { color: var(--rs-link); }
 
   blockquote {
     margin-inline: 0;
     display: flex;
-    gap: var(--ds-space-200);
-    padding: var(--ds-space-200);
-    border-radius: var(--ds-radius-large);
-    background: var(--ds-background-information);
-    font: var(--ds-font-body);
+    gap: var(--rs-space-4);
+    padding: var(--rs-space-4);
+    border-radius: var(--rs-radius-4);
+    background: var(--rs-bg-info);
+    font: var(--rs-font-ui);
     &::before {
       content: "";
       flex: none;
       width: 1rem;
       height: 1rem;
-      margin-top: var(--ds-space-025);
-      background: var(--ds-icon-information);
+      margin-top: var(--rs-space-0-5);
+      background: var(--rs-icon-info);
       -webkit-mask: var(--icon-info) center / contain no-repeat;
       mask: var(--icon-info) center / contain no-repeat;
     }
-    > * + * { margin-top: var(--ds-space-150); }
+    > * + * { margin-top: var(--rs-space-3); }
   }
 
   // Tables scroll inside their wrapper (see src/lib/rehype-a11y.ts), so
@@ -107,36 +107,36 @@
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-radius: var(--ds-radius-small);
+    border-radius: var(--rs-radius-2);
     &:focus-visible { @include focus-ring; }
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    font: var(--ds-font-body);
+    font: var(--rs-font-ui);
     font-variant-numeric: tabular-nums;
   }
   th {
     text-align: start;
-    color: var(--ds-text-subtle);
-    font-weight: var(--ds-font-weight-bold);
-    padding: var(--ds-space-050) var(--ds-space-100);
-    border-bottom: 2px solid var(--ds-border);
+    color: var(--rs-text-muted);
+    font-weight: var(--rs-weight-bold);
+    padding: var(--rs-space-1) var(--rs-space-2);
+    border-bottom: 2px solid var(--rs-border);
     white-space: nowrap;
   }
   td {
-    padding: var(--ds-space-100);
-    border-bottom: 1px solid var(--ds-border);
+    padding: var(--rs-space-2);
+    border-bottom: 1px solid var(--rs-border);
     vertical-align: top;
   }
-  tbody tr:hover { background: var(--ds-background-neutral-subtle-hovered); }
+  tbody tr:hover { background: var(--rs-bg-hover); }
 
-  hr { border: 0; border-top: 1px solid var(--ds-border); margin-block: var(--ds-space-500); }
+  hr { border: 0; border-top: 1px solid var(--rs-border); margin-block: var(--rs-space-10); }
 
   pre.astro-code {
-    border: 1px solid var(--ds-border);
-    border-radius: var(--ds-radius-large);
-    background: var(--ds-surface-sunken) !important;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-4);
+    background: var(--rs-bg-sunken) !important;
   }
   .code-block pre.astro-code { border: 0; border-radius: 0; }
 }
@@ -147,18 +147,18 @@
   --icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
 }
 
-// Replaces the ✅ emoji in synced docs (see scripts/sync-docs.ts). Styled as a success lozenge.
+// Replaces the ✅ emoji in synced docs (see scripts/sync-docs.ts). Styled as a success badge.
 .done-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--ds-space-050);
-  margin-inline-start: var(--ds-space-100);
-  padding: 0 var(--ds-space-050);
-  border-radius: var(--ds-radius-small);
-  background: var(--ds-background-success);
-  color: var(--ds-text-success);
-  font: var(--ds-font-body-small);
-  font-weight: var(--ds-font-weight-bold);
+  gap: var(--rs-space-1);
+  margin-inline-start: var(--rs-space-2);
+  padding: 0 var(--rs-space-1);
+  border-radius: var(--rs-radius-2);
+  background: var(--rs-bg-success);
+  color: var(--rs-text-success);
+  font: var(--rs-font-caption);
+  font-weight: var(--rs-weight-bold);
   vertical-align: middle;
-  svg { color: var(--ds-icon-success); }
+  svg { color: var(--rs-icon-success); }
 }

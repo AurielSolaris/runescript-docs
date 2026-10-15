@@ -3,7 +3,9 @@
 [runescript-alpha.vercel.app](https://runescript-alpha.vercel.app)
 
 Landing page and docs for [RuneScript](https://github.com/AurielSolaris/runescript).
-Astro + Alpine.js + SCSS, styled with Atlassian Design System tokens (`src/styles/_tokens.scss`).
+Astro + Alpine.js + SCSS, with the site's own design tokens (`src/styles/_tokens.scss`):
+colours from GitHub's open-source Primer themes (GitHub Light, GitHub Dark Dimmed),
+Inter and JetBrains Mono fonts, and Lucide icon paths. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ```sh
 bun install

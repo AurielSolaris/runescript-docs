@@ -112,7 +112,7 @@ const jsonLd = [
     <div class="container hero__inner">
       <div class="hero__copy">
         <p class="hero__status">
-          <span class="lozenge lozenge--inprogress">v{site.version} in progress</span>
+          <span class="badge badge--info">v{site.version} in progress</span>
           <span>Early development</span>
         </p>
         <h1 id="hero-title">A strict, statically typed language with ActionScript roots</h1>
@@ -126,7 +126,7 @@ const jsonLd = [
           <a class="btn btn--primary btn--large" href="/docs/getting-started">
             Get started <Icon name="arrow-right" />
           </a>
-          <a class="btn btn--default btn--large" href="/docs">
+          <a class="btn btn--secondary btn--large" href="/docs">
             <Icon name="book" /> Read the guide
           </a>
         </div>
@@ -202,7 +202,7 @@ const jsonLd = [
     <section class="section section--sunken" aria-labelledby="diag-title">
       <div class="container split">
         <div class="split__copy">
-          <span class="lozenge lozenge--removed">Rejected at compile time</span>
+          <span class="badge badge--danger">Rejected at compile time</span>
           <h2 id="diag-title">Mistakes surface before the program runs</h2>
           <p>
             Assigning a signed value to a <code>uint</code> is a compile-time error, not a silent wraparound. The checker tells
@@ -213,7 +213,7 @@ const jsonLd = [
             <li><Icon name="circle-check" /> <span><code>line:col</code> positions, with the source line and a caret</span></li>
             <li><Icon name="circle-check" /> <span>Help text with a concrete fix</span></li>
           </ul>
-          <a class="btn btn--default" href="/docs/diagnostics">Browse every error code <Icon name="arrow-right" /></a>
+          <a class="btn btn--secondary" href="/docs/diagnostics">Browse every error code <Icon name="arrow-right" /></a>
         </div>
         <div class="split__demo">
           <CodeBlock code={rejected.code.split("\n").slice(4).join("\n")} filename={rejected.file} />
@@ -232,16 +232,16 @@ const jsonLd = [
       </header>
       <div class="compare">
         <div>
-          <h3 class="compare__label"><span class="lozenge lozenge--default">ActionScript 3</span></h3>
+          <h3 class="compare__label"><span class="badge badge--neutral">ActionScript 3</span></h3>
           <CodeBlock code={as3} lang="actionscript-3" filename="Greeter.as" />
         </div>
         <div>
-          <h3 class="compare__label"><span class="lozenge lozenge--new">RuneScript</span></h3>
+          <h3 class="compare__label"><span class="badge badge--accent">RuneScript</span></h3>
           <CodeBlock code={rune} filename="greeter.rsc" />
         </div>
       </div>
       <div class="table-wrap" role="region" aria-label="Table: how AS3 and RuneScript treat integers" data-scroll-region>
-        <table class="ds-table">
+        <table class="data-table">
           <caption class="visually-hidden">How AS3 and RuneScript treat integers</caption>
           <thead>
             <tr><th scope="col">Code</th><th scope="col">ActionScript 3</th><th scope="col">RuneScript</th></tr>
@@ -255,7 +255,7 @@ const jsonLd = [
           </tbody>
         </table>
       </div>
-      <a class="btn btn--subtle section__more" href="/docs/coming-from-actionscript">Full comparison <Icon name="arrow-right" /></a>
+      <a class="btn btn--ghost section__more" href="/docs/coming-from-actionscript">Full comparison <Icon name="arrow-right" /></a>
     </div>
   </section>
 
@@ -268,19 +268,19 @@ const jsonLd = [
       </header>
       <div class="status">
         <div class="card status__card">
-          <h3><span class="lozenge lozenge--success">Works now</span></h3>
+          <h3><span class="badge badge--success">Works now</span></h3>
           <ul>
             {works.map((w) => <li><Icon name="circle-check" class="status__ok" /> {w}</li>)}
           </ul>
         </div>
         <div class="card status__card">
-          <h3><span class="lozenge lozenge--default">Planned</span></h3>
+          <h3><span class="badge badge--neutral">Planned</span></h3>
           <ul>
             {planned.map((p) => <li><Icon name="clock" class="status__todo" /> {p}</li>)}
           </ul>
         </div>
       </div>
-      <a class="btn btn--subtle section__more" href="/docs/roadmap"><Icon name="map" /> See the roadmap</a>
+      <a class="btn btn--ghost section__more" href="/docs/roadmap"><Icon name="map" /> See the roadmap</a>
     </div>
   </section>
 
@@ -307,7 +307,7 @@ const jsonLd = [
       </ol>
       <div class="cta">
         <a class="btn btn--primary btn--large" href="/docs/getting-started">Read the guide <Icon name="arrow-right" /></a>
-        <a class="btn btn--default btn--large" href="/examples">Browse examples</a>
+        <a class="btn btn--secondary btn--large" href="/examples">Browse examples</a>
       </div>
     </div>
   </section>
@@ -318,41 +318,41 @@ const jsonLd = [
 
   // ------------------------------------------------ Hero
   .hero {
-    padding-block: var(--ds-space-600) var(--ds-space-800);
-    border-bottom: 1px solid var(--ds-border);
-    @include up(m) { padding-block: var(--ds-space-800) var(--ds-space-1000); }
+    padding-block: var(--rs-space-12) var(--rs-space-16);
+    border-bottom: 1px solid var(--rs-border);
+    @include up(m) { padding-block: var(--rs-space-16) var(--rs-space-20); }
     // WUXGA: the extra 120px of height over 1080p goes to the hero, so it fills the first screen.
     @include wuxga {
       min-height: calc(100vh - var(--nav-height));
       display: grid;
       align-items: center;
-      padding-block: var(--ds-space-600);
+      padding-block: var(--rs-space-12);
     }
   }
 
   .hero__inner {
     display: grid;
-    gap: var(--ds-space-600);
+    gap: var(--rs-space-12);
     @include up(m) {
       grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
       align-items: center;
-      gap: var(--ds-space-800);
+      gap: var(--rs-space-16);
     }
-    @include up(wuxga) { gap: var(--ds-space-1000); }
+    @include up(wuxga) { gap: var(--rs-space-20); }
   }
 
-  .hero__copy { display: grid; gap: var(--ds-space-300); align-content: start; }
+  .hero__copy { display: grid; gap: var(--rs-space-6); align-content: start; }
 
   .hero__status {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-100);
-    color: var(--ds-text-subtlest);
-    font: var(--ds-font-body-small);
+    gap: var(--rs-space-2);
+    color: var(--rs-text-faint);
+    font: var(--rs-font-caption);
   }
 
   h1 {
-    font: var(--ds-font-heading-xxlarge);
+    font: var(--rs-font-display);
     text-wrap: balance;
     // Marketing display size on large screens, on the same 4px grid as the type scale.
     @include up(l) { font-size: 2.5rem; line-height: 3rem; letter-spacing: -0.01em; }
@@ -360,46 +360,46 @@ const jsonLd = [
   }
 
   .hero__lede {
-    font: var(--ds-font-body-large);
-    color: var(--ds-text-subtle);
+    font: var(--rs-font-body);
+    color: var(--rs-text-muted);
     max-width: 36rem;
     @include up(wuxga) { font-size: 1.125rem; line-height: 1.75rem; }
-    code { font: var(--ds-font-code); background: var(--ds-background-neutral); padding: 0.125em var(--ds-space-050); border-radius: var(--ds-radius-small); }
+    code { font: var(--rs-font-code); background: var(--rs-bg-neutral); padding: 0.125em var(--rs-space-1); border-radius: var(--rs-radius-2); }
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     @include down(xs) { .btn { flex: 1 1 100%; } }
   }
 
   .hero__facts {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ds-space-300);
-    margin: var(--ds-space-100) 0 0;
-    padding-top: var(--ds-space-300);
-    border-top: 1px solid var(--ds-border);
-    dt { font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
-    dd { margin: var(--ds-space-025) 0 0; font-weight: var(--ds-font-weight-medium); }
+    gap: var(--rs-space-6);
+    margin: var(--rs-space-2) 0 0;
+    padding-top: var(--rs-space-6);
+    border-top: 1px solid var(--rs-border);
+    dt { font: var(--rs-font-caption); color: var(--rs-text-faint); }
+    dd { margin: var(--rs-space-0-5) 0 0; font-weight: var(--rs-weight-medium); }
   }
 
   .hero__demo { min-width: 0; }
 
   .window {
-    background: var(--ds-surface-overlay);
-    box-shadow: var(--ds-shadow-overlay);
-    border-radius: var(--ds-radius-xlarge);
+    background: var(--rs-bg-overlay);
+    box-shadow: var(--rs-shadow-overlay);
+    border-radius: var(--rs-radius-5);
     overflow: hidden;
   }
 
-  .window__bar { padding: var(--ds-space-100) var(--ds-space-150) 0; }
+  .window__bar { padding: var(--rs-space-2) var(--rs-space-3) 0; }
 
   .window__panel {
     display: grid;
-    gap: var(--ds-space-150);
-    padding: var(--ds-space-150);
+    gap: var(--rs-space-3);
+    padding: var(--rs-space-3);
     &[hidden] { display: none; }
 
     :global(.window__code pre.astro-code) {
@@ -412,22 +412,22 @@ const jsonLd = [
 
   // ------------------------------------------------ Sections
   .section {
-    padding-block: var(--ds-space-800);
-    @include up(m) { padding-block: var(--ds-space-1000); }
-    &--sunken { background: var(--ds-surface-sunken); border-block: 1px solid var(--ds-border); }
+    padding-block: var(--rs-space-16);
+    @include up(m) { padding-block: var(--rs-space-20); }
+    &--sunken { background: var(--rs-bg-sunken); border-block: 1px solid var(--rs-border); }
   }
   .section + .section--sunken, .section--sunken + .section { border-top: 0; }
 
   .section__head {
     display: grid;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     max-width: 44rem;
-    margin-bottom: var(--ds-space-500);
-    h2 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
-    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+    margin-bottom: var(--rs-space-10);
+    h2 { font: var(--rs-font-h1); text-wrap: balance; }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
   }
 
-  .section__more { margin-top: var(--ds-space-300); }
+  .section__more { margin-top: var(--rs-space-6); }
 
   // ------------------------------------------------ Features
   .features {
@@ -435,97 +435,97 @@ const jsonLd = [
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--ds-space-200);
+    gap: var(--rs-space-4);
     @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    @include up(m) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ds-space-300); }
+    @include up(m) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--rs-space-6); }
   }
 
   .feature {
     display: grid;
-    gap: var(--ds-space-150);
+    gap: var(--rs-space-3);
     align-content: start;
-    h3 { font: var(--ds-font-heading-small); margin-top: var(--ds-space-050); }
-    p { color: var(--ds-text-subtle); }
+    h3 { font: var(--rs-font-h4); margin-top: var(--rs-space-1); }
+    p { color: var(--rs-text-muted); }
   }
 
   // ------------------------------------------------ Split (diagnostics)
   .split {
     display: grid;
-    gap: var(--ds-space-500);
-    @include up(m) { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: center; gap: var(--ds-space-800); }
+    gap: var(--rs-space-10);
+    @include up(m) { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: center; gap: var(--rs-space-16); }
   }
 
   .split__copy {
     display: grid;
-    gap: var(--ds-space-200);
+    gap: var(--rs-space-4);
     justify-items: start;
-    h2 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
-    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
-    code { font: var(--ds-font-code); }
+    h2 { font: var(--rs-font-h1); text-wrap: balance; }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
+    code { font: var(--rs-font-code); }
   }
 
-  .split__demo { display: grid; gap: var(--ds-space-150); min-width: 0; }
+  .split__demo { display: grid; gap: var(--rs-space-3); min-width: 0; }
 
   .checklist {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--ds-space-100);
-    li { display: flex; gap: var(--ds-space-100); align-items: flex-start; }
-    li :global(svg) { flex: none; margin-top: var(--ds-space-025); color: var(--ds-icon-success); }
+    gap: var(--rs-space-2);
+    li { display: flex; gap: var(--rs-space-2); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--rs-space-0-5); color: var(--rs-icon-success); }
   }
 
   // ------------------------------------------------ Compare
   .compare {
     display: grid;
-    gap: var(--ds-space-300);
-    margin-bottom: var(--ds-space-400);
+    gap: var(--rs-space-6);
+    margin-bottom: var(--rs-space-8);
     @include up(m) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    > div { min-width: 0; display: grid; gap: var(--ds-space-100); align-content: start; }
+    > div { min-width: 0; display: grid; gap: var(--rs-space-2); align-content: start; }
   }
-  .compare__label { font: var(--ds-font-heading-xsmall); }
+  .compare__label { font: var(--rs-font-h5); }
 
   .table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--ds-border);
-    border-radius: var(--ds-radius-xlarge);
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-5);
   }
 
-  .ds-table {
+  .data-table {
     width: 100%;
     min-width: 36rem;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
     th {
       text-align: start;
-      color: var(--ds-text-subtle);
-      font-weight: var(--ds-font-weight-bold);
-      padding: var(--ds-space-100) var(--ds-space-200);
-      border-bottom: 2px solid var(--ds-border);
+      color: var(--rs-text-muted);
+      font-weight: var(--rs-weight-bold);
+      padding: var(--rs-space-2) var(--rs-space-4);
+      border-bottom: 2px solid var(--rs-border);
     }
-    td { padding: var(--ds-space-100) var(--ds-space-200); border-bottom: 1px solid var(--ds-border); }
+    td { padding: var(--rs-space-2) var(--rs-space-4); border-bottom: 1px solid var(--rs-border); }
     tbody tr:last-child td { border-bottom: 0; }
-    tbody tr:hover { background: var(--ds-background-neutral-subtle-hovered); }
-    code { font: var(--ds-font-code); }
+    tbody tr:hover { background: var(--rs-bg-hover); }
+    code { font: var(--rs-font-code); }
   }
 
   // ------------------------------------------------ Status
   .status {
     display: grid;
-    gap: var(--ds-space-200);
-    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ds-space-300); }
+    gap: var(--rs-space-4);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--rs-space-6); }
   }
 
   .status__card {
-    h3 { margin-bottom: var(--ds-space-200); font: inherit; }
-    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ds-space-150); }
-    li { display: flex; gap: var(--ds-space-100); align-items: flex-start; }
-    li :global(svg) { flex: none; margin-top: var(--ds-space-025); }
+    h3 { margin-bottom: var(--rs-space-4); font: inherit; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--rs-space-3); }
+    li { display: flex; gap: var(--rs-space-2); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--rs-space-0-5); }
   }
-  .status__card :global(.status__ok) { color: var(--ds-icon-success); }
-  .status__card :global(.status__todo) { color: var(--ds-icon-subtlest); }
+  .status__card :global(.status__ok) { color: var(--rs-icon-success); }
+  .status__card :global(.status__todo) { color: var(--rs-icon-faint); }
 
   // ------------------------------------------------ Steps
   .steps {
@@ -533,27 +533,27 @@ const jsonLd = [
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--ds-space-300);
+    gap: var(--rs-space-6);
     counter-reset: step;
     @include up(l) { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
 
-    li { counter-increment: step; display: grid; gap: var(--ds-space-150); min-width: 0; }
+    li { counter-increment: step; display: grid; gap: var(--rs-space-3); min-width: 0; }
     h3 {
       display: flex;
       align-items: center;
-      gap: var(--ds-space-100);
-      font: var(--ds-font-heading-small);
+      gap: var(--rs-space-2);
+      font: var(--rs-font-h4);
       &::before {
         content: counter(step);
         display: inline-grid;
         place-items: center;
         width: 1.5rem;
         height: 1.5rem;
-        border-radius: var(--ds-radius-full);
-        background: var(--ds-background-brand-bold);
-        color: var(--ds-text-inverse);
-        font: var(--ds-font-body-small);
-        font-weight: var(--ds-font-weight-bold);
+        border-radius: var(--rs-radius-full);
+        background: var(--rs-bg-brand);
+        color: var(--rs-text-inverse);
+        font: var(--rs-font-caption);
+        font-weight: var(--rs-weight-bold);
       }
     }
   }
@@ -561,8 +561,8 @@ const jsonLd = [
   .cta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ds-space-100);
-    margin-top: var(--ds-space-500);
+    gap: var(--rs-space-2);
+    margin-top: var(--rs-space-10);
     @include down(xs) { .btn { flex: 1 1 100%; } }
   }
 </style>

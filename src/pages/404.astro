@@ -5,12 +5,12 @@ import Icon from "../components/Icon.astro";
 
 <Base title="Page not found" description="This page doesn't exist." noindex>
   <div class="container nf">
-    <span class="lozenge lozenge--default">404</span>
+    <span class="badge badge--neutral">404</span>
     <h1>We can't find that page</h1>
     <p>It may have moved when the docs were reorganised. Try the guide, or head back to the start.</p>
     <div class="nf__actions">
       <a class="btn btn--primary" href="/docs">Go to the docs <Icon name="arrow-right" /></a>
-      <a class="btn btn--default" href="/">Home</a>
+      <a class="btn btn--secondary" href="/">Home</a>
     </div>
   </div>
 </Base>
@@ -18,12 +18,12 @@ import Icon from "../components/Icon.astro";
 <style lang="scss">
   .nf {
     display: grid;
-    gap: var(--ds-space-200);
+    gap: var(--rs-space-4);
     justify-items: start;
     max-width: 40rem;
-    padding-block: var(--ds-space-1000);
-    h1 { font: var(--ds-font-heading-xlarge); }
-    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+    padding-block: var(--rs-space-20);
+    h1 { font: var(--rs-font-h1); }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
   }
-  .nf__actions { display: flex; flex-wrap: wrap; gap: var(--ds-space-100); }
+  .nf__actions { display: flex; flex-wrap: wrap; gap: var(--rs-space-2); }
 </style>

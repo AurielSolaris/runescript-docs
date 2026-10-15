@@ -70,8 +70,8 @@ const jsonLd = [
               <h2 id={`${e.name}-title`}>
                 <code>{e.file}</code>
                 {e.rejected
-                  ? <span class="lozenge lozenge--removed">Rejected</span>
-                  : <span class="lozenge lozenge--success">Runs</span>}
+                  ? <span class="badge badge--danger">Rejected</span>
+                  : <span class="badge badge--success">Runs</span>}
               </h2>
               <p set:html={md(e.description)} />
             </header>
@@ -96,21 +96,21 @@ const jsonLd = [
 <style lang="scss">
   @use "../styles/mixins" as *;
 
-  .examples { padding-block: var(--ds-space-400) var(--ds-space-600); @include up(m) { padding-top: var(--ds-space-600); } }
+  .examples { padding-block: var(--rs-space-8) var(--rs-space-12); @include up(m) { padding-top: var(--rs-space-12); } }
 
   .examples__head {
     display: grid;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     max-width: 44rem;
-    margin-bottom: var(--ds-space-500);
-    h1 { font: var(--ds-font-heading-xlarge); }
-    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+    margin-bottom: var(--rs-space-10);
+    h1 { font: var(--rs-font-h1); }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
   }
 
   .examples__layout {
     display: grid;
-    gap: var(--ds-space-400);
-    @include up(m) { grid-template-columns: 12rem minmax(0, 1fr); gap: var(--ds-space-600); }
+    gap: var(--rs-space-8);
+    @include up(m) { grid-template-columns: 12rem minmax(0, 1fr); gap: var(--rs-space-12); }
     @include up(wuxga) { grid-template-columns: 14rem minmax(0, 1fr); }
   }
 
@@ -119,34 +119,34 @@ const jsonLd = [
     @include up(m) {
       display: block;
       position: sticky;
-      top: calc(var(--nav-height) + var(--ds-space-300));
+      top: calc(var(--nav-height) + var(--rs-space-6));
       align-self: start;
     }
-    ul { list-style: none; margin: 0 0 var(--ds-space-300); padding: 0; display: grid; gap: var(--ds-space-025); }
+    ul { list-style: none; margin: 0 0 var(--rs-space-6); padding: 0; display: grid; gap: var(--rs-space-0-5); }
     a {
       display: block;
-      padding: var(--ds-space-050) var(--ds-space-100);
-      border-radius: var(--ds-radius-medium);
-      color: var(--ds-text-subtle);
-      font: var(--ds-font-body);
-      font-family: var(--ds-font-family-code);
+      padding: var(--rs-space-1) var(--rs-space-2);
+      border-radius: var(--rs-radius-3);
+      color: var(--rs-text-muted);
+      font: var(--rs-font-ui);
+      font-family: var(--rs-font-mono);
       font-size: 0.8125rem;
-      &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text); text-decoration: none; }
+      &:hover { background: var(--rs-bg-hover); color: var(--rs-text); text-decoration: none; }
     }
   }
 
   .examples__group {
-    font: var(--ds-font-heading-xxsmall);
-    color: var(--ds-text-subtlest);
-    padding: 0 var(--ds-space-100);
-    margin-bottom: var(--ds-space-100);
+    font: var(--rs-font-h6);
+    color: var(--rs-text-faint);
+    padding: 0 var(--rs-space-2);
+    margin-bottom: var(--rs-space-2);
   }
 
-  .examples__list { display: grid; gap: var(--ds-space-800); min-width: 0; }
+  .examples__list { display: grid; gap: var(--rs-space-16); min-width: 0; }
 
   .example {
     display: grid;
-    gap: var(--ds-space-200);
+    gap: var(--rs-space-4);
     min-width: 0;
     // WUXGA has the width for code and output side by side.
     @include up(wuxga) {
@@ -158,23 +158,23 @@ const jsonLd = [
 
   .example__head {
     display: grid;
-    gap: var(--ds-space-075);
+    gap: var(--rs-space-1-5);
     h2 {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--ds-space-100);
-      font: var(--ds-font-heading-medium);
-      code { font: inherit; font-family: var(--ds-font-family-code); }
+      gap: var(--rs-space-2);
+      font: var(--rs-font-h3);
+      code { font: inherit; font-family: var(--rs-font-mono); }
     }
-    p { color: var(--ds-text-subtle); font: var(--ds-font-body-large); }
-    p :global(code) { font: var(--ds-font-code); background: var(--ds-background-neutral); padding: 0.125em var(--ds-space-050); border-radius: var(--ds-radius-small); }
+    p { color: var(--rs-text-muted); font: var(--rs-font-body); }
+    p :global(code) { font: var(--rs-font-code); background: var(--rs-bg-neutral); padding: 0.125em var(--rs-space-1); border-radius: var(--rs-radius-2); }
   }
 
   .example__out {
     display: grid;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     min-width: 0;
-    h3 { display: flex; align-items: center; gap: var(--ds-space-075); font: var(--ds-font-heading-xxsmall); color: var(--ds-text-subtlest); }
+    h3 { display: flex; align-items: center; gap: var(--rs-space-1-5); font: var(--rs-font-h6); color: var(--rs-text-faint); }
   }
 </style>

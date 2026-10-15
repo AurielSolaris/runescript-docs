@@ -25,11 +25,11 @@ const current = nav
 
     <div class="topnav__actions">
       <ThemeMenu />
-      <a class="btn btn--subtle btn--icon" href={site.repo} aria-label="RuneScript on GitHub" rel="noopener">
+      <a class="btn btn--ghost btn--icon" href={site.repo} aria-label="RuneScript on GitHub" rel="noopener">
         <Icon name="github" />
       </a>
       <button
-        class="btn btn--subtle btn--icon topnav__menu-btn"
+        class="btn btn--ghost btn--icon topnav__menu-btn"
         type="button"
         :aria-expanded="open.toString()"
         aria-expanded="false"
@@ -62,8 +62,8 @@ const current = nav
     position: sticky;
     top: 0;
     z-index: 200;
-    background: var(--ds-surface);
-    border-bottom: 1px solid var(--ds-border);
+    background: var(--rs-bg);
+    border-bottom: 1px solid var(--rs-border);
     // Clears the status bar when launched from the iOS home screen.
     padding-top: env(safe-area-inset-top);
   }
@@ -71,7 +71,7 @@ const current = nav
   .topnav__inner {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-300);
+    gap: var(--rs-space-6);
     height: var(--nav-height);
     @include gutter-inline;
   }
@@ -79,16 +79,16 @@ const current = nav
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--ds-space-100);
-    color: var(--ds-text);
-    font: var(--ds-font-heading-small);
-    border-radius: var(--ds-radius-small);
+    gap: var(--rs-space-2);
+    color: var(--rs-text);
+    font: var(--rs-font-h4);
+    border-radius: var(--rs-radius-2);
     &:hover { text-decoration: none; }
   }
 
   .topnav__links {
     display: none;
-    gap: var(--ds-space-050);
+    gap: var(--rs-space-1);
     height: 100%;
     @include up(s) { display: flex; }
 
@@ -96,23 +96,23 @@ const current = nav
       position: relative;
       display: inline-flex;
       align-items: center;
-      padding: 0 var(--ds-space-100);
-      color: var(--ds-text-subtle);
-      font-weight: var(--ds-font-weight-medium);
-      border-radius: var(--ds-radius-small);
+      padding: 0 var(--rs-space-2);
+      color: var(--rs-text-muted);
+      font-weight: var(--rs-weight-medium);
+      border-radius: var(--rs-radius-2);
 
-      &:hover { color: var(--ds-text); text-decoration: none; }
+      &:hover { color: var(--rs-text); text-decoration: none; }
       &:focus-visible { outline-offset: -2px; }
       &[aria-current="page"] {
-        color: var(--ds-text-selected);
+        color: var(--rs-text-selected);
         &::after {
           content: "";
           position: absolute;
-          left: var(--ds-space-100);
-          right: var(--ds-space-100);
+          left: var(--rs-space-2);
+          right: var(--rs-space-2);
           bottom: -1px;
           height: 2px;
-          background: var(--ds-border-selected);
+          background: var(--rs-border-selected);
         }
       }
     }
@@ -121,7 +121,7 @@ const current = nav
   .topnav__actions {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-050);
+    gap: var(--rs-space-1);
     margin-inline-start: auto;
   }
 
@@ -132,8 +132,8 @@ const current = nav
   .mobile-nav {
     display: flex;
     flex-direction: column;
-    padding: var(--ds-space-050) 0 var(--ds-space-100);
-    border-top: 1px solid var(--ds-border);
+    padding: var(--rs-space-1) 0 var(--rs-space-2);
+    border-top: 1px solid var(--rs-border);
     @include gutter-inline(0px);
     @include up(s) { display: none !important; }
 
@@ -142,9 +142,9 @@ const current = nav
       padding-inline: var(--page-margin);
       &:hover { text-decoration: none; }
       &[aria-current="page"] {
-        background: var(--ds-background-selected);
-        color: var(--ds-text-selected);
-        box-shadow: inset 2px 0 0 var(--ds-border-selected);
+        background: var(--rs-bg-selected);
+        color: var(--rs-text-selected);
+        box-shadow: inset 2px 0 0 var(--rs-border-selected);
       }
     }
   }

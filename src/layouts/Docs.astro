@@ -56,7 +56,7 @@ const jsonLd = [
   <div class="docs" x-data="drawer" @keydown.escape.window="close()">
     <div class="docs__mobilebar">
       <button
-        class="btn btn--subtle"
+        class="btn btn--ghost"
         type="button"
         aria-controls="docs-sidebar"
         aria-expanded="false"
@@ -71,7 +71,7 @@ const jsonLd = [
       </nav>
     </div>
 
-    <div class="docs__blanket" x-show="open" x-cloak @click="close()" aria-hidden="true"></div>
+    <div class="docs__backdrop" x-show="open" x-cloak @click="close()" aria-hidden="true"></div>
 
     <aside id="docs-sidebar" class="docs__sidebar" :class="open && 'is-open'" aria-label="Documentation">
       <div class="docs__sidebar-inner" x-data="docsNav">
@@ -81,7 +81,7 @@ const jsonLd = [
             <span class="visually-hidden">Filter pages</span>
             <input type="search" placeholder="Filter pages" x-model="query" autocomplete="off" enterkeyhint="search" />
           </label>
-          <button class="btn btn--subtle btn--icon docs__close" type="button" aria-label="Close menu" @click="close()">
+          <button class="btn btn--ghost btn--icon docs__close" type="button" aria-label="Close menu" @click="close()">
             <Icon name="x" />
           </button>
         </div>
@@ -187,17 +187,17 @@ const jsonLd = [
   .docs {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    max-width: calc(var(--sidebar-width) + var(--prose-max) + var(--toc-width) + 2 * var(--ds-space-600) + 2 * var(--page-margin));
+    max-width: calc(var(--sidebar-width) + var(--prose-max) + var(--toc-width) + 2 * var(--rs-space-12) + 2 * var(--page-margin));
     margin-inline: auto;
     @include gutter-inline;
 
     @include up(m) {
       grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-      column-gap: var(--ds-space-500);
+      column-gap: var(--rs-space-10);
     }
     @include up(l) {
       grid-template-columns: var(--sidebar-width) minmax(0, var(--prose-max)) var(--toc-width);
-      column-gap: var(--ds-space-600);
+      column-gap: var(--rs-space-12);
       justify-content: center;
     }
   }
@@ -209,20 +209,20 @@ const jsonLd = [
     z-index: 150;
     display: flex;
     align-items: center;
-    gap: var(--ds-space-100);
+    gap: var(--rs-space-2);
     margin-inline: calc(-1 * max(var(--page-margin), env(safe-area-inset-left)));
-    padding: var(--ds-space-100) max(var(--page-margin), env(safe-area-inset-left));
-    background: var(--ds-surface);
-    border-bottom: 1px solid var(--ds-border);
+    padding: var(--rs-space-2) max(var(--page-margin), env(safe-area-inset-left));
+    background: var(--rs-bg);
+    border-bottom: 1px solid var(--rs-border);
     @include up(m) { display: none; }
   }
 
-  .docs__blanket {
+  .docs__backdrop {
     position: fixed;
     inset: 0;
     z-index: 500;
-    background: var(--ds-blanket);
-    animation: var(--ds-blanket-enter);
+    background: var(--rs-backdrop);
+    animation: var(--rs-anim-backdrop-in);
     @include up(m) { display: none; }
   }
 
@@ -232,19 +232,19 @@ const jsonLd = [
       inset: 0 auto 0 0;
       z-index: 510;
       width: min(20rem, 85vw);
-      background: var(--ds-surface-overlay);
-      box-shadow: var(--ds-shadow-overlay);
+      background: var(--rs-bg-overlay);
+      box-shadow: var(--rs-shadow-overlay);
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
       padding-left: env(safe-area-inset-left);
       transform: translateX(-100%);
       visibility: hidden;
-      transition: transform var(--ds-duration-medium) var(--ds-easing-in-practical), visibility 0s var(--ds-duration-medium);
+      transition: transform var(--rs-duration-base) var(--rs-ease-in), visibility 0s var(--rs-duration-base);
 
       &.is-open {
         transform: none;
         visibility: visible;
-        transition: transform var(--ds-duration-long) var(--ds-easing-out-bold);
+        transition: transform var(--rs-duration-slow) var(--rs-ease-emphasized);
       }
     }
   }
@@ -254,7 +254,7 @@ const jsonLd = [
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    padding: var(--ds-space-200);
+    padding: var(--rs-space-4);
 
     @include up(m) {
       position: sticky;
@@ -262,126 +262,126 @@ const jsonLd = [
       height: auto;
       max-height: calc(100vh - var(--nav-height));
       max-height: calc(100dvh - var(--nav-height));
-      padding: var(--ds-space-400) var(--ds-space-100) var(--ds-space-400) 0;
+      padding: var(--rs-space-8) var(--rs-space-2) var(--rs-space-8) 0;
     }
   }
 
   .docs__sidebar-head {
     display: flex;
-    gap: var(--ds-space-100);
-    margin-bottom: var(--ds-space-300);
+    gap: var(--rs-space-2);
+    margin-bottom: var(--rs-space-6);
     .field { flex: 1; }
   }
 
   .docs__close { @include up(m) { display: none; } }
 
-  // ---------------------------------------------- Side nav (ADS side navigation)
+  // ---------------------------------------------- Side nav
   .sidenav {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--ds-space-025);
+    gap: var(--rs-space-0-5);
 
     a {
       display: flex;
       align-items: center;
-      gap: var(--ds-space-100);
+      gap: var(--rs-space-2);
       min-height: 2rem;
-      padding: var(--ds-space-050) var(--ds-space-100);
-      border-radius: var(--ds-radius-medium);
-      color: var(--ds-text-subtle);
-      font-weight: var(--ds-font-weight-medium);
+      padding: var(--rs-space-1) var(--rs-space-2);
+      border-radius: var(--rs-radius-3);
+      color: var(--rs-text-muted);
+      font-weight: var(--rs-weight-medium);
 
       @include down(m) { min-height: 2.75rem; }
-      &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text); text-decoration: none; }
-      &:active { background: var(--ds-background-neutral-subtle-pressed); }
+      &:hover { background: var(--rs-bg-hover); color: var(--rs-text); text-decoration: none; }
+      &:active { background: var(--rs-bg-active); }
       &[aria-current="page"] {
-        background: var(--ds-background-selected);
-        color: var(--ds-text-selected);
-        box-shadow: inset 2px 0 0 var(--ds-border-selected);
-        .sidenav__num { color: var(--ds-text-selected); }
+        background: var(--rs-bg-selected);
+        color: var(--rs-text-selected);
+        box-shadow: inset 2px 0 0 var(--rs-border-selected);
+        .sidenav__num { color: var(--rs-text-selected); }
       }
     }
   }
 
   .sidenav__num {
     min-width: 1.25rem;
-    color: var(--ds-text-subtlest);
-    font: var(--ds-font-body-small);
+    color: var(--rs-text-faint);
+    font: var(--rs-font-caption);
     font-variant-numeric: tabular-nums;
   }
 
-  .sidenav__group { margin-top: var(--ds-space-300); }
+  .sidenav__group { margin-top: var(--rs-space-6); }
 
   .sidenav__title {
-    font: var(--ds-font-heading-xxsmall);
-    color: var(--ds-text-subtlest);
-    padding: 0 var(--ds-space-100);
-    margin-bottom: var(--ds-space-100);
+    font: var(--rs-font-h6);
+    color: var(--rs-text-faint);
+    padding: 0 var(--rs-space-2);
+    margin-bottom: var(--rs-space-2);
   }
 
   // ---------------------------------------------- Content
   .docs__content {
     min-width: 0;
-    padding-block: var(--ds-space-300) var(--ds-space-600);
-    @include up(m) { padding-top: var(--ds-space-400); }
+    padding-block: var(--rs-space-6) var(--rs-space-12);
+    @include up(m) { padding-top: var(--rs-space-8); }
   }
 
   .crumbs {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-050);
+    gap: var(--rs-space-1);
     min-width: 0;
-    color: var(--ds-text-subtlest);
-    font: var(--ds-font-body-small);
-    a { color: var(--ds-text-subtle); }
+    color: var(--rs-text-faint);
+    font: var(--rs-font-caption);
+    a { color: var(--rs-text-muted); }
     span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     :global(svg) { flex: none; }
   }
-  .crumbs--full { display: none; margin-bottom: var(--ds-space-150); @include up(m) { display: flex; } }
+  .crumbs--full { display: none; margin-bottom: var(--rs-space-3); @include up(m) { display: flex; } }
 
   .docs__header {
     display: grid;
-    gap: var(--ds-space-100);
-    margin-bottom: var(--ds-space-400);
-    h1 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
+    gap: var(--rs-space-2);
+    margin-bottom: var(--rs-space-8);
+    h1 { font: var(--rs-font-h1); text-wrap: balance; }
   }
 
   .docs__source {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-075);
-    font: var(--ds-font-body-small);
-    color: var(--ds-text-subtlest);
-    a { color: var(--ds-text-subtle); font-family: var(--ds-font-family-code); }
+    gap: var(--rs-space-1-5);
+    font: var(--rs-font-caption);
+    color: var(--rs-text-faint);
+    a { color: var(--rs-text-muted); font-family: var(--rs-font-mono); }
   }
 
   .pager {
     display: grid;
-    gap: var(--ds-space-200);
-    margin-top: var(--ds-space-800);
+    gap: var(--rs-space-4);
+    margin-top: var(--rs-space-16);
     @include up(s) { grid-template-columns: 1fr 1fr; }
   }
 
   .pager__link {
     display: grid;
-    gap: var(--ds-space-050);
-    padding: var(--ds-space-200);
-    border: 1px solid var(--ds-border);
-    border-radius: var(--ds-radius-large);
-    color: var(--ds-text);
-    transition: background-color var(--ds-duration-short) var(--ds-easing-out-practical);
-    &:hover { background: var(--ds-background-neutral-subtle-hovered); text-decoration: none; }
+    gap: var(--rs-space-1);
+    padding: var(--rs-space-4);
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-4);
+    color: var(--rs-text);
+    transition: background-color var(--rs-duration-fast) var(--rs-ease-out);
+    &:hover { background: var(--rs-bg-hover); text-decoration: none; }
     &--next { text-align: end; justify-items: end; grid-column: -2; }
   }
-  .pager__dir { display: inline-flex; align-items: center; gap: var(--ds-space-050); font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
-  .pager__title { font: var(--ds-font-heading-small); color: var(--ds-link); }
+  .pager__dir { display: inline-flex; align-items: center; gap: var(--rs-space-1); font: var(--rs-font-caption); color: var(--rs-text-faint); }
+  .pager__title { font: var(--rs-font-h4); color: var(--rs-link); }
 
   .docs__edit {
-    margin-top: var(--ds-space-400);
-    font: var(--ds-font-body-small);
-    a { display: inline-flex; align-items: center; gap: var(--ds-space-075); color: var(--ds-text-subtle); }
+    margin-top: var(--rs-space-8);
+    font: var(--rs-font-caption);
+    a { display: inline-flex; align-items: center; gap: var(--rs-space-1-5); color: var(--rs-text-muted); }
   }
 
   // ---------------------------------------------- On this page
@@ -394,20 +394,21 @@ const jsonLd = [
       top: var(--nav-height);
       max-height: calc(100vh - var(--nav-height));
       overflow-y: auto;
-      padding-block: var(--ds-space-400);
+      padding-block: var(--rs-space-8);
     }
-    ul { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--ds-border); }
+    ul { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--rs-border); }
     a {
       display: block;
-      padding: var(--ds-space-050) var(--ds-space-150);
+      min-height: 24px; // target size (WCAG 2.5.8); rem is 14px here
+      padding: var(--rs-space-1) var(--rs-space-3);
       margin-inline-start: -1px;
       border-inline-start: 2px solid transparent;
-      color: var(--ds-text-subtle);
-      font: var(--ds-font-body-small);
-      &:hover { color: var(--ds-text); text-decoration: none; }
-      &[aria-current="location"] { color: var(--ds-text-selected); border-inline-start-color: var(--ds-border-selected); font-weight: var(--ds-font-weight-medium); }
+      color: var(--rs-text-muted);
+      font: var(--rs-font-caption);
+      &:hover { color: var(--rs-text); text-decoration: none; }
+      &[aria-current="location"] { color: var(--rs-text-selected); border-inline-start-color: var(--rs-border-selected); font-weight: var(--rs-weight-medium); }
     }
-    .toc__depth-3 a { padding-inline-start: var(--ds-space-300); }
-    :global(code) { font: var(--ds-font-code); }
+    .toc__depth-3 a { padding-inline-start: var(--rs-space-6); }
+    :global(code) { font: var(--rs-font-code); }
   }
 </style>

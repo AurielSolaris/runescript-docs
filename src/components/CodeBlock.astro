@@ -2,7 +2,7 @@
 import { Code } from "astro:components";
 import Icon from "./Icon.astro";
 import { runescript } from "../lib/runescript.grammar";
-import { adsTheme } from "../lib/shiki";
+import { codeTheme } from "../lib/shiki";
 
 interface Props {
   code: string;
@@ -22,10 +22,10 @@ const { code, lang = "runescript", filename, class: className } = Astro.props;
     </figcaption>
   )}
   <div x-ref="code">
-    <Code code={code} lang={lang === "runescript" ? runescript : lang} theme={adsTheme} />
+    <Code code={code} lang={lang === "runescript" ? runescript : lang} theme={codeTheme} />
   </div>
   <button
-    class="btn btn--default btn--compact code-block__copy"
+    class="btn btn--secondary btn--compact code-block__copy"
     type="button"
     aria-label="Copy code"
     :aria-label="copied ? 'Copied' : 'Copy code'"
@@ -41,12 +41,12 @@ const { code, lang = "runescript", filename, class: className } = Astro.props;
   .cb__title {
     display: flex;
     align-items: center;
-    gap: var(--ds-space-075);
-    padding: var(--ds-space-100) var(--ds-space-200);
-    border-bottom: 1px solid var(--ds-border);
-    color: var(--ds-text-subtle);
-    font: var(--ds-font-body-small);
-    font-family: var(--ds-font-family-code);
+    gap: var(--rs-space-1-5);
+    padding: var(--rs-space-2) var(--rs-space-4);
+    border-bottom: 1px solid var(--rs-border);
+    color: var(--rs-text-muted);
+    font: var(--rs-font-caption);
+    font-family: var(--rs-font-mono);
   }
-  .cb:has(.cb__title) .code-block__copy { top: var(--ds-space-075); }
+  .cb:has(.cb__title) .code-block__copy { top: var(--rs-space-1-5); }
 </style>

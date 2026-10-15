@@ -64,33 +64,33 @@ const shortcuts: { href: string; icon: IconName; tone: string; title: string; bo
     list-style: none;
     padding: 0;
     display: grid;
-    gap: var(--ds-space-150);
+    gap: var(--rs-space-3);
     @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     li + li { margin-top: 0; }
   }
 
   .shortcut {
     display: flex;
-    gap: var(--ds-space-200);
+    gap: var(--rs-space-4);
     height: 100%;
-    padding: var(--ds-space-200);
-    border: 1px solid var(--ds-border);
-    border-radius: var(--ds-radius-large);
-    color: var(--ds-text);
-    font: var(--ds-font-body);
-    transition: background-color var(--ds-duration-short) var(--ds-easing-out-practical);
-    &:hover { background: var(--ds-background-neutral-subtle-hovered); text-decoration: none; }
-    > span:last-child { display: grid; gap: var(--ds-space-050); }
+    padding: var(--rs-space-4);
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-4);
+    color: var(--rs-text);
+    font: var(--rs-font-ui);
+    transition: background-color var(--rs-duration-fast) var(--rs-ease-out);
+    &:hover { background: var(--rs-bg-hover); text-decoration: none; }
+    > span:last-child { display: grid; gap: var(--rs-space-1); }
   }
-  .shortcut__title { font: var(--ds-font-heading-xsmall); }
-  .shortcut__body { color: var(--ds-text-subtle); }
+  .shortcut__title { font: var(--rs-font-h5); }
+  .shortcut__body { color: var(--rs-text-muted); }
 
   .guide-list {
     display: grid;
-    gap: var(--ds-space-150);
-    li { padding-inline-start: var(--ds-space-050); }
+    gap: var(--rs-space-3);
+    li { padding-inline-start: var(--rs-space-1); }
     li + li { margin-top: 0; }
-    a { font-weight: var(--ds-font-weight-semibold); }
-    span { display: block; font: var(--ds-font-body); color: var(--ds-text-subtle); }
+    a { font-weight: var(--rs-weight-semibold); }
+    span { display: block; font: var(--rs-font-ui); color: var(--rs-text-muted); }
   }
 </style>
