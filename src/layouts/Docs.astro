@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import Base from "./Base.astro";
 import Icon from "../components/Icon.astro";
 import { sectionOrder, site } from "../lib/site";
+import { localeInfo, localeOf, ui } from "../lib/i18n";
 
 interface Props {
   title: string;
@@ -16,22 +17,41 @@ interface Props {
 }
 
 const { title, description, slug, section, headings = [], source } = Astro.props;
+const locale = localeOf(Astro.url.pathname);
+const t = ui[locale];
+const p = localeInfo[locale].prefix;
 
+// The sidebar: in a translation, each guide chapter is the translated page where
+// there is one; the specification, the roadmap, and untranslated chapters are
+// the English pages, marked as English.
 const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
-const groups = sectionOrder.map((s) => ({ section: s, pages: docs.filter((d) => d.data.section === s) }));
+const translated = new Map(
+  (await getCollection("translations"))
+    .filter((e) => locale !== "en" && e.id.startsWith(`${locale}/`))
+    .map((e) => [e.data.page, e]),
+);
+const englishTitles: Record<string, string> = { spec: t.specLong, roadmap: t.roadmap };
+const pages = docs.map((d) => {
+  const tr = translated.get(d.id);
+  if (locale === "en" || tr) {
+    return { id: d.id, title: tr?.data.title ?? d.data.title, section: d.data.section, order: d.data.order, href: `${p}/docs/${d.id}`, en: false };
+  }
+  return { id: d.id, title: englishTitles[d.id] ?? d.data.title, section: d.data.section, order: d.data.order, href: `/docs/${d.id}`, en: true };
+});
+const groups = sectionOrder.map((s) => ({ section: s, pages: pages.filter((d) => d.section === s) }));
 
-const flat = [{ id: "", data: { title: "Overview" } }, ...docs];
+// Previous/next stays within the page's language.
+const flat = [{ id: "", title: t.overview, href: `${p}/docs` }, ...pages.filter((d) => !d.en)];
 const index = flat.findIndex((d) => d.id === slug);
 const prev = index > 0 ? flat[index - 1] : undefined;
 const next = index >= 0 && index < flat.length - 1 ? flat[index + 1] : undefined;
-const href = (id: string) => (id ? `/docs/${id}` : "/docs");
 
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
-const url = new URL(href(slug), site.url).href;
+const url = new URL(slug ? `${p}/docs/${slug}` : `${p}/docs`, site.url).href;
 const crumbs = [
-  { name: "Home", url: site.url },
-  { name: "Docs", url: `${site.url}/docs` },
+  { name: site.name, url: new URL(p || "/", site.url).href },
+  { name: t.docs, url: new URL(`${p}/docs`, site.url).href },
   ...(slug ? [{ name: title, url }] : []),
 ];
 const jsonLd = [
@@ -40,7 +60,7 @@ const jsonLd = [
     headline: title,
     description,
     url,
-    inLanguage: site.locale,
+    inLanguage: localeInfo[locale].lang,
     isPartOf: { "@id": `${site.url}/#website` },
     about: { "@type": "ComputerLanguage", name: site.name },
     proficiencyLevel: section === "Reference" ? "Expert" : "Beginner",
@@ -52,7 +72,7 @@ const jsonLd = [
 ];
 ---
 
-<Base title={slug ? title : "Documentation"} description={description} ogType="article" jsonLd={jsonLd}>
+<Base title={slug ? title : t.docsTitle} description={description} ogType="article" jsonLd={jsonLd}>
   <div class="docs" x-data="drawer" @keydown.escape.window="close()">
     <div class="docs__mobilebar">
       <button
@@ -63,43 +83,43 @@ const jsonLd = [
         :aria-expanded="open.toString()"
         @click="toggle()"
       >
-        <Icon name="list" /> Menu
+        <Icon name="list" /> {t.menu}
       </button>
-      <nav class="crumbs crumbs--compact" aria-label="Breadcrumb">
-        <a href="/docs">Docs</a>
-        {slug && <><Icon name="chevron-right" size={12} /><span aria-current="page">{title}</span></>}
+      <nav class="crumbs crumbs--compact" aria-label={t.breadcrumb}>
+        <a href={`${p}/docs`}>{t.docs}</a>
+        {slug && <><Icon name="chevron-right" size={12} class="rtl-flip" /><span aria-current="page">{title}</span></>}
       </nav>
     </div>
 
     <div class="docs__backdrop" x-show="open" x-cloak @click="close()" aria-hidden="true"></div>
 
-    <aside id="docs-sidebar" class="docs__sidebar" :class="open && 'is-open'" aria-label="Documentation">
+    <aside id="docs-sidebar" class="docs__sidebar" :class="open && 'is-open'" aria-label={t.documentation}>
       <div class="docs__sidebar-inner" x-data="docsNav">
         <div class="docs__sidebar-head">
           <label class="field">
             <Icon name="search" />
-            <span class="visually-hidden">Filter pages</span>
-            <input type="search" placeholder="Filter pages" x-model="query" autocomplete="off" enterkeyhint="search" />
+            <span class="visually-hidden">{t.filterPages}</span>
+            <input type="search" placeholder={t.filterPages} x-model="query" autocomplete="off" enterkeyhint="search" />
           </label>
-          <button class="btn btn--ghost btn--icon docs__close" type="button" aria-label="Close menu" @click="close()">
+          <button class="btn btn--ghost btn--icon docs__close" type="button" aria-label={t.closeMenu} @click="close()">
             <Icon name="x" />
           </button>
         </div>
-        <nav aria-label="Docs">
+        <nav aria-label={t.docs}>
           <ul class="sidenav">
-            <li x-show="matches('Overview')">
-              <a href="/docs" aria-current={slug === "" ? "page" : undefined}>Overview</a>
+            <li x-show={`matches(${JSON.stringify(t.overview)})`}>
+              <a href={`${p}/docs`} aria-current={slug === "" ? "page" : undefined}>{t.overview}</a>
             </li>
           </ul>
           {groups.map((g) => (
             <div class="sidenav__group">
-              <h2 class="sidenav__title">{g.section}</h2>
+              <h2 class="sidenav__title">{t.sections[g.section]}</h2>
               <ul class="sidenav">
                 {g.pages.map((d) => (
-                  <li x-show={`matches(${JSON.stringify(d.data.title)})`}>
-                    <a href={href(d.id)} aria-current={d.id === slug ? "page" : undefined}>
-                      {d.data.section === "Guide" && <span class="sidenav__num">{d.data.order}</span>}
-                      {d.data.title}
+                  <li x-show={`matches(${JSON.stringify(d.title)})`}>
+                    <a href={d.href} hreflang={d.en ? "en" : undefined} aria-current={!d.en && d.id === slug ? "page" : undefined}>
+                      {d.section === "Guide" && <span class="sidenav__num">{d.order}</span>}
+                      <span>{d.title}{d.en && <span class="sidenav__lang"> {t.inEnglish}</span>}</span>
                     </a>
                   </li>
                 ))}
@@ -107,9 +127,13 @@ const jsonLd = [
             </div>
           ))}
           <div class="sidenav__group">
-            <h2 class="sidenav__title">More</h2>
+            <h2 class="sidenav__title">{t.more}</h2>
             <ul class="sidenav">
-              <li x-show="matches('Examples')"><a href="/examples">Examples</a></li>
+              <li x-show={`matches(${JSON.stringify(t.examples)})`}>
+                <a href="/examples" hreflang={locale !== "en" ? "en" : undefined}>
+                  <span>{t.examples}{locale !== "en" && <span class="sidenav__lang"> {t.inEnglish}</span>}</span>
+                </a>
+              </li>
             </ul>
           </div>
         </nav>
@@ -117,16 +141,16 @@ const jsonLd = [
     </aside>
 
     <article class="docs__content">
-      <nav class="crumbs crumbs--full" aria-label="Breadcrumb">
-        <a href="/docs">Docs</a>
-        {section && <><Icon name="chevron-right" size={12} /><span>{section}</span></>}
+      <nav class="crumbs crumbs--full" aria-label={t.breadcrumb}>
+        <a href={`${p}/docs`}>{t.docs}</a>
+        {section && <><Icon name="chevron-right" size={12} class="rtl-flip" /><span>{t.sections[section] ?? section}</span></>}
       </nav>
       <header class="docs__header">
         <h1>{title}</h1>
         {source && (
           <p class="docs__source">
             <Icon name="file" />
-            <a href={`${site.repo}/blob/main/${source}`} rel="noopener">{source}</a>
+            <a href={`${site.repo}/blob/main/${source}`} rel="noopener" dir="ltr">{source}</a>
           </p>
         )}
       </header>
@@ -136,17 +160,17 @@ const jsonLd = [
       </div>
 
       {(prev || next) && (
-        <nav class="pager" aria-label="Previous and next pages">
+        <nav class="pager" aria-label={t.pager}>
           {prev ? (
-            <a class="pager__link" href={href(prev.id)} rel="prev">
-              <span class="pager__dir"><Icon name="chevron-left" size={12} /> Previous</span>
-              <span class="pager__title">{prev.data.title}</span>
+            <a class="pager__link" href={prev.href} rel="prev">
+              <span class="pager__dir"><Icon name="chevron-left" size={12} class="rtl-flip" /> {t.previous}</span>
+              <span class="pager__title">{prev.title}</span>
             </a>
           ) : <span />}
           {next && (
-            <a class="pager__link pager__link--next" href={href(next.id)} rel="next">
-              <span class="pager__dir">Next <Icon name="chevron-right" size={12} /></span>
-              <span class="pager__title">{next.data.title}</span>
+            <a class="pager__link pager__link--next" href={next.href} rel="next">
+              <span class="pager__dir">{t.next} <Icon name="chevron-right" size={12} class="rtl-flip" /></span>
+              <span class="pager__title">{next.title}</span>
             </a>
           )}
         </nav>
@@ -154,7 +178,7 @@ const jsonLd = [
 
       {source && (
         <p class="docs__edit">
-          <a href={`${site.repo}/edit/main/${source}`} rel="noopener"><Icon name="github" /> Suggest a change to this page</a>
+          <a href={`${site.repo}/edit/main/${source}`} rel="noopener"><Icon name="github" /> {t.suggestChange}</a>
         </p>
       )}
     </article>
@@ -162,7 +186,7 @@ const jsonLd = [
     {toc.length > 1 && (
       <aside class="docs__toc" aria-labelledby="toc-title">
         <nav x-data="toc">
-          <h2 id="toc-title" class="sidenav__title">On this page</h2>
+          <h2 id="toc-title" class="sidenav__title">{t.onThisPage}</h2>
           <ul>
             {toc.map((h) => (
               <li class={`toc__depth-${h.depth}`}>
@@ -229,19 +253,21 @@ const jsonLd = [
   .docs__sidebar {
     @include down(m) {
       position: fixed;
-      inset: 0 auto 0 0;
+      inset-block: 0;
+      inset-inline-start: 0;
       z-index: 510;
       width: min(20rem, 85vw);
       background: var(--rs-bg-overlay);
       box-shadow: var(--rs-shadow-overlay);
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
+      padding-inline-start: env(safe-area-inset-left);
       transform: translateX(-100%);
+      &:dir(rtl) { transform: translateX(100%); padding-inline-start: env(safe-area-inset-right); }
       visibility: hidden;
       transition: transform var(--rs-duration-base) var(--rs-ease-in), visibility 0s var(--rs-duration-base);
 
-      &.is-open {
+      &.is-open, &.is-open:dir(rtl) {
         transform: none;
         visibility: visible;
         transition: transform var(--rs-duration-slow) var(--rs-ease-emphasized);
@@ -300,10 +326,13 @@ const jsonLd = [
         background: var(--rs-bg-selected);
         color: var(--rs-text-selected);
         box-shadow: inset 2px 0 0 var(--rs-border-selected);
+        &:dir(rtl) { box-shadow: inset -2px 0 0 var(--rs-border-selected); }
         .sidenav__num { color: var(--rs-text-selected); }
       }
     }
   }
+
+  .sidenav__lang { color: var(--rs-text-faint); font-weight: var(--rs-weight-regular); }
 
   .sidenav__num {
     min-width: 1.25rem;
@@ -399,7 +428,7 @@ const jsonLd = [
     ul { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--rs-border); }
     a {
       display: block;
-      min-height: 24px; // target size (WCAG 2.5.8); rem is 14px here
+      min-height: 24px; // target size (WCAG 2.5.8)
       padding: var(--rs-space-1) var(--rs-space-3);
       margin-inline-start: -1px;
       border-inline-start: 2px solid transparent;

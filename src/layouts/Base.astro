@@ -3,6 +3,7 @@ import "../styles/global.scss";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../lib/site";
+import { alternates, localeInfo, localeOf, ui, type Locale } from "../lib/i18n";
 
 interface Props {
   title?: string;
@@ -11,14 +12,31 @@ interface Props {
   jsonLd?: Record<string, unknown>[];
   ogType?: "website" | "article";
   noindex?: boolean;
+  /** The whole <title>, when "title · RuneScript" doesn't fit (the translated home pages). */
+  pageTitle?: string;
 }
 
-const { title, description = site.description, jsonLd = [], ogType = "website", noindex = false } = Astro.props;
-const fullTitle = title ? `${title} · ${site.name}` : `${site.name}: ${site.tagline}`;
+const { title, description = site.description, jsonLd = [], ogType = "website", noindex = false, pageTitle } = Astro.props;
+const locale: Locale = localeOf(Astro.url.pathname);
+const { lang, dir, og } = localeInfo[locale];
+const t = ui[locale];
+const fullTitle = pageTitle ?? (title ? `${title} · ${site.name}` : `${site.name}: ${site.tagline}`);
 // Pages build as name.html (served without the extension), so strip it from the canonical URL.
 const cleanPath = Astro.url.pathname.replace(/(\/?index)?\.html$/, "").replace(/\/$/, "") || "/";
 const canonical = new URL(cleanPath, Astro.site ?? site.url).href;
 const ogImage = new URL("/og.png", Astro.site ?? site.url).href;
+// The same page in the other languages (hreflang), where it is translated.
+const alt = Object.entries(await alternates(cleanPath)) as [Locale, string][];
+const altHref = (path: string) => new URL(path, Astro.site ?? site.url).href;
+
+// Fonts: Inter and JetBrains Mono everywhere; the Noto family for the page's own script.
+// Every page also loads the two language names of the language menu, as a tiny subset.
+const fontFamilies = ["Inter:opsz,wght@14..32,400..700", "JetBrains+Mono:wght@400;700"];
+if (locale === "bn") fontFamilies.push("Noto+Sans+Bengali:wght@400..700");
+if (locale === "heb") fontFamilies.push("Noto+Sans+Hebrew:wght@400..700");
+const fonts = `https://fonts.googleapis.com/css2?${fontFamilies.map((f) => `family=${f}`).join("&")}&display=swap`;
+const menuNames = Object.values(localeInfo).map((l) => l.name).join("");
+const menuFonts = `https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500&family=Noto+Sans+Hebrew:wght@400;500&text=${encodeURIComponent(menuNames)}&display=swap`;
 
 const graph = [
   {
@@ -27,14 +45,14 @@ const graph = [
     name: site.name,
     url: site.url,
     description: site.description,
-    inLanguage: site.locale,
+    inLanguage: Object.values(localeInfo).map((l) => l.lang),
   },
   ...jsonLd,
 ];
 ---
 
 <!doctype html>
-<html lang={site.locale}>
+<html lang={lang} dir={dir} data-copy-code={t.copyCode} data-copied={t.copied} data-link-to-section={t.linkToSection}>
   <head>
     <meta charset="utf-8" />
     <!-- viewport-fit=cover lets the layout run under the notch; safe-area insets pad it back. -->
@@ -42,6 +60,8 @@ const graph = [
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {alt.length > 1 && alt.map(([l, path]) => <link rel="alternate" hreflang={localeInfo[l].lang} href={altHref(path)} />)}
+    {alt.length > 1 && <link rel="alternate" hreflang="x-default" href={altHref(alt[0][1])} />}
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="generator" content={Astro.generator} />
 
@@ -73,16 +93,17 @@ const graph = [
     <!-- Open Graph / social -->
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:title" content={pageTitle ?? title ?? site.name} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="RuneScript: a statically typed language with ActionScript roots" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={og} />
+    {alt.filter(([l]) => l !== locale).map(([l]) => <meta property="og:locale:alternate" content={localeInfo[l].og} />)}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title ?? site.name} />
+    <meta name="twitter:title" content={pageTitle ?? title ?? site.name} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
@@ -90,15 +111,13 @@ const graph = [
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;700&display=swap"
-    />
+    <link rel="stylesheet" href={fonts} />
+    <link rel="stylesheet" href={menuFonts} />
 
     <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": graph })} />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{t.skip}</a>
     <Header />
     <slot name="before-main" />
     <main id="main" tabindex="-1">

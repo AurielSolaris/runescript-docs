@@ -160,6 +160,7 @@
     background: var(--rs-bg-selected);
     color: var(--rs-text-selected);
     box-shadow: inset 2px 0 0 var(--rs-border-selected);
+    &:dir(rtl) { box-shadow: inset -2px 0 0 var(--rs-border-selected); }
   }
   .menu-item__check { margin-inline-start: auto; }
 }
@@ -230,7 +231,8 @@
     color: var(--rs-text);
     // 16px stops iOS Safari from zooming the page when the field gets focus.
     font: var(--rs-font-body);
-    padding: var(--rs-space-1) var(--rs-space-1-5) var(--rs-space-1) 0;
+    padding-block: var(--rs-space-1);
+    padding-inline: 0 var(--rs-space-1-5);
     -webkit-appearance: none;
     appearance: none;
     &::placeholder { color: var(--rs-text-faint); }
@@ -290,7 +292,7 @@ pre.astro-code {
   &__copy {
     position: absolute;
     top: var(--rs-space-2);
-    right: var(--rs-space-2);
+    inset-inline-end: var(--rs-space-2);
     background: var(--rs-bg);
     opacity: 0;
     transition: opacity var(--rs-duration-fast) var(--rs-ease-out);

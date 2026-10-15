@@ -1,0 +1,11 @@
+---
+// The translated home pages: /bn and /heb.
+import Home from "../../components/Home.astro";
+import { locales } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return locales.filter((l) => l !== "en").map((lang) => ({ params: { lang } }));
+}
+---
+
+<Home />

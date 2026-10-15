@@ -13,4 +13,18 @@ const docs = defineCollection({
   }),
 });
 
-export const collections = { docs };
+// Translated guide pages, one folder per language (bn/, heb/); ids are "bn/trace".
+// page "" is the guide index.
+const translations = defineCollection({
+  loader: glob({ pattern: "*/*.md", base: "./src/content/translations" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    summary: z.string(),
+    order: z.number(),
+    page: z.string(),
+    source: z.string(),
+  }),
+});
+
+export const collections = { docs, translations };

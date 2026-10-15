@@ -1,0 +1,519 @@
+---
+// The home page, in every language: src/pages/index.astro and src/pages/[lang]/index.astro.
+import Base from "../layouts/Base.astro";
+import CodeBlock from "./CodeBlock.astro";
+import Terminal from "./Terminal.astro";
+import Icon, { type IconName } from "./Icon.astro";
+import examples from "../data/examples.json";
+import { site } from "../lib/site";
+import { home } from "../lib/home";
+import { docHref, localeOf, translatedSlugs } from "../lib/i18n";
+
+const locale = localeOf(Astro.url.pathname);
+const c = home[locale];
+const have = (await translatedSlugs()).get(locale) ?? new Set<string>();
+const doc = (slug: string) => docHref(locale, slug, have);
+// Links to English-only pages from a translated page say so (hreflang).
+const enOnly = locale === "en" ? undefined : "en";
+
+const byName = Object.fromEntries(examples.map((e) => [e.name, e]));
+const heroTabs = ["hello", "callbacks", "strings"].map((n) => byName[n]).filter(Boolean);
+const rejected = byName["signedness_error"];
+
+const featureLook: { icon: IconName; tone: string }[] = [
+  { icon: "code", tone: "blue" },
+  { icon: "shield", tone: "green" },
+  { icon: "alert", tone: "orange" },
+  { icon: "crosshair", tone: "magenta" },
+  { icon: "zap", tone: "purple" },
+  { icon: "flask", tone: "teal" },
+];
+const features = c.features.map((f, i) => ({ ...f, ...featureLook[i] }));
+
+const as3 = `package {
+    public class Greeter {
+        public function sayHi(message:String, times:int):void {
+            for (var i:int = 0; i < times; i++) {
+                trace(message);
+            }
+        }
+    }
+}`;
+
+const rune = `package main;
+
+public void sayHi(string message, int times) {
+    for (int i = 0; i < times; i++) {
+        trace(message);
+    }
+}
+
+public void main() {
+    sayHi("hi", 2);
+}`;
+
+const jsonLd = [
+  {
+    "@type": "SoftwareSourceCode",
+    name: site.name,
+    description: site.description,
+    url: site.url,
+    codeRepository: site.repo,
+    programmingLanguage: "Go",
+    runtimePlatform: "Go 1.25+",
+    version: site.version,
+  },
+  {
+    "@type": "ComputerLanguage",
+    name: site.name,
+    url: site.url,
+    description: site.description,
+  },
+];
+---
+
+<Base jsonLd={jsonLd} pageTitle={c.title || undefined} description={c.description || undefined}>
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="hero__status">
+          <span class="badge badge--info">{c.status.replace("{version}", site.version)}</span>
+          <span>{c.statusNote}</span>
+        </p>
+        <h1 id="hero-title">{c.heading}</h1>
+        <p class="hero__lede" set:html={c.lede} />
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--large" href={doc("getting-started")}>
+            {c.getStarted} <Icon name="arrow-right" class="rtl-flip" />
+          </a>
+          <a class="btn btn--secondary btn--large" href={doc("")}>
+            <Icon name="book" /> {c.readGuide}
+          </a>
+        </div>
+        <dl class="hero__facts">
+          {c.facts.map(([dt, dd]) => <div><dt>{dt}</dt><dd><bdi>{dd}</bdi></dd></div>)}
+        </dl>
+      </div>
+
+      <div class="hero__demo" x-data="tabs(0)">
+        <div class="window">
+          <div class="window__bar">
+            <div class="tablist" role="tablist" aria-label={c.tabsLabel} x-ref="tablist" @keydown="key($event)">
+              {heroTabs.map((ex, i) => (
+                <button
+                  class="tab"
+                  type="button"
+                  role="tab"
+                  id={`hero-tab-${i}`}
+                  aria-controls={`hero-panel-${i}`}
+                  aria-selected={i === 0 ? "true" : "false"}
+                  tabindex={i === 0 ? 0 : -1}
+                  :aria-selected={`(active === ${i}).toString()`}
+                  :tabindex={`active === ${i} ? 0 : -1`}
+                  @click={`active = ${i}`}
+                >
+                  {ex.file}
+                </button>
+              ))}
+            </div>
+          </div>
+          {heroTabs.map((ex, i) => (
+            <div
+              class="window__panel"
+              role="tabpanel"
+              id={`hero-panel-${i}`}
+              aria-labelledby={`hero-tab-${i}`}
+              x-show={`active === ${i}`}
+              hidden={i !== 0}
+              :hidden={`active !== ${i}`}
+            >
+              <CodeBlock code={ex.code} class="window__code" />
+              <Terminal command={`runescript run ${ex.file}`} output={ex.output} label={c.outputOf.replace("{file}", ex.file)} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" aria-labelledby="features-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="features-title">{c.featuresTitle}</h2>
+        <p>{c.featuresLede}</p>
+      </header>
+      <ul class="features">
+        {features.map((f) => (
+          <li class="card feature">
+            <span class={`icon-tile icon-tile--${f.tone}`}><Icon name={f.icon} size={20} /></span>
+            <h3>{f.title}</h3>
+            <p set:html={f.body} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Diagnostics -->
+  {rejected && (
+    <section class="section section--sunken" aria-labelledby="diag-title">
+      <div class="container split">
+        <div class="split__copy">
+          <span class="badge badge--danger">{c.diagBadge}</span>
+          <h2 id="diag-title">{c.diagTitle}</h2>
+          <p set:html={c.diagBody} />
+          <ul class="checklist">
+            {c.diagChecks.map((html) => <li><Icon name="circle-check" /> <span set:html={html} /></li>)}
+          </ul>
+          <a class="btn btn--secondary" href={doc("diagnostics")}>{c.diagMore} <Icon name="arrow-right" class="rtl-flip" /></a>
+        </div>
+        <div class="split__demo">
+          <CodeBlock code={rejected.code.split("\n").slice(4).join("\n")} filename={rejected.file} />
+          <Terminal command={`runescript check ${rejected.file}`} output={rejected.output} label={c.diagLabel} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- From AS3 -->
+  <section class="section" aria-labelledby="as3-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="as3-title">{c.as3Title}</h2>
+        <p set:html={c.as3Lede} />
+      </header>
+      <div class="compare">
+        <div>
+          <h3 class="compare__label"><span class="badge badge--neutral">ActionScript 3</span></h3>
+          <CodeBlock code={as3} lang="actionscript-3" filename="Greeter.as" />
+        </div>
+        <div>
+          <h3 class="compare__label"><span class="badge badge--accent">RuneScript</span></h3>
+          <CodeBlock code={rune} filename="greeter.rsc" />
+        </div>
+      </div>
+      <div class="table-wrap" role="region" aria-label={c.tableLabel} data-scroll-region>
+        <table class="data-table">
+          <caption class="visually-hidden">{c.tableCaption}</caption>
+          <thead>
+            <tr>{c.tableHead.map((h) => <th scope="col">{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {c.tableRows.map((row) => <tr>{row.map((cell) => <td set:html={cell} />)}</tr>)}
+          </tbody>
+        </table>
+      </div>
+      <a class="btn btn--ghost section__more" href={doc("coming-from-actionscript")}>{c.as3More} <Icon name="arrow-right" class="rtl-flip" /></a>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <section class="section section--sunken" aria-labelledby="status-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="status-title">{c.statusTitle}</h2>
+        <p>{c.statusLede}</p>
+      </header>
+      <div class="status">
+        <div class="card status__card">
+          <h3><span class="badge badge--success">{c.worksNow}</span></h3>
+          <ul>
+            {c.works.map((w) => <li><Icon name="circle-check" class="status__ok" /> <span set:html={w} /></li>)}
+          </ul>
+        </div>
+        <div class="card status__card">
+          <h3><span class="badge badge--neutral">{c.planned}</span></h3>
+          <ul>
+            {c.plannedItems.map((p) => <li><Icon name="clock" class="status__todo" /> {p}</li>)}
+          </ul>
+        </div>
+      </div>
+      <a class="btn btn--ghost section__more" href="/docs/roadmap" hreflang={enOnly}><Icon name="map" /> {c.roadmap}</a>
+    </div>
+  </section>
+
+  <!-- Get started -->
+  <section class="section" aria-labelledby="start-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="start-title">{c.startTitle}</h2>
+        <p>{c.startLede}</p>
+      </header>
+      <ol class="steps">
+        <li>
+          <h3>{c.steps[0]}</h3>
+          <Terminal command={`git clone ${site.repo}.git && cd runescript`} label={c.stepLabels[0]} />
+        </li>
+        <li>
+          <h3>{c.steps[1]}</h3>
+          <Terminal command="go build -o runescript ./cmd/runescript" label={c.stepLabels[1]} />
+        </li>
+        <li>
+          <h3>{c.steps[2]}</h3>
+          <Terminal command="./runescript run examples/hello.rsc" output={byName["hello"]?.output} label={c.stepLabels[2].replace("{file}", "hello.rsc")} />
+        </li>
+      </ol>
+      <div class="cta">
+        <a class="btn btn--primary btn--large" href={doc("getting-started")}>{c.startGuide} <Icon name="arrow-right" class="rtl-flip" /></a>
+        <a class="btn btn--secondary btn--large" href="/examples" hreflang={enOnly}>{c.browseExamples}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style lang="scss">
+  @use "../styles/mixins" as *;
+
+  // ------------------------------------------------ Hero
+  .hero {
+    padding-block: var(--rs-space-12) var(--rs-space-16);
+    border-bottom: 1px solid var(--rs-border);
+    @include up(m) { padding-block: var(--rs-space-16) var(--rs-space-20); }
+    // WUXGA: the extra 120px of height over 1080p goes to the hero, so it fills the first screen.
+    @include wuxga {
+      min-height: calc(100vh - var(--nav-height));
+      display: grid;
+      align-items: center;
+      padding-block: var(--rs-space-12);
+    }
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: var(--rs-space-12);
+    @include up(m) {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: center;
+      gap: var(--rs-space-16);
+    }
+    @include up(wuxga) { gap: var(--rs-space-20); }
+  }
+
+  .hero__copy { display: grid; gap: var(--rs-space-6); align-content: start; }
+
+  .hero__status {
+    display: flex;
+    align-items: center;
+    gap: var(--rs-space-2);
+    color: var(--rs-text-faint);
+    font: var(--rs-font-caption);
+  }
+
+  h1 {
+    font: var(--rs-font-display);
+    text-wrap: balance;
+    // Marketing display size on large screens, on the same 4px grid as the type scale.
+    @include up(l) { font-size: 2.5rem; line-height: 3rem; letter-spacing: -0.01em; }
+    @include up(wuxga) { font-size: 3rem; line-height: 3.5rem; }
+  }
+
+  .hero__lede {
+    font: var(--rs-font-body);
+    color: var(--rs-text-muted);
+    max-width: 36rem;
+    @include up(wuxga) { font-size: 1.125rem; line-height: 1.75rem; }
+    code { font: var(--rs-font-code); background: var(--rs-bg-neutral); padding: 0.125em var(--rs-space-1); border-radius: var(--rs-radius-2); }
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rs-space-2);
+    @include down(xs) { .btn { flex: 1 1 100%; } }
+  }
+
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rs-space-6);
+    margin: var(--rs-space-2) 0 0;
+    padding-top: var(--rs-space-6);
+    border-top: 1px solid var(--rs-border);
+    dt { font: var(--rs-font-caption); color: var(--rs-text-faint); }
+    dd { margin: var(--rs-space-0-5) 0 0; font-weight: var(--rs-weight-medium); }
+  }
+
+  .hero__demo { min-width: 0; }
+
+  .window {
+    background: var(--rs-bg-overlay);
+    box-shadow: var(--rs-shadow-overlay);
+    border-radius: var(--rs-radius-5);
+    overflow: hidden;
+  }
+
+  .window__bar { padding: var(--rs-space-2) var(--rs-space-3) 0; }
+
+  .window__panel {
+    display: grid;
+    gap: var(--rs-space-3);
+    padding: var(--rs-space-3);
+    &[hidden] { display: none; }
+
+    :global(.window__code pre.astro-code) {
+      max-height: 22rem;
+      overflow: auto;
+      @include wuxga { max-height: 30rem; }
+    }
+    :global(.terminal) { max-height: 10rem; overflow: auto; }
+  }
+
+  // ------------------------------------------------ Sections
+  .section {
+    padding-block: var(--rs-space-16);
+    @include up(m) { padding-block: var(--rs-space-20); }
+    &--sunken { background: var(--rs-bg-sunken); border-block: 1px solid var(--rs-border); }
+  }
+  .section + .section--sunken, .section--sunken + .section { border-top: 0; }
+
+  .section__head {
+    display: grid;
+    gap: var(--rs-space-2);
+    max-width: 44rem;
+    margin-bottom: var(--rs-space-10);
+    h2 { font: var(--rs-font-h1); text-wrap: balance; }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
+  }
+
+  .section__more { margin-top: var(--rs-space-6); }
+
+  // ------------------------------------------------ Features
+  .features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--rs-space-4);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(m) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--rs-space-6); }
+  }
+
+  .feature {
+    display: grid;
+    gap: var(--rs-space-3);
+    align-content: start;
+    h3 { font: var(--rs-font-h4); margin-top: var(--rs-space-1); }
+    p { color: var(--rs-text-muted); }
+  }
+
+  // ------------------------------------------------ Split (diagnostics)
+  .split {
+    display: grid;
+    gap: var(--rs-space-10);
+    @include up(m) { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: center; gap: var(--rs-space-16); }
+  }
+
+  .split__copy {
+    display: grid;
+    gap: var(--rs-space-4);
+    justify-items: start;
+    h2 { font: var(--rs-font-h1); text-wrap: balance; }
+    p { font: var(--rs-font-body); color: var(--rs-text-muted); }
+    code { font: var(--rs-font-code); }
+  }
+
+  .split__demo { display: grid; gap: var(--rs-space-3); min-width: 0; }
+
+  .checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--rs-space-2);
+    li { display: flex; gap: var(--rs-space-2); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--rs-space-0-5); color: var(--rs-icon-success); }
+  }
+
+  // ------------------------------------------------ Compare
+  .compare {
+    display: grid;
+    gap: var(--rs-space-6);
+    margin-bottom: var(--rs-space-8);
+    @include up(m) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    > div { min-width: 0; display: grid; gap: var(--rs-space-2); align-content: start; }
+  }
+  .compare__label { font: var(--rs-font-h5); }
+
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--rs-border);
+    border-radius: var(--rs-radius-5);
+  }
+
+  .data-table {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    th {
+      text-align: start;
+      color: var(--rs-text-muted);
+      font-weight: var(--rs-weight-bold);
+      padding: var(--rs-space-2) var(--rs-space-4);
+      border-bottom: 2px solid var(--rs-border);
+    }
+    td { padding: var(--rs-space-2) var(--rs-space-4); border-bottom: 1px solid var(--rs-border); }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: var(--rs-bg-hover); }
+    code { font: var(--rs-font-code); }
+  }
+
+  // ------------------------------------------------ Status
+  .status {
+    display: grid;
+    gap: var(--rs-space-4);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--rs-space-6); }
+  }
+
+  .status__card {
+    h3 { margin-bottom: var(--rs-space-4); font: inherit; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--rs-space-3); }
+    li { display: flex; gap: var(--rs-space-2); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--rs-space-0-5); }
+    :global(code) { font: var(--rs-font-code); }
+  }
+  .status__card :global(.status__ok) { color: var(--rs-icon-success); }
+  .status__card :global(.status__todo) { color: var(--rs-icon-faint); }
+
+  // ------------------------------------------------ Steps
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--rs-space-6);
+    counter-reset: step;
+    @include up(l) { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+
+    li { counter-increment: step; display: grid; gap: var(--rs-space-3); min-width: 0; }
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--rs-space-2);
+      font: var(--rs-font-h4);
+      &::before {
+        content: counter(step);
+        display: inline-grid;
+        place-items: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: var(--rs-radius-full);
+        background: var(--rs-bg-brand);
+        color: var(--rs-text-inverse);
+        font: var(--rs-font-caption);
+        font-weight: var(--rs-weight-bold);
+      }
+    }
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rs-space-2);
+    margin-top: var(--rs-space-10);
+    @include down(xs) { .btn { flex: 1 1 100%; } }
+  }
+</style>

@@ -1,9 +1,21 @@
 ---
 import Icon from "./Icon.astro";
 import ThemeMenu from "./ThemeMenu.astro";
-import { nav, site } from "../lib/site";
+import LanguageMenu from "./LanguageMenu.astro";
+import { site } from "../lib/site";
+import { localeInfo, localeOf, ui } from "../lib/i18n";
 
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+const locale = localeOf(path);
+const t = ui[locale];
+const p = localeInfo[locale].prefix;
+// Only the guide is translated: Examples, the specification, and the roadmap are English pages.
+const nav = [
+  { href: `${p}/docs`, label: t.docs, en: false },
+  { href: "/examples", label: t.examples, en: locale !== "en" },
+  { href: "/docs/spec", label: t.spec, en: locale !== "en" },
+  { href: "/docs/roadmap", label: t.roadmap, en: locale !== "en" },
+];
 // The most specific nav entry that contains this page is the current one.
 const current = nav
   .filter((n) => path === n.href || path.startsWith(`${n.href}/`))
@@ -12,20 +24,23 @@ const current = nav
 
 <header class="topnav" x-data="drawer" @keydown.escape.window="close()">
   <div class="topnav__inner">
-    <a class="brand" href="/" aria-label={`${site.name} home`}>
+    <a class="brand" href={p || "/"} aria-label={t.home}>
       <img src="/favicon.svg" alt="" width="24" height="24" />
       <span>{site.name}</span>
     </a>
 
-    <nav class="topnav__links" aria-label="Main">
+    <nav class="topnav__links" aria-label={t.mainNav}>
       {nav.map((n) => (
-        <a href={n.href} aria-current={n.href === current ? "page" : undefined}>{n.label}</a>
+        <a href={n.href} hreflang={n.en ? "en" : undefined} aria-current={n.href === current ? "page" : undefined}>
+          {n.label}{n.en && <span class="visually-hidden"> {t.inEnglish}</span>}
+        </a>
       ))}
     </nav>
 
     <div class="topnav__actions">
+      <LanguageMenu />
       <ThemeMenu />
-      <a class="btn btn--ghost btn--icon" href={site.repo} aria-label="RuneScript on GitHub" rel="noopener">
+      <a class="btn btn--ghost btn--icon" href={site.repo} aria-label={t.github} rel="noopener">
         <Icon name="github" />
       </a>
       <button
@@ -34,8 +49,8 @@ const current = nav
         :aria-expanded="open.toString()"
         aria-expanded="false"
         aria-controls="mobile-nav"
-        :aria-label="open ? 'Close menu' : 'Open menu'"
-        aria-label="Open menu"
+        :aria-label={`open ? ${JSON.stringify(t.closeMenu)} : ${JSON.stringify(t.openMenu)}`}
+        aria-label={t.openMenu}
         @click="toggle()"
       >
         <Icon name="menu" />
@@ -43,10 +58,10 @@ const current = nav
     </div>
   </div>
 
-  <nav id="mobile-nav" class="mobile-nav" aria-label="Main" x-show="open" x-cloak x-transition.opacity.duration.150ms>
+  <nav id="mobile-nav" class="mobile-nav" aria-label={t.mainNav} x-show="open" x-cloak x-transition.opacity.duration.150ms>
     {nav.map((n) => (
-      <a class="menu-item" href={n.href} aria-current={n.href === current ? "page" : undefined} @click="close()">
-        {n.label}
+      <a class="menu-item" href={n.href} hreflang={n.en ? "en" : undefined} aria-current={n.href === current ? "page" : undefined} @click="close()">
+        {n.label}{n.en && <span class="visually-hidden"> {t.inEnglish}</span>}
       </a>
     ))}
     <a class="menu-item" href={site.repo} rel="noopener">
@@ -145,6 +160,7 @@ const current = nav
         background: var(--rs-bg-selected);
         color: var(--rs-text-selected);
         box-shadow: inset 2px 0 0 var(--rs-border-selected);
+        &:dir(rtl) { box-shadow: inset -2px 0 0 var(--rs-border-selected); }
       }
     }
   }

@@ -1,0 +1,70 @@
+---
+// Language switcher: links to this page in each language, or to that
+// language's home page where this page isn't translated.
+import Icon from "./Icon.astro";
+import { alternates, localeInfo, locales, localeOf, ui } from "../lib/i18n";
+
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+const locale = localeOf(path);
+const t = ui[locale];
+const alt = await alternates(path);
+const items = locales.map((l) => ({ l, ...localeInfo[l], href: alt[l] ?? (localeInfo[l].prefix || "/") }));
+---
+
+<div
+  class="lang-menu"
+  x-data="menu"
+  @keydown.escape="close()"
+  @click.outside="close(false)"
+  @focusout="$el.contains($event.relatedTarget) || close(false)"
+>
+  <button
+    x-ref="trigger"
+    class="btn btn--ghost btn--icon"
+    type="button"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    :aria-expanded="open.toString()"
+    aria-label={t.language}
+    @click="toggle()"
+  >
+    <Icon name="languages" />
+  </button>
+  <div
+    x-ref="panel"
+    class="popup lang-menu__panel"
+    role="menu"
+    aria-label={t.language}
+    x-show="open"
+    x-cloak
+    @keydown.arrow-down.prevent="move(1)"
+    @keydown.arrow-up.prevent="move(-1)"
+  >
+    {items.map((i) => (
+      <a
+        class="menu-item"
+        href={i.href}
+        lang={i.lang}
+        hreflang={i.lang}
+        role="menuitemradio"
+        tabindex="-1"
+        aria-checked={i.l === locale ? "true" : "false"}
+      >
+        {i.name}
+        {i.l === locale && <span class="menu-item__check"><Icon name="check" /></span>}
+      </a>
+    ))}
+  </div>
+</div>
+
+<style lang="scss">
+  .lang-menu { position: relative; }
+
+  .lang-menu__panel {
+    inset-inline-end: 0;
+    top: calc(100% + var(--rs-space-2));
+    min-width: 10rem;
+
+    .menu-item:hover { text-decoration: none; }
+  }
+</style>

@@ -41,21 +41,24 @@ const svg = (body: string) =>
 const copyIcon = svg('<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>');
 const checkIcon = svg('<path d="M20 6 9 17l-5-5"/>');
 
+// Labels in the page's language, from <html data-copy-code data-copied data-link-to-section>.
+const label = (key: "copyCode" | "copied" | "linkToSection", fallback: string) => document.documentElement.dataset[key] || fallback;
+
 function makeCopyButton(getText: () => string): HTMLButtonElement {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "btn btn--secondary btn--compact code-block__copy";
-  btn.setAttribute("aria-label", "Copy code");
+  btn.setAttribute("aria-label", label("copyCode", "Copy code"));
   btn.innerHTML = copyIcon;
   btn.addEventListener("click", async () => {
     if (!(await copyText(getText()))) return;
     btn.innerHTML = checkIcon;
     btn.dataset.copied = "";
-    btn.setAttribute("aria-label", "Copied");
+    btn.setAttribute("aria-label", label("copied", "Copied"));
     setTimeout(() => {
       btn.innerHTML = copyIcon;
       delete btn.dataset.copied;
-      btn.setAttribute("aria-label", "Copy code");
+      btn.setAttribute("aria-label", label("copyCode", "Copy code"));
     }, 1500);
   });
   return btn;
@@ -169,8 +172,11 @@ export default (Alpine: Alpine) => {
       const tablist = this.$refs.tablist as HTMLElement | undefined;
       const tabs = [...(tablist?.querySelectorAll<HTMLElement>("[role='tab']") ?? [])];
       let i = this.active;
-      if (e.key === "ArrowRight") i = (i + 1) % tabs.length;
-      else if (e.key === "ArrowLeft") i = (i - 1 + tabs.length) % tabs.length;
+      // In a right-to-left page the next tab is to the left.
+      const forward = getComputedStyle(tablist ?? document.documentElement).direction === "rtl" ? "ArrowLeft" : "ArrowRight";
+      const back = forward === "ArrowRight" ? "ArrowLeft" : "ArrowRight";
+      if (e.key === forward) i = (i + 1) % tabs.length;
+      else if (e.key === back) i = (i - 1 + tabs.length) % tabs.length;
       else if (e.key === "Home") i = 0;
       else if (e.key === "End") i = tabs.length - 1;
       else return;
@@ -207,7 +213,7 @@ export default (Alpine: Alpine) => {
         a.className = "heading-anchor";
         a.href = `#${h.id}`;
         a.textContent = "#";
-        a.setAttribute("aria-label", `Link to section: ${h.textContent ?? ""}`);
+        a.setAttribute("aria-label", `${label("linkToSection", "Link to section:")} ${h.textContent ?? ""}`);
         h.append(a);
       }
     },

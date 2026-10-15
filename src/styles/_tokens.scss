@@ -26,8 +26,8 @@
   --rs-space-16: 4rem;
   --rs-space-20: 5rem;
 
-  /* Type: Inter for text, JetBrains Mono for code. */
-  --rs-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  /* Type: Inter for text (Noto Sans for Bengali and Hebrew, which Inter lacks), JetBrains Mono for code. */
+  --rs-font-sans: Inter, "Noto Sans Bengali", "Noto Sans Hebrew", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
   --rs-font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --rs-weight-regular: 400;
   --rs-weight-medium: 500;
@@ -159,8 +159,8 @@
   --rs-text-danger: #ff8e86;
   --rs-text-info: #6cb6ff;
   --rs-text-accent: #b392f0;
-  --rs-link: #539bf5;
-  --rs-link-active: #6cb6ff;
+  --rs-link: #6cb6ff;
+  --rs-link-active: #96d0ff;
 
   --rs-bg: #212830;
   --rs-bg-sunken: #1a2028;

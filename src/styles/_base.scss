@@ -23,7 +23,9 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  font: var(--rs-font-ui);
+  // The browser's root size (16px by default): the tokens are written for it
+  // (0.25rem = 4px, 2.75rem = 44px). Body text sizes come from the tokens.
+  font-size: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -56,6 +58,12 @@ code, pre, kbd, samp, .terminal, .astro-code {
 }
 
 img, svg { display: block; max-width: 100%; }
+
+// Right-to-left pages (Hebrew): code reads left to right, and so does inline
+// code inside a sentence; arrows and chevrons that point "forward" are mirrored.
+pre, .terminal, :not(pre) > code, kbd { direction: ltr; unicode-bidi: isolate; }
+pre, .terminal { text-align: left; }
+.rtl-flip:dir(rtl) { transform: scaleX(-1); }
 
 a {
   color: var(--rs-link);
@@ -104,7 +112,7 @@ h1, h2, h3, h4, h5, h6, p { margin: 0; }
   &:focus {
     position: fixed !important;
     width: auto; height: auto; clip: auto; margin: 0;
-    top: var(--rs-space-2); left: var(--rs-space-2);
+    top: var(--rs-space-2); inset-inline-start: var(--rs-space-2);
     z-index: 900;
     padding: var(--rs-space-2) var(--rs-space-3);
     background: var(--rs-bg-overlay);

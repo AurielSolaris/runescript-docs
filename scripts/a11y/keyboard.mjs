@@ -64,6 +64,40 @@ const axe = async (page, what) => {
   check(await page.evaluate(() => [...document.querySelectorAll(".heading-anchor")].every((a) => a.getAttribute("aria-label")?.startsWith("Link to section"))), "heading anchors have names");
 }
 
+// Language menu
+{
+  const page = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
+  await page.goto(base + "/docs/trace", { waitUntil: "networkidle" });
+  await page.focus('.lang-menu button[aria-haspopup="menu"]');
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(100);
+  check(await page.evaluate(() => document.activeElement?.getAttribute("aria-checked") === "true" && document.activeElement.lang === "en"), "Enter opens the language menu on the current language");
+  await axe(page, "language menu open");
+  await page.keyboard.press("ArrowDown");
+  check(await page.evaluate(() => document.activeElement?.getAttribute("href") === "/bn/docs/trace"), "the language menu links to this page in Bengali");
+  await page.keyboard.press("Escape");
+  check(await page.evaluate(() => document.activeElement?.closest(".lang-menu") && document.activeElement.getAttribute("aria-haspopup") === "menu"), "Escape closes the language menu and returns focus to its button");
+  const links = await page.evaluate(() => [...document.querySelectorAll("link[rel=alternate][hreflang]")].map((l) => l.hreflang).sort().join(" "));
+  check(links === "bn en he x-default", `hreflang alternates on a translated page (${links})`);
+}
+
+// Right to left (Hebrew)
+{
+  const page = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
+  await page.goto(base + "/heb/docs/trace", { waitUntil: "networkidle" });
+  const attrs = await page.evaluate(() => [document.documentElement.lang, document.documentElement.dir, getComputedStyle(document.querySelector(".prose pre")).direction]);
+  check(attrs.join(" ") === "he rtl ltr", `Hebrew pages are lang="he" dir="rtl", with code left to right (${attrs.join(" ")})`);
+  await page.keyboard.press("Tab");
+  const skip = await page.evaluate(() => ({ text: document.activeElement.textContent.trim(), right: document.activeElement.getBoundingClientRect().right }));
+  check(skip.text === "דילוג לתוכן" && skip.right > 1280 - 100, "the Hebrew skip link is translated and sits at the right");
+
+  await page.goto(base + "/heb", { waitUntil: "networkidle" });
+  await page.focus('[role="tab"][aria-selected="true"]');
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForTimeout(100);
+  check(await page.evaluate(() => [...document.querySelectorAll('[role="tab"]')].findIndex((t) => t.getAttribute("aria-selected") === "true") === 1), "right to left, ArrowLeft selects the next tab");
+}
+
 // Home page tabs
 {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
@@ -105,6 +139,15 @@ const axe = async (page, what) => {
   await page.waitForTimeout(300);
   check(await page.evaluate(() => document.getElementById("mobile-nav").contains(document.activeElement)), "opening the site menu moves focus into it");
   await axe(page, "site menu open (phone)");
+
+  // Right to left, the docs drawer slides in from the right.
+  await page.goto(base + "/heb/docs/trace", { waitUntil: "networkidle" });
+  await page.focus('button[aria-controls="docs-sidebar"]');
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  const box = await page.evaluate(() => document.getElementById("docs-sidebar").getBoundingClientRect());
+  check(Math.round(box.right) === 375 && box.left > 0, "the Hebrew docs drawer opens from the right");
+  await axe(page, "docs menu open (phone, Hebrew)");
 }
 
 // Forced colours: the task-list status icons stay visible.

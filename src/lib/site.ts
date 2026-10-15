@@ -7,15 +7,7 @@ export const site = {
   url: import.meta.env.SITE.replace(/\/$/, ""),
   repo: "https://github.com/AurielSolaris/runescript",
   version: "0.3",
-  locale: "en",
   themeColor: { light: "#FFFFFF", dark: "#1F1F21" },
 };
-
-export const nav = [
-  { href: "/docs", label: "Docs" },
-  { href: "/examples", label: "Examples" },
-  { href: "/docs/spec", label: "Specification" },
-  { href: "/docs/roadmap", label: "Roadmap" },
-];
 
 export const sectionOrder = ["Guide", "Reference", "Project"] as const;

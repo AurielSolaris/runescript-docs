@@ -2,7 +2,7 @@
 // AA, plus best practices) on every page, in light and dark, at desktop and
 // phone widths, plus reflow at 320 CSS px (WCAG 1.4.10).
 import { chromium } from "playwright";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,6 +12,12 @@ const axeSource = readFileSync(new URL("../../node_modules/axe-core/axe.min.js",
 
 const pages = ["/", "/examples", "/docs", "/404"];
 for (const f of readdirSync(join(dist, "docs"))) if (f.endsWith(".html")) pages.push("/docs/" + f.replace(/\.html$/, ""));
+// Translations: /bn, /heb, their docs index, and each translated chapter.
+for (const lang of ["bn", "heb"]) {
+  if (!existsSync(join(dist, lang, "docs"))) continue;
+  pages.push(`/${lang}`, `/${lang}/docs`);
+  for (const f of readdirSync(join(dist, lang, "docs"))) if (f.endsWith(".html")) pages.push(`/${lang}/docs/` + f.replace(/\.html$/, ""));
+}
 
 const browser = await chromium.launch(process.env.A11Y_CHANNEL ? { channel: process.env.A11Y_CHANNEL } : {});
 const found = new Map(); // rule -> {impact, help, nodes: Set}

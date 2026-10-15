@@ -1,10 +1,12 @@
 ---
 import Icon from "./Icon.astro";
+import { localeOf, ui } from "../lib/i18n";
 
+const t = ui[localeOf(Astro.url.pathname)];
 const options = [
-  { mode: "light", label: "Light", icon: "sun" },
-  { mode: "dark", label: "Dark", icon: "moon" },
-  { mode: "system", label: "Match system", icon: "monitor" },
+  { mode: "light", label: t.light, icon: "sun" },
+  { mode: "dark", label: t.dark, icon: "moon" },
+  { mode: "system", label: t.system, icon: "monitor" },
 ] as const;
 ---
 
@@ -22,7 +24,7 @@ const options = [
     aria-haspopup="menu"
     aria-expanded="false"
     :aria-expanded="open.toString()"
-    aria-label="Theme"
+    aria-label={t.theme}
     @click="toggle()"
   >
     <span class="theme-menu__icon theme-menu__icon--light"><Icon name="sun" /></span>
@@ -32,7 +34,7 @@ const options = [
     x-ref="panel"
     class="popup theme-menu__panel"
     role="menu"
-    aria-label="Theme"
+    aria-label={t.theme}
     x-show="open"
     x-cloak
     @keydown.arrow-down.prevent="move(1)"
@@ -60,7 +62,7 @@ const options = [
   .theme-menu { position: relative; }
 
   .theme-menu__panel {
-    right: 0;
+    inset-inline-end: 0;
     top: calc(100% + var(--rs-space-2));
     min-width: 12rem;
   }
