@@ -1,0 +1,106 @@
+[
+  {
+    "name": "boundary_error",
+    "file": "boundary_error.rsc",
+    "description": "`ASX-NAME-009`: nested functions don't capture outer variables",
+    "rejected": true,
+    "code": "// This program is intentionally rejected: nested functions and lambdas do\n// not capture the variables of the function around them.\n//\n//   runescript check examples/boundary_error.rsc\npackage examples.errors;\n\npublic int main() {\n    int total = 0;\n    private void add(int n) {\n        total += n; // expect: ASX-NAME-009 10:9\n    }\n    add(5);\n    return total;\n}",
+    "output": "examples/boundary_error.rsc:10:9: error ASX-NAME-009: 'total' belongs to an enclosing function and is not visible here\n            total += n; // expect: ASX-NAME-009 10:9\n            ^^^^^\n  help: nested functions and lambdas do not capture outer variables; pass 'total' as a parameter"
+  },
+  {
+    "name": "callbacks",
+    "file": "callbacks.rsc",
+    "description": "Function types, callbacks, lambdas, nested functions, prototypes, returning functions",
+    "rejected": false,
+    "code": "// Advanced functions: callbacks, lambdas, nested functions, prototypes,\n// and functions that return functions.\npackage examples.callbacks;\n\n// A prototype: the definition is further down.\npublic int sumWith(int(int) f, int n);\n\npublic void forEach(int from, int to, void(int) body) {\n    for (int i = from; i <= to; i++) {\n        body(i);\n    }\n}\n\npublic int(int) multiplier(int factor) {\n    // Functions do not capture variables, so each factor gets its own function.\n    private int times2(int x) { return x * 2; }\n    private int times3(int x) { return x * 3; }\n    if (factor == 2) {\n        return times2;\n    }\n    if (factor == 3) {\n        return times3;\n    }\n    return (int x) => x;\n}\n\npublic int main() {\n    // Pass a lambda as a callback.\n    forEach(1, 3, (int i) => trace(\"item\", i));\n\n    // Store functions in variables and pass named functions around.\n    int(int) square = (int x) => x * x;\n    trace(\"sum of squares 1..4:\", sumWith(square, 4));\n    trace(\"sum of triples 1..5:\", sumWith(multiplier(3), 5));\n    trace(\"double 21:\", multiplier(2)(21));\n\n    // Nested functions, with a prototype for mutual recursion.\n    private bool isEven(int n);\n    private bool isOdd(int n) {\n        if (n == 0) { return false; }\n        return isEven(n - 1);\n    }\n    private bool isEven(int n) {\n        if (n == 0) { return true; }\n        return isOdd(n - 1);\n    }\n    trace(\"7 is odd:\", isOdd(7));\n    return 0;\n}\n\npublic int sumWith(int(int) f, int n) {\n    int total = 0;\n    for (int i = 1; i <= n; i++) {\n        total += f(i);\n    }\n    return total;\n}",
+    "output": "item 1\nitem 2\nitem 3\nsum of squares 1..4: 30\nsum of triples 1..5: 45\ndouble 21: 42\n7 is odd: true"
+  },
+  {
+    "name": "conditionals",
+    "file": "conditionals.rsc",
+    "description": "`if` / `else if` / `else`, comparisons, boolean logic",
+    "rejected": false,
+    "code": "// if / else if / else, comparisons, and boolean operators.\npackage examples.conditionals;\n\npublic string classify(int n) {\n    if (n < 0) {\n        return \"negative\";\n    } else if (n == 0) {\n        return \"zero\";\n    } else if (n % 2 == 0 && n > 100) {\n        return \"large even\";\n    } else {\n        return \"positive\";\n    }\n}\n\npublic void main() {\n    trace(-5, classify(-5));\n    trace(0, classify(0));\n    trace(7, classify(7));\n    trace(200, classify(200));\n\n    bool a = true;\n    bool b = !a || 3 >= 2;\n    trace(\"b is\", b);\n}",
+    "output": "-5 negative\n0 zero\n7 positive\n200 large even\nb is true"
+  },
+  {
+    "name": "errors",
+    "file": "errors.rsc",
+    "description": "`throw`, `try`/`catch`/`finally`, error types, and catching a runtime error",
+    "rejected": false,
+    "code": "// Errors: throw, try/catch/finally, and catching runtime errors.\npackage examples;\n\n// parseAge turns text into an age, or throws.\npublic int parseAge(string text) {\n    int age = (int) text; // a TypeError if text isn't a whole number\n    if (age < 0 || age > 150) {\n        throw new RangeError(\"not a plausible age\", 100);\n    }\n    return age;\n}\n\npublic void report(string text) {\n    try {\n        trace(text, \"->\", parseAge(text));\n    } catch (RangeError e) {\n        trace(text, \"-> out of range:\", e.message);\n    } catch (TypeError e) {\n        trace(text, \"-> not a number\");\n    }\n}\n\npublic int main() {\n    report(\"42\");\n    report(\"-7\");\n    report(\"forty\");\n\n    // Runtime errors are errors too, and finally always runs.\n    int big = 2147483647;\n    for (int step = 1; step <= 2; step++) {\n        try {\n            trace(\"adding\", step);\n            big += 2147483647 * (step - 1) + 1;\n            trace(\"never printed\");\n        } catch (RangeError e) {\n            trace(\"caught\", e.name, e.errorID);\n        } finally {\n            trace(\"finally\", step);\n        }\n    }\n    return 0;\n}",
+    "output": "42 -> 42\n-7 -> out of range: not a plausible age\nforty -> not a number\nadding 1\ncaught RangeError 2\nfinally 1\nadding 2\ncaught RangeError 2\nfinally 2"
+  },
+  {
+    "name": "fizzbuzz",
+    "file": "fizzbuzz.rsc",
+    "description": "Putting the basics together",
+    "rejected": false,
+    "code": "// The classic.\npackage examples.fizzbuzz;\n\npublic void fizzbuzz(int limit) {\n    for (int i = 1; i <= limit; i++) {\n        if (i % 15 == 0) {\n            trace(\"FizzBuzz\");\n        } else if (i % 3 == 0) {\n            trace(\"Fizz\");\n        } else if (i % 5 == 0) {\n            trace(\"Buzz\");\n        } else {\n            trace(i);\n        }\n    }\n}\n\npublic int main() {\n    fizzbuzz(15);\n    return 0;\n}",
+    "output": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz"
+  },
+  {
+    "name": "functions",
+    "file": "functions.rsc",
+    "description": "Parameters, return values, recursion, calling before declaration",
+    "rejected": false,
+    "code": "// Functions: parameters, return values, recursion, and calls before declaration.\npackage examples.functions;\n\npublic int main() {\n    trace(\"5! =\", factorial(5));\n    trace(\"fib(20) =\", fib(20));\n    trace(\"gcd(84, 36) =\", gcd(84, 36));\n    return 0;\n}\n\npublic int factorial(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n\npublic int fib(int n) {\n    int a = 0;\n    int b = 1;\n    for (int i = 0; i < n; i++) {\n        int next = a + b;\n        a = b;\n        b = next;\n    }\n    return a;\n}\n\npublic uint gcd(uint a, uint b) {\n    uint x = a;\n    uint y = b;\n    while (y != 0) {\n        uint t = x % y;\n        x = y;\n        y = t;\n    }\n    return x;\n}",
+    "output": "5! = 120\nfib(20) = 6765\ngcd(84, 36) = 12"
+  },
+  {
+    "name": "hello",
+    "file": "hello.rsc",
+    "description": "The minimal program",
+    "rejected": false,
+    "code": "// The smallest complete RuneScript program.\npackage main;\n\nprotected int main() {\n    trace(\"Hello, RuneScript!\");\n    return 0;\n}",
+    "output": "Hello, RuneScript!"
+  },
+  {
+    "name": "loops",
+    "file": "loops.rsc",
+    "description": "`for`, `while`, `break`, `continue`",
+    "rejected": false,
+    "code": "// while, for, break, and continue.\npackage examples.loops;\n\npublic void sayHi(string message, int times) {\n    for (int i = 0; i < times; i++) {\n        trace(message);\n    }\n}\n\npublic int main() {\n    sayHi(\"Hello world\", 3);\n\n    int n = 0;\n    while (n < 10) {\n        n++;\n        if (n % 2 == 0) {\n            continue;\n        }\n        if (n > 7) {\n            break;\n        }\n        trace(\"odd\", n);\n    }\n    return 0;\n}",
+    "output": "Hello world\nHello world\nHello world\nodd 1\nodd 3\nodd 5\nodd 7"
+  },
+  {
+    "name": "primes",
+    "file": "primes.rsc",
+    "description": "Predicate callbacks, a lambda, a nested helper, and `string.repeat`",
+    "rejected": false,
+    "code": "// Counting and charting primes with predicate callbacks, a lambda,\n// a nested helper function, and std:string.\npackage examples.primes;\n\nuse \"std:string\";\n\npublic bool isPrime(int n) {\n    if (n < 2) {\n        return false;\n    }\n    for (int d = 2; d * d <= n; d++) {\n        if (n % d == 0) {\n            return false;\n        }\n    }\n    return true;\n}\n\n// Counts the numbers in [from, to] for which pred returns true.\npublic int countWhere(int from, int to, bool(int) pred) {\n    int count = 0;\n    for (int n = from; n <= to; n++) {\n        if (pred(n)) {\n            count++;\n        }\n    }\n    return count;\n}\n\npublic int main() {\n    trace(\"primes up to 100:\", countWhere(1, 100, isPrime));\n    trace(\"twin primes up to 100:\", countWhere(1, 100, (int n) => isPrime(n) && isPrime(n + 2)));\n\n    private void bar(int from, int count) {\n        trace(from, string.repeat(\"#\", count), count);\n    }\n    trace(\"primes per hundred:\");\n    for (int from = 0; from < 500; from += 100) {\n        bar(from, countWhere(from, from + 99, isPrime));\n    }\n    return 0;\n}",
+    "output": "primes up to 100: 25\ntwin primes up to 100: 8\nprimes per hundred:\n0 ######################### 25\n100 ##################### 21\n200 ################ 16\n300 ################ 16\n400 ################# 17"
+  },
+  {
+    "name": "signedness_error",
+    "file": "signedness_error.rsc",
+    "description": "`ASX-TYPE-004`: a signed value can't go into a `uint`",
+    "rejected": true,
+    "code": "// This program is intentionally rejected: RuneScript never silently\n// converts a signed integer to an unsigned one.\n//\n//   runescript check examples/signedness_error.rsc\npackage examples.errors;\n\npublic int main() {\n    sint signedValue = -10;\n    uint unsignedValue = signedValue; // expect: ASX-TYPE-004 9:26\n    return 0;\n}",
+    "output": "examples/signedness_error.rsc:9:26: error ASX-TYPE-004: Cannot assign signed integer 'sint' to unsigned integer 'uint'.\n        uint unsignedValue = signedValue; // expect: ASX-TYPE-004 9:26\n                             ^^^^^^^^^^^\n  help: Use an explicit checked conversion, (uint) x, or change the destination type."
+  },
+  {
+    "name": "strings",
+    "file": "strings.rsc",
+    "description": "The `std:string` standard library",
+    "rejected": false,
+    "code": "// The std:string standard library package (Go's strings, camelCase names).\npackage examples.strings;\n\nuse \"std:string\";\n\npublic string slug(string title) {\n    string s = string.toLower(string.trimSpace(title));\n    return string.replaceAll(s, \" \", \"-\");\n}\n\npublic int main() {\n    string title = \"   Hello RuneScript World   \";\n    trace(\"slug:\", slug(title));\n\n    string path = \"assets/runescript.svg\";\n    if (string.hasSuffix(path, \".svg\")) {\n        trace(\"image:\", string.trimSuffix(path, \".svg\"));\n    }\n\n    int slash = string.index(path, \"/\");\n    trace(\"first slash at byte\", slash);\n    trace(\"vowels in title:\", string.count(title, \"o\") + string.count(title, \"e\"));\n    trace(string.repeat(\"=\", 20));\n    return 0;\n}",
+    "output": "slug: hello-runescript-world\nimage: assets/runescript\nfirst slash at byte 6\nvowels in title: 4\n===================="
+  },
+  {
+    "name": "temperatures",
+    "file": "temperatures.rsc",
+    "description": "`float`, `float32`, and checked conversions such as `(int) f` and `(float) \"98.6\"`",
+    "rejected": false,
+    "code": "// Floats and conversions: a temperature table.\npackage examples;\n\npublic float toFahrenheit(float celsius) {\n    return celsius * 9 / 5 + 32;\n}\n\npublic int main() {\n    for (int c = -40; c <= 100; c += 35) {\n        float f = toFahrenheit((float) c);\n        trace(c, \"C is\", f, \"F\");\n    }\n\n    // float32 keeps 32-bit precision; float keeps every digit.\n    float exact = 1.0 / 3;\n    float32 rounded = (float32) exact;\n    trace(exact, rounded);\n\n    // Conversions are checked and truncate toward zero.\n    trace((int) toFahrenheit(37.5), (int) -2.9, (float) \"98.6\");\n    return 0;\n}",
+    "output": "-40 C is -40 F\n-5 C is 23 F\n30 C is 86 F\n65 C is 149 F\n100 C is 212 F\n0.3333333333333333 0.33333334\n99 -2 98.6"
+  },
+  {
+    "name": "variables",
+    "file": "variables.rsc",
+    "description": "Declarations, assignment, compound assignment, `sint`/`uint`/`bool`/`string`",
+    "rejected": false,
+    "code": "// Declarations, assignment, and compound assignment.\npackage examples.variables;\n\npublic int main() {\n    int count = 10;\n    sint offset = -3;          // 'sint' is another spelling of 'int'\n    uint total = 0;\n    string label = \"count\";\n    bool ready = true;\n\n    count = count + offset;    // 7\n    count *= 2;                // 14\n    count++;                   // 15\n    total += 40;\n\n    trace(label, count);\n    trace(\"total\", total);\n    trace(\"ready\", ready);\n    return 0;\n}",
+    "output": "count 15\ntotal 40\nready true"
+  }
+]

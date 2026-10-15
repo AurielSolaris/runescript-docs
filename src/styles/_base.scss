@@ -1,0 +1,116 @@
+@use "mixins" as *;
+
+:root {
+  --page-margin: var(--ds-space-200);
+  --page-max: 1296px; // ADS fixed-wide
+  --prose-max: 864px; // ADS fixed-narrow
+  --nav-height: 3.5rem;
+  --sidebar-width: 16.5rem;
+  --toc-width: 13.5rem;
+  color-scheme: light dark;
+
+  @include up(m) { --page-margin: var(--ds-space-400); }
+  @include up(wuxga) {
+    --page-max: 1536px;
+    --sidebar-width: 18rem;
+    --toc-width: 15rem;
+  }
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font: var(--ds-font-body);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: calc(var(--nav-height) + var(--ds-space-200));
+  @media (prefers-reduced-motion: no-preference) { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font: var(--ds-font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+// Ligatures would turn == and != into single glyphs, which misleads in a language reference.
+code, pre, kbd, samp, .terminal, .astro-code {
+  font-family: var(--ds-font-family-code);
+  // The `font` shorthand used on code elements resets ligature settings, so this one wins outright.
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "calt" 0 !important;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+a {
+  color: var(--ds-link);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  &:hover { text-decoration: underline; }
+  &:active { color: var(--ds-link-pressed); }
+}
+
+// Links in running text are underlined, not told apart by colour alone
+// (WCAG 1.4.1). Navigation, buttons, and cards keep their own styles.
+:where(p, li, td, th, dd, blockquote, figcaption) > a:not(.btn, .menu-item, .heading-anchor),
+:where(p, li, td, th, dd, blockquote, figcaption) > :where(strong, em, code) > a {
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, 0.06em);
+  &:hover { text-decoration-thickness: 2px; }
+}
+:where(nav, .sidenav, .crumbs, .pager, .toc) a { text-decoration: none; }
+
+// Windows High Contrast and other forced-colour modes: icons drawn with a
+// CSS mask take their colour from the background, which forced colours
+// reset, so give them a system colour.
+@media (forced-colors: active) {
+  .prose input[type="checkbox"], .prose blockquote::before { background: CanvasText !important; forced-color-adjust: none; }
+  .field:focus-within { outline: 2px solid Highlight; outline-offset: 1px; }
+  .prose blockquote { border: 1px solid CanvasText; }
+}
+
+:focus-visible { @include focus-ring; }
+
+::selection { background: var(--ds-background-selected); }
+
+h1, h2, h3, h4, h5, h6, p { margin: 0; }
+
+.container {
+  width: 100%;
+  max-width: calc(var(--page-max) + 2 * var(--page-margin));
+  margin-inline: auto;
+  @include gutter-inline;
+}
+
+.visually-hidden { @include visually-hidden; }
+
+.skip-link {
+  @include visually-hidden;
+  &:focus {
+    position: fixed !important;
+    width: auto; height: auto; clip: auto; margin: 0;
+    top: var(--ds-space-100); left: var(--ds-space-100);
+    z-index: 900;
+    padding: var(--ds-space-100) var(--ds-space-150);
+    background: var(--ds-surface-overlay);
+    box-shadow: var(--ds-shadow-overlay);
+    border-radius: var(--ds-radius-medium);
+  }
+}
+
+[x-cloak] { display: none !important; }

@@ -1,0 +1,413 @@
+---
+import type { MarkdownHeading } from "astro";
+import { getCollection } from "astro:content";
+import Base from "./Base.astro";
+import Icon from "../components/Icon.astro";
+import { sectionOrder, site } from "../lib/site";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Slug of the current page, or "" for the docs home. */
+  slug: string;
+  section?: string;
+  headings?: MarkdownHeading[];
+  source?: string;
+}
+
+const { title, description, slug, section, headings = [], source } = Astro.props;
+
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+const groups = sectionOrder.map((s) => ({ section: s, pages: docs.filter((d) => d.data.section === s) }));
+
+const flat = [{ id: "", data: { title: "Overview" } }, ...docs];
+const index = flat.findIndex((d) => d.id === slug);
+const prev = index > 0 ? flat[index - 1] : undefined;
+const next = index >= 0 && index < flat.length - 1 ? flat[index + 1] : undefined;
+const href = (id: string) => (id ? `/docs/${id}` : "/docs");
+
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const url = new URL(href(slug), site.url).href;
+const crumbs = [
+  { name: "Home", url: site.url },
+  { name: "Docs", url: `${site.url}/docs` },
+  ...(slug ? [{ name: title, url }] : []),
+];
+const jsonLd = [
+  {
+    "@type": "TechArticle",
+    headline: title,
+    description,
+    url,
+    inLanguage: site.locale,
+    isPartOf: { "@id": `${site.url}/#website` },
+    about: { "@type": "ComputerLanguage", name: site.name },
+    proficiencyLevel: section === "Reference" ? "Expert" : "Beginner",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: c.url })),
+  },
+];
+---
+
+<Base title={slug ? title : "Documentation"} description={description} ogType="article" jsonLd={jsonLd}>
+  <div class="docs" x-data="drawer" @keydown.escape.window="close()">
+    <div class="docs__mobilebar">
+      <button
+        class="btn btn--subtle"
+        type="button"
+        aria-controls="docs-sidebar"
+        aria-expanded="false"
+        :aria-expanded="open.toString()"
+        @click="toggle()"
+      >
+        <Icon name="list" /> Menu
+      </button>
+      <nav class="crumbs crumbs--compact" aria-label="Breadcrumb">
+        <a href="/docs">Docs</a>
+        {slug && <><Icon name="chevron-right" size={12} /><span aria-current="page">{title}</span></>}
+      </nav>
+    </div>
+
+    <div class="docs__blanket" x-show="open" x-cloak @click="close()" aria-hidden="true"></div>
+
+    <aside id="docs-sidebar" class="docs__sidebar" :class="open && 'is-open'" aria-label="Documentation">
+      <div class="docs__sidebar-inner" x-data="docsNav">
+        <div class="docs__sidebar-head">
+          <label class="field">
+            <Icon name="search" />
+            <span class="visually-hidden">Filter pages</span>
+            <input type="search" placeholder="Filter pages" x-model="query" autocomplete="off" enterkeyhint="search" />
+          </label>
+          <button class="btn btn--subtle btn--icon docs__close" type="button" aria-label="Close menu" @click="close()">
+            <Icon name="x" />
+          </button>
+        </div>
+        <nav aria-label="Docs">
+          <ul class="sidenav">
+            <li x-show="matches('Overview')">
+              <a href="/docs" aria-current={slug === "" ? "page" : undefined}>Overview</a>
+            </li>
+          </ul>
+          {groups.map((g) => (
+            <div class="sidenav__group">
+              <h2 class="sidenav__title">{g.section}</h2>
+              <ul class="sidenav">
+                {g.pages.map((d) => (
+                  <li x-show={`matches(${JSON.stringify(d.data.title)})`}>
+                    <a href={href(d.id)} aria-current={d.id === slug ? "page" : undefined}>
+                      {d.data.section === "Guide" && <span class="sidenav__num">{d.data.order}</span>}
+                      {d.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div class="sidenav__group">
+            <h2 class="sidenav__title">More</h2>
+            <ul class="sidenav">
+              <li x-show="matches('Examples')"><a href="/examples">Examples</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <article class="docs__content">
+      <nav class="crumbs crumbs--full" aria-label="Breadcrumb">
+        <a href="/docs">Docs</a>
+        {section && <><Icon name="chevron-right" size={12} /><span>{section}</span></>}
+      </nav>
+      <header class="docs__header">
+        <h1>{title}</h1>
+        {source && (
+          <p class="docs__source">
+            <Icon name="file" />
+            <a href={`${site.repo}/blob/main/${source}`} rel="noopener">{source}</a>
+          </p>
+        )}
+      </header>
+
+      <div class="prose" x-data="prose">
+        <slot />
+      </div>
+
+      {(prev || next) && (
+        <nav class="pager" aria-label="Previous and next pages">
+          {prev ? (
+            <a class="pager__link" href={href(prev.id)} rel="prev">
+              <span class="pager__dir"><Icon name="chevron-left" size={12} /> Previous</span>
+              <span class="pager__title">{prev.data.title}</span>
+            </a>
+          ) : <span />}
+          {next && (
+            <a class="pager__link pager__link--next" href={href(next.id)} rel="next">
+              <span class="pager__dir">Next <Icon name="chevron-right" size={12} /></span>
+              <span class="pager__title">{next.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )}
+
+      {source && (
+        <p class="docs__edit">
+          <a href={`${site.repo}/edit/main/${source}`} rel="noopener"><Icon name="github" /> Suggest a change to this page</a>
+        </p>
+      )}
+    </article>
+
+    {toc.length > 1 && (
+      <aside class="docs__toc" aria-labelledby="toc-title">
+        <nav x-data="toc">
+          <h2 id="toc-title" class="sidenav__title">On this page</h2>
+          <ul>
+            {toc.map((h) => (
+              <li class={`toc__depth-${h.depth}`}>
+                <a
+                  href={`#${h.slug}`}
+                  :aria-current={`current === ${JSON.stringify(h.slug)} ? 'location' : null`}
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+    )}
+  </div>
+</Base>
+
+<style lang="scss">
+  @use "../styles/mixins" as *;
+
+  .docs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: calc(var(--sidebar-width) + var(--prose-max) + var(--toc-width) + 2 * var(--ds-space-600) + 2 * var(--page-margin));
+    margin-inline: auto;
+    @include gutter-inline;
+
+    @include up(m) {
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      column-gap: var(--ds-space-500);
+    }
+    @include up(l) {
+      grid-template-columns: var(--sidebar-width) minmax(0, var(--prose-max)) var(--toc-width);
+      column-gap: var(--ds-space-600);
+      justify-content: center;
+    }
+  }
+
+  // ---------------------------------------------- Mobile bar + drawer
+  .docs__mobilebar {
+    position: sticky;
+    top: calc(var(--nav-height) + env(safe-area-inset-top));
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-100);
+    margin-inline: calc(-1 * max(var(--page-margin), env(safe-area-inset-left)));
+    padding: var(--ds-space-100) max(var(--page-margin), env(safe-area-inset-left));
+    background: var(--ds-surface);
+    border-bottom: 1px solid var(--ds-border);
+    @include up(m) { display: none; }
+  }
+
+  .docs__blanket {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: var(--ds-blanket);
+    animation: var(--ds-blanket-enter);
+    @include up(m) { display: none; }
+  }
+
+  .docs__sidebar {
+    @include down(m) {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 510;
+      width: min(20rem, 85vw);
+      background: var(--ds-surface-overlay);
+      box-shadow: var(--ds-shadow-overlay);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition: transform var(--ds-duration-medium) var(--ds-easing-in-practical), visibility 0s var(--ds-duration-medium);
+
+      &.is-open {
+        transform: none;
+        visibility: visible;
+        transition: transform var(--ds-duration-long) var(--ds-easing-out-bold);
+      }
+    }
+  }
+
+  .docs__sidebar-inner {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--ds-space-200);
+
+    @include up(m) {
+      position: sticky;
+      top: calc(var(--nav-height) + env(safe-area-inset-top));
+      height: auto;
+      max-height: calc(100vh - var(--nav-height));
+      max-height: calc(100dvh - var(--nav-height));
+      padding: var(--ds-space-400) var(--ds-space-100) var(--ds-space-400) 0;
+    }
+  }
+
+  .docs__sidebar-head {
+    display: flex;
+    gap: var(--ds-space-100);
+    margin-bottom: var(--ds-space-300);
+    .field { flex: 1; }
+  }
+
+  .docs__close { @include up(m) { display: none; } }
+
+  // ---------------------------------------------- Side nav (ADS side navigation)
+  .sidenav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--ds-space-025);
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--ds-space-100);
+      min-height: 2rem;
+      padding: var(--ds-space-050) var(--ds-space-100);
+      border-radius: var(--ds-radius-medium);
+      color: var(--ds-text-subtle);
+      font-weight: var(--ds-font-weight-medium);
+
+      @include down(m) { min-height: 2.75rem; }
+      &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text); text-decoration: none; }
+      &:active { background: var(--ds-background-neutral-subtle-pressed); }
+      &[aria-current="page"] {
+        background: var(--ds-background-selected);
+        color: var(--ds-text-selected);
+        box-shadow: inset 2px 0 0 var(--ds-border-selected);
+        .sidenav__num { color: var(--ds-text-selected); }
+      }
+    }
+  }
+
+  .sidenav__num {
+    min-width: 1.25rem;
+    color: var(--ds-text-subtlest);
+    font: var(--ds-font-body-small);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sidenav__group { margin-top: var(--ds-space-300); }
+
+  .sidenav__title {
+    font: var(--ds-font-heading-xxsmall);
+    color: var(--ds-text-subtlest);
+    padding: 0 var(--ds-space-100);
+    margin-bottom: var(--ds-space-100);
+  }
+
+  // ---------------------------------------------- Content
+  .docs__content {
+    min-width: 0;
+    padding-block: var(--ds-space-300) var(--ds-space-600);
+    @include up(m) { padding-top: var(--ds-space-400); }
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-050);
+    min-width: 0;
+    color: var(--ds-text-subtlest);
+    font: var(--ds-font-body-small);
+    a { color: var(--ds-text-subtle); }
+    span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    :global(svg) { flex: none; }
+  }
+  .crumbs--full { display: none; margin-bottom: var(--ds-space-150); @include up(m) { display: flex; } }
+
+  .docs__header {
+    display: grid;
+    gap: var(--ds-space-100);
+    margin-bottom: var(--ds-space-400);
+    h1 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
+  }
+
+  .docs__source {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-075);
+    font: var(--ds-font-body-small);
+    color: var(--ds-text-subtlest);
+    a { color: var(--ds-text-subtle); font-family: var(--ds-font-family-code); }
+  }
+
+  .pager {
+    display: grid;
+    gap: var(--ds-space-200);
+    margin-top: var(--ds-space-800);
+    @include up(s) { grid-template-columns: 1fr 1fr; }
+  }
+
+  .pager__link {
+    display: grid;
+    gap: var(--ds-space-050);
+    padding: var(--ds-space-200);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-large);
+    color: var(--ds-text);
+    transition: background-color var(--ds-duration-short) var(--ds-easing-out-practical);
+    &:hover { background: var(--ds-background-neutral-subtle-hovered); text-decoration: none; }
+    &--next { text-align: end; justify-items: end; grid-column: -2; }
+  }
+  .pager__dir { display: inline-flex; align-items: center; gap: var(--ds-space-050); font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
+  .pager__title { font: var(--ds-font-heading-small); color: var(--ds-link); }
+
+  .docs__edit {
+    margin-top: var(--ds-space-400);
+    font: var(--ds-font-body-small);
+    a { display: inline-flex; align-items: center; gap: var(--ds-space-075); color: var(--ds-text-subtle); }
+  }
+
+  // ---------------------------------------------- On this page
+  .docs__toc {
+    display: none;
+    @include up(l) { display: block; }
+
+    nav {
+      position: sticky;
+      top: var(--nav-height);
+      max-height: calc(100vh - var(--nav-height));
+      overflow-y: auto;
+      padding-block: var(--ds-space-400);
+    }
+    ul { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--ds-border); }
+    a {
+      display: block;
+      padding: var(--ds-space-050) var(--ds-space-150);
+      margin-inline-start: -1px;
+      border-inline-start: 2px solid transparent;
+      color: var(--ds-text-subtle);
+      font: var(--ds-font-body-small);
+      &:hover { color: var(--ds-text); text-decoration: none; }
+      &[aria-current="location"] { color: var(--ds-text-selected); border-inline-start-color: var(--ds-border-selected); font-weight: var(--ds-font-weight-medium); }
+    }
+    .toc__depth-3 a { padding-inline-start: var(--ds-space-300); }
+    :global(code) { font: var(--ds-font-code); }
+  }
+</style>

@@ -1,0 +1,568 @@
+---
+import Base from "../layouts/Base.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import Terminal from "../components/Terminal.astro";
+import Icon, { type IconName } from "../components/Icon.astro";
+import examples from "../data/examples.json";
+import { site } from "../lib/site";
+
+const byName = Object.fromEntries(examples.map((e) => [e.name, e]));
+const heroTabs = ["hello", "callbacks", "strings"].map((n) => byName[n]).filter(Boolean);
+const rejected = byName["signedness_error"];
+
+const features: { icon: IconName; tone: string; title: string; body: string }[] = [
+  {
+    icon: "code",
+    tone: "blue",
+    title: "Types first, C-family syntax",
+    body: "Write public int add(int a, int b). Every function starts with an access modifier, types come before names, and semicolons are required.",
+  },
+  {
+    icon: "shield",
+    tone: "green",
+    title: "Strict by default",
+    body: "Nothing is implicitly any. Signed and unsigned integers never mix silently, and conditions must be bool.",
+  },
+  {
+    icon: "alert",
+    tone: "orange",
+    title: "No silent overflow",
+    body: "Integer arithmetic is exact. Overflow and division by zero stop the program with a located runtime error instead of wrapping.",
+  },
+  {
+    icon: "crosshair",
+    tone: "magenta",
+    title: "Errors that point at the problem",
+    body: "Every diagnostic has a stable code, a line and column, the source line with a caret, and help text that says how to fix it.",
+  },
+  {
+    icon: "zap",
+    tone: "purple",
+    title: "Functions as values",
+    body: "Function types like int(int, int), lambdas, callbacks, nested functions, prototypes, and functions that return functions.",
+  },
+  {
+    icon: "flask",
+    tone: "teal",
+    title: "Docs that compile",
+    body: "Every program in the guide is compiled by the test suite, and every example's output is checked. If the docs drift, the build fails.",
+  },
+];
+
+const works = [
+  "Packages and access-modified functions",
+  "int / sint, uint, float / float32 / float64, bool, string, void",
+  "if, while, for, break, continue, return",
+  "Function types, lambdas, callbacks",
+  "use \"std:string\" (Go's strings package)",
+  "Multi-file programs: use \"pkg\" and use \"./file\"",
+  "Checked conversions: (int) 64.3, (float) \"64.7\"",
+  "throw, try / catch / finally, catchable runtime errors",
+  "Located compile-time and runtime errors",
+  "Compiles to JavaScript (runescript build)",
+];
+
+const planned = ["Classes and structs", "Arrays", "String concatenation", "std:math", "Native graphics package"];
+
+const as3 = `package {
+    public class Greeter {
+        public function sayHi(message:String, times:int):void {
+            for (var i:int = 0; i < times; i++) {
+                trace(message);
+            }
+        }
+    }
+}`;
+
+const rune = `package main;
+
+public void sayHi(string message, int times) {
+    for (int i = 0; i < times; i++) {
+        trace(message);
+    }
+}
+
+public void main() {
+    sayHi("hi", 2);
+}`;
+
+const jsonLd = [
+  {
+    "@type": "SoftwareSourceCode",
+    name: site.name,
+    description: site.description,
+    url: site.url,
+    codeRepository: site.repo,
+    programmingLanguage: "Go",
+    runtimePlatform: "Go 1.25+",
+    version: site.version,
+  },
+  {
+    "@type": "ComputerLanguage",
+    name: site.name,
+    url: site.url,
+    description: site.description,
+  },
+];
+---
+
+<Base jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="hero__status">
+          <span class="lozenge lozenge--inprogress">v{site.version} in progress</span>
+          <span>Early development</span>
+        </p>
+        <h1 id="hero-title">A strict, statically typed language with ActionScript roots</h1>
+        <p class="hero__lede">
+          RuneScript keeps ActionScript's <code>package</code>, <code>trace</code>, <code>int</code>/<code>uint</code>,
+          <code>try</code>/<code>catch</code> and access modifiers, moves to a C-family syntax, and checks every type
+          before your program runs. It runs as a
+          standalone CLI implemented in Go, and compiles to a JavaScript module for the web with the same strict typing.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--large" href="/docs/getting-started">
+            Get started <Icon name="arrow-right" />
+          </a>
+          <a class="btn btn--default btn--large" href="/docs">
+            <Icon name="book" /> Read the guide
+          </a>
+        </div>
+        <dl class="hero__facts">
+          <div><dt>Implemented in</dt><dd>Go 1.25+</dd></div>
+          <div><dt>Typing</dt><dd>Static, explicit</dd></div>
+          <div><dt>Runs as</dt><dd>CLI or JavaScript</dd></div>
+        </dl>
+      </div>
+
+      <div class="hero__demo" x-data="tabs(0)">
+        <div class="window">
+          <div class="window__bar">
+            <div class="tablist" role="tablist" aria-label="Example programs" x-ref="tablist" @keydown="key($event)">
+              {heroTabs.map((ex, i) => (
+                <button
+                  class="tab"
+                  type="button"
+                  role="tab"
+                  id={`hero-tab-${i}`}
+                  aria-controls={`hero-panel-${i}`}
+                  aria-selected={i === 0 ? "true" : "false"}
+                  tabindex={i === 0 ? 0 : -1}
+                  :aria-selected={`(active === ${i}).toString()`}
+                  :tabindex={`active === ${i} ? 0 : -1`}
+                  @click={`active = ${i}`}
+                >
+                  {ex.file}
+                </button>
+              ))}
+            </div>
+          </div>
+          {heroTabs.map((ex, i) => (
+            <div
+              class="window__panel"
+              role="tabpanel"
+              id={`hero-panel-${i}`}
+              aria-labelledby={`hero-tab-${i}`}
+              x-show={`active === ${i}`}
+              hidden={i !== 0}
+              :hidden={`active !== ${i}`}
+            >
+              <CodeBlock code={ex.code} class="window__code" />
+              <Terminal command={`runescript run ${ex.file}`} output={ex.output} label={`Output of ${ex.file}`} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" aria-labelledby="features-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="features-title">Familiar shape, stricter rules</h2>
+        <p>If you've written ActionScript, Java, C# or TypeScript, RuneScript reads the way you expect. It just refuses to guess.</p>
+      </header>
+      <ul class="features">
+        {features.map((f) => (
+          <li class="card feature">
+            <span class={`icon-tile icon-tile--${f.tone}`}><Icon name={f.icon} size={20} /></span>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Diagnostics -->
+  {rejected && (
+    <section class="section section--sunken" aria-labelledby="diag-title">
+      <div class="container split">
+        <div class="split__copy">
+          <span class="lozenge lozenge--removed">Rejected at compile time</span>
+          <h2 id="diag-title">Mistakes surface before the program runs</h2>
+          <p>
+            Assigning a signed value to a <code>uint</code> is a compile-time error, not a silent wraparound. The checker tells
+            you exactly where, and what to do about it.
+          </p>
+          <ul class="checklist">
+            <li><Icon name="circle-check" /> <span>Stable error codes, such as <code>ASX-TYPE-004</code></span></li>
+            <li><Icon name="circle-check" /> <span><code>line:col</code> positions, with the source line and a caret</span></li>
+            <li><Icon name="circle-check" /> <span>Help text with a concrete fix</span></li>
+          </ul>
+          <a class="btn btn--default" href="/docs/diagnostics">Browse every error code <Icon name="arrow-right" /></a>
+        </div>
+        <div class="split__demo">
+          <CodeBlock code={rejected.code.split("\n").slice(4).join("\n")} filename={rejected.file} />
+          <Terminal command={`runescript check ${rejected.file}`} output={rejected.output} label="Compiler diagnostics" />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- From AS3 -->
+  <section class="section" aria-labelledby="as3-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="as3-title">Coming from ActionScript 3</h2>
+        <p>RuneScript is inspired by AS3 but isn't source-compatible with it. Declarations put the type first, and there's no <code>function</code> or <code>var</code>.</p>
+      </header>
+      <div class="compare">
+        <div>
+          <h3 class="compare__label"><span class="lozenge lozenge--default">ActionScript 3</span></h3>
+          <CodeBlock code={as3} lang="actionscript-3" filename="Greeter.as" />
+        </div>
+        <div>
+          <h3 class="compare__label"><span class="lozenge lozenge--new">RuneScript</span></h3>
+          <CodeBlock code={rune} filename="greeter.rsc" />
+        </div>
+      </div>
+      <div class="table-wrap" role="region" aria-label="Table: how AS3 and RuneScript treat integers" data-scroll-region>
+        <table class="ds-table">
+          <caption class="visually-hidden">How AS3 and RuneScript treat integers</caption>
+          <thead>
+            <tr><th scope="col">Code</th><th scope="col">ActionScript 3</th><th scope="col">RuneScript</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>var u:uint = -1;</code></td><td>Becomes 4294967295</td><td>Compile error <code>ASX-TYPE-007</code></td></tr>
+            <tr><td><code>uint</code> ← <code>int</code> variable</td><td>Converted silently</td><td>Compile error <code>ASX-TYPE-004</code></td></tr>
+            <tr><td><code>int + uint</code></td><td>Converted silently</td><td>Compile error <code>ASX-TYPE-011</code></td></tr>
+            <tr><td><code>int.MAX_VALUE + 1</code></td><td>Wraps to a negative number</td><td>Runtime error <code>ASX-RUN-002</code></td></tr>
+            <tr><td><code>7 / 2</code></td><td><code>3.5</code></td><td><code>3</code> (integer division)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <a class="btn btn--subtle section__more" href="/docs/coming-from-actionscript">Full comparison <Icon name="arrow-right" /></a>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <section class="section section--sunken" aria-labelledby="status-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="status-title">Where it stands</h2>
+        <p>RuneScript is small on purpose. A feature counts as done only when tests show it working.</p>
+      </header>
+      <div class="status">
+        <div class="card status__card">
+          <h3><span class="lozenge lozenge--success">Works now</span></h3>
+          <ul>
+            {works.map((w) => <li><Icon name="circle-check" class="status__ok" /> {w}</li>)}
+          </ul>
+        </div>
+        <div class="card status__card">
+          <h3><span class="lozenge lozenge--default">Planned</span></h3>
+          <ul>
+            {planned.map((p) => <li><Icon name="clock" class="status__todo" /> {p}</li>)}
+          </ul>
+        </div>
+      </div>
+      <a class="btn btn--subtle section__more" href="/docs/roadmap"><Icon name="map" /> See the roadmap</a>
+    </div>
+  </section>
+
+  <!-- Get started -->
+  <section class="section" aria-labelledby="start-title">
+    <div class="container">
+      <header class="section__head">
+        <h2 id="start-title">Run your first program</h2>
+        <p>You need Go 1.25 or newer. Build the CLI, then run any example.</p>
+      </header>
+      <ol class="steps">
+        <li>
+          <h3>Get the source</h3>
+          <Terminal command={`git clone ${site.repo}.git && cd runescript`} label="Clone the repository" />
+        </li>
+        <li>
+          <h3>Build the CLI</h3>
+          <Terminal command="go build -o runescript ./cmd/runescript" label="Build" />
+        </li>
+        <li>
+          <h3>Run a program</h3>
+          <Terminal command="./runescript run examples/hello.rsc" output={byName["hello"]?.output} label="Run hello.rsc" />
+        </li>
+      </ol>
+      <div class="cta">
+        <a class="btn btn--primary btn--large" href="/docs/getting-started">Read the guide <Icon name="arrow-right" /></a>
+        <a class="btn btn--default btn--large" href="/examples">Browse examples</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style lang="scss">
+  @use "../styles/mixins" as *;
+
+  // ------------------------------------------------ Hero
+  .hero {
+    padding-block: var(--ds-space-600) var(--ds-space-800);
+    border-bottom: 1px solid var(--ds-border);
+    @include up(m) { padding-block: var(--ds-space-800) var(--ds-space-1000); }
+    // WUXGA: the extra 120px of height over 1080p goes to the hero, so it fills the first screen.
+    @include wuxga {
+      min-height: calc(100vh - var(--nav-height));
+      display: grid;
+      align-items: center;
+      padding-block: var(--ds-space-600);
+    }
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: var(--ds-space-600);
+    @include up(m) {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: center;
+      gap: var(--ds-space-800);
+    }
+    @include up(wuxga) { gap: var(--ds-space-1000); }
+  }
+
+  .hero__copy { display: grid; gap: var(--ds-space-300); align-content: start; }
+
+  .hero__status {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-100);
+    color: var(--ds-text-subtlest);
+    font: var(--ds-font-body-small);
+  }
+
+  h1 {
+    font: var(--ds-font-heading-xxlarge);
+    text-wrap: balance;
+    // Marketing display size on large screens, on the same 4px grid as the type scale.
+    @include up(l) { font-size: 2.5rem; line-height: 3rem; letter-spacing: -0.01em; }
+    @include up(wuxga) { font-size: 3rem; line-height: 3.5rem; }
+  }
+
+  .hero__lede {
+    font: var(--ds-font-body-large);
+    color: var(--ds-text-subtle);
+    max-width: 36rem;
+    @include up(wuxga) { font-size: 1.125rem; line-height: 1.75rem; }
+    code { font: var(--ds-font-code); background: var(--ds-background-neutral); padding: 0.125em var(--ds-space-050); border-radius: var(--ds-radius-small); }
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-100);
+    @include down(xs) { .btn { flex: 1 1 100%; } }
+  }
+
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-300);
+    margin: var(--ds-space-100) 0 0;
+    padding-top: var(--ds-space-300);
+    border-top: 1px solid var(--ds-border);
+    dt { font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
+    dd { margin: var(--ds-space-025) 0 0; font-weight: var(--ds-font-weight-medium); }
+  }
+
+  .hero__demo { min-width: 0; }
+
+  .window {
+    background: var(--ds-surface-overlay);
+    box-shadow: var(--ds-shadow-overlay);
+    border-radius: var(--ds-radius-xlarge);
+    overflow: hidden;
+  }
+
+  .window__bar { padding: var(--ds-space-100) var(--ds-space-150) 0; }
+
+  .window__panel {
+    display: grid;
+    gap: var(--ds-space-150);
+    padding: var(--ds-space-150);
+    &[hidden] { display: none; }
+
+    :global(.window__code pre.astro-code) {
+      max-height: 22rem;
+      overflow: auto;
+      @include wuxga { max-height: 30rem; }
+    }
+    :global(.terminal) { max-height: 10rem; overflow: auto; }
+  }
+
+  // ------------------------------------------------ Sections
+  .section {
+    padding-block: var(--ds-space-800);
+    @include up(m) { padding-block: var(--ds-space-1000); }
+    &--sunken { background: var(--ds-surface-sunken); border-block: 1px solid var(--ds-border); }
+  }
+  .section + .section--sunken, .section--sunken + .section { border-top: 0; }
+
+  .section__head {
+    display: grid;
+    gap: var(--ds-space-100);
+    max-width: 44rem;
+    margin-bottom: var(--ds-space-500);
+    h2 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
+    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+  }
+
+  .section__more { margin-top: var(--ds-space-300); }
+
+  // ------------------------------------------------ Features
+  .features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--ds-space-200);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include up(m) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ds-space-300); }
+  }
+
+  .feature {
+    display: grid;
+    gap: var(--ds-space-150);
+    align-content: start;
+    h3 { font: var(--ds-font-heading-small); margin-top: var(--ds-space-050); }
+    p { color: var(--ds-text-subtle); }
+  }
+
+  // ------------------------------------------------ Split (diagnostics)
+  .split {
+    display: grid;
+    gap: var(--ds-space-500);
+    @include up(m) { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: center; gap: var(--ds-space-800); }
+  }
+
+  .split__copy {
+    display: grid;
+    gap: var(--ds-space-200);
+    justify-items: start;
+    h2 { font: var(--ds-font-heading-xlarge); text-wrap: balance; }
+    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+    code { font: var(--ds-font-code); }
+  }
+
+  .split__demo { display: grid; gap: var(--ds-space-150); min-width: 0; }
+
+  .checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--ds-space-100);
+    li { display: flex; gap: var(--ds-space-100); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--ds-space-025); color: var(--ds-icon-success); }
+  }
+
+  // ------------------------------------------------ Compare
+  .compare {
+    display: grid;
+    gap: var(--ds-space-300);
+    margin-bottom: var(--ds-space-400);
+    @include up(m) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    > div { min-width: 0; display: grid; gap: var(--ds-space-100); align-content: start; }
+  }
+  .compare__label { font: var(--ds-font-heading-xsmall); }
+
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-xlarge);
+  }
+
+  .ds-table {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    th {
+      text-align: start;
+      color: var(--ds-text-subtle);
+      font-weight: var(--ds-font-weight-bold);
+      padding: var(--ds-space-100) var(--ds-space-200);
+      border-bottom: 2px solid var(--ds-border);
+    }
+    td { padding: var(--ds-space-100) var(--ds-space-200); border-bottom: 1px solid var(--ds-border); }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: var(--ds-background-neutral-subtle-hovered); }
+    code { font: var(--ds-font-code); }
+  }
+
+  // ------------------------------------------------ Status
+  .status {
+    display: grid;
+    gap: var(--ds-space-200);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ds-space-300); }
+  }
+
+  .status__card {
+    h3 { margin-bottom: var(--ds-space-200); font: inherit; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ds-space-150); }
+    li { display: flex; gap: var(--ds-space-100); align-items: flex-start; }
+    li :global(svg) { flex: none; margin-top: var(--ds-space-025); }
+  }
+  .status__card :global(.status__ok) { color: var(--ds-icon-success); }
+  .status__card :global(.status__todo) { color: var(--ds-icon-subtlest); }
+
+  // ------------------------------------------------ Steps
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--ds-space-300);
+    counter-reset: step;
+    @include up(l) { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+
+    li { counter-increment: step; display: grid; gap: var(--ds-space-150); min-width: 0; }
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--ds-space-100);
+      font: var(--ds-font-heading-small);
+      &::before {
+        content: counter(step);
+        display: inline-grid;
+        place-items: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: var(--ds-radius-full);
+        background: var(--ds-background-brand-bold);
+        color: var(--ds-text-inverse);
+        font: var(--ds-font-body-small);
+        font-weight: var(--ds-font-weight-bold);
+      }
+    }
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ds-space-100);
+    margin-top: var(--ds-space-500);
+    @include down(xs) { .btn { flex: 1 1 100%; } }
+  }
+</style>

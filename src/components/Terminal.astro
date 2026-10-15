@@ -1,0 +1,34 @@
+---
+// Shows a command and its output. Diagnostics (`file:line:col: error CODE: …`,
+// the caret line and `help:`) are coloured by role.
+interface Props {
+  command?: string;
+  output?: string | null;
+  label?: string;
+}
+
+const { command, output, label = "Terminal" } = Astro.props;
+
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function format(text: string) {
+  return text
+    .split("\n")
+    .map((line) => {
+      const diag = line.match(/^(.*?:\d+:\d+: )(error) ([A-Z]+-[A-Z]+-\d+)(: .*)$/);
+      if (diag) {
+        return `${esc(diag[1])}<span class="t-error">${diag[2]} <span class="t-code">${diag[3]}</span></span>${esc(diag[4])}`;
+      }
+      if (/^\s*\^+\s*$/.test(line)) return `<span class="t-caret">${esc(line)}</span>`;
+      if (/^\s+help:/.test(line)) return `<span class="t-help">${esc(line)}</span>`;
+      return esc(line);
+    })
+    .join("\n");
+}
+
+const html = [command ? `<span class="t-prompt">$ </span>${esc(command)}` : "", output ? format(output) : ""]
+  .filter(Boolean)
+  .join("\n");
+---
+
+<pre class="terminal" role="region" aria-label={label} tabindex="0"><code set:html={html} /></pre>

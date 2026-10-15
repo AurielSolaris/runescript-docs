@@ -1,0 +1,99 @@
+---
+import { site } from "../lib/site";
+
+const groups = [
+  {
+    title: "Learn",
+    links: [
+      { href: "/docs/getting-started", label: "Getting started" },
+      { href: "/docs", label: "Guide" },
+      { href: "/examples", label: "Examples" },
+      { href: "/docs/coming-from-actionscript", label: "Coming from ActionScript 3" },
+    ],
+  },
+  {
+    title: "Reference",
+    links: [
+      { href: "/docs/spec", label: "Language specification" },
+      { href: "/docs/diagnostics", label: "Diagnostics" },
+      { href: "/docs/std-string", label: "std:string" },
+    ],
+  },
+  {
+    title: "Project",
+    links: [
+      { href: "/docs/roadmap", label: "Roadmap" },
+      { href: site.repo, label: "Source code" },
+      { href: `${site.repo}/issues`, label: "Report an issue" },
+    ],
+  },
+];
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a href="/" class="footer__logo">
+        <img src="/favicon.svg" alt="" width="20" height="20" loading="lazy" />
+        {site.name}
+      </a>
+      <p>A strict, statically typed language with ActionScript roots. Implemented in Go.</p>
+      <p class="footer__meta">v{site.version} · early development</p>
+    </div>
+    {groups.map((g) => (
+      <nav class="footer__group" aria-label={g.title}>
+        <h2>{g.title}</h2>
+        <ul>
+          {g.links.map((l) => (
+            <li><a href={l.href} rel={l.href.startsWith("http") ? "noopener" : undefined}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+</footer>
+
+<style lang="scss">
+  @use "../styles/mixins" as *;
+
+  .footer {
+    margin-top: var(--ds-space-1000);
+    border-top: 1px solid var(--ds-border);
+    background: var(--ds-surface-sunken);
+    padding-block: var(--ds-space-600) calc(var(--ds-space-600) + env(safe-area-inset-bottom));
+  }
+
+  .footer__inner {
+    display: grid;
+    gap: var(--ds-space-400);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    @include up(m) { grid-template-columns: 2fr repeat(3, 1fr); }
+  }
+
+  .footer__brand {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--ds-space-100);
+    align-content: start;
+    max-width: 22rem;
+    color: var(--ds-text-subtle);
+    @include up(m) { grid-column: auto; }
+  }
+
+  .footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ds-space-100);
+    color: var(--ds-text);
+    font: var(--ds-font-heading-small);
+    &:hover { text-decoration: none; }
+  }
+
+  .footer__meta { font: var(--ds-font-body-small); color: var(--ds-text-subtlest); }
+
+  .footer__group {
+    h2 { font: var(--ds-font-heading-xxsmall); color: var(--ds-text-subtlest); margin-bottom: var(--ds-space-150); }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ds-space-100); }
+    a { color: var(--ds-text-subtle); &:hover { color: var(--ds-text); } }
+  }
+</style>

@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- Square app icon. ?size=180&pad=0.12&bg=1 (Apple touch icons must be opaque).
+     Sizes are in px because headless Chromium has a minimum viewport width. -->
+<html><head><meta charset="utf-8"><style>
+  html, body { margin: 0; background: transparent; }
+  .box { display: grid; place-items: center; width: var(--size); height: var(--size); }
+  .bg { background: #FFFFFF; }
+  img { width: calc(var(--size) * (1 - 2 * var(--pad))); height: auto; }
+</style></head>
+<body><div class="box"><img src="../../public/favicon.svg" alt=""></div>
+<script>
+  const p = new URLSearchParams(location.search);
+  const root = document.documentElement.style;
+  root.setProperty("--size", (p.get("size") ?? "256") + "px");
+  root.setProperty("--pad", p.get("pad") ?? "0");
+  if (p.get("bg") === "1") document.querySelector(".box").classList.add("bg");
+</script></body></html>

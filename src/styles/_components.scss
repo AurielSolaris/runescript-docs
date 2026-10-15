@@ -1,0 +1,318 @@
+@use "mixins" as *;
+
+// ---------------------------------------------------------------- Button
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-050);
+  height: 2rem;
+  padding: 0 var(--ds-space-150);
+  border: 0;
+  border-radius: var(--ds-radius-medium);
+  font: var(--ds-font-body);
+  font-weight: var(--ds-font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--ds-button-hovered);
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &:hover { text-decoration: none; }
+  &:focus-visible { @include focus-ring; }
+  &:disabled { background: var(--ds-background-disabled); color: var(--ds-text-disabled); box-shadow: none; cursor: not-allowed; }
+
+  svg { flex: none; }
+
+  &--default {
+    background: var(--ds-background-neutral-subtle);
+    color: var(--ds-text-subtle);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text-subtle); }
+    &:active { background: var(--ds-background-neutral-subtle-pressed); }
+  }
+  &--primary {
+    background: var(--ds-background-brand-bold);
+    color: var(--ds-text-inverse);
+    &:hover { background: var(--ds-background-brand-bold-hovered); color: var(--ds-text-inverse); }
+    &:active { background: var(--ds-background-brand-bold-pressed); }
+  }
+  &--subtle {
+    background: transparent;
+    color: var(--ds-text-subtle);
+    &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text-subtle); }
+    &:active { background: var(--ds-background-neutral-subtle-pressed); }
+  }
+  &--large { height: 2.5rem; padding: 0 var(--ds-space-200); }
+  &--compact { height: 1.5rem; padding: 0 var(--ds-space-075); }
+  &--icon { width: 2rem; padding: 0; }
+  &[aria-pressed="true"], &[aria-expanded="true"].btn--subtle {
+    background: var(--ds-background-selected);
+    color: var(--ds-text-selected);
+  }
+}
+
+// ---------------------------------------------------------------- Lozenge
+.lozenge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-050);
+  padding: 0 var(--ds-space-050);
+  border-radius: var(--ds-radius-small);
+  font: var(--ds-font-body-small);
+  font-weight: var(--ds-font-weight-bold);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+
+  &--default    { background: var(--ds-background-neutral);     color: var(--ds-text-subtle); }
+  &--inprogress { background: var(--ds-background-information); color: var(--ds-text-information); }
+  &--success    { background: var(--ds-background-success);     color: var(--ds-text-success); }
+  &--removed    { background: var(--ds-background-danger);      color: var(--ds-text-danger); }
+  &--moved      { background: var(--ds-background-warning);     color: var(--ds-text-warning); }
+  &--new        { background: var(--ds-background-discovery);   color: var(--ds-text-discovery); }
+}
+
+// ---------------------------------------------------------------- Card
+.card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-large);
+  padding: var(--ds-space-300);
+}
+
+.card--raised {
+  background: var(--ds-surface-raised);
+  border-color: transparent;
+  box-shadow: var(--ds-shadow-raised);
+}
+
+// ---------------------------------------------------------------- Icon tile
+.icon-tile {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--ds-radius-large);
+  flex: none;
+
+  &--blue    { background: var(--ds-background-accent-blue-subtlest);    color: var(--ds-icon-accent-blue); }
+  &--green   { background: var(--ds-background-accent-green-subtlest);   color: var(--ds-icon-accent-green); }
+  &--purple  { background: var(--ds-background-accent-purple-subtlest);  color: var(--ds-icon-accent-purple); }
+  &--orange  { background: var(--ds-background-accent-orange-subtlest);  color: var(--ds-icon-accent-orange); }
+  &--teal    { background: var(--ds-background-accent-teal-subtlest);    color: var(--ds-icon-accent-teal); }
+  &--magenta { background: var(--ds-background-accent-magenta-subtlest); color: var(--ds-icon-accent-magenta); }
+}
+
+// ---------------------------------------------------------------- Section message
+.section-msg {
+  display: flex;
+  gap: var(--ds-space-200);
+  padding: var(--ds-space-200);
+  border-radius: var(--ds-radius-large);
+  background: var(--ds-background-information);
+
+  > svg { flex: none; margin-top: var(--ds-space-025); color: var(--ds-icon-information); }
+  &--warning { background: var(--ds-background-warning); > svg { color: var(--ds-icon-warning); } }
+  &--success { background: var(--ds-background-success); > svg { color: var(--ds-icon-success); } }
+  &--discovery { background: var(--ds-background-discovery); > svg { color: var(--ds-icon-discovery); } }
+}
+
+// ---------------------------------------------------------------- Popup / menu
+.popup {
+  position: absolute;
+  z-index: 400;
+  min-width: 10rem;
+  padding: var(--ds-space-050) 0;
+  background: var(--ds-surface-overlay);
+  box-shadow: var(--ds-shadow-overlay);
+  border-radius: var(--ds-radius-large);
+  animation: var(--ds-popup-enter-bottom);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-100);
+  width: 100%;
+  min-height: 2rem;
+  padding: var(--ds-space-075) var(--ds-space-150);
+  border: 0;
+  background: transparent;
+  color: var(--ds-text);
+  font: var(--ds-font-body);
+  font-weight: var(--ds-font-weight-medium);
+  text-align: start;
+  cursor: pointer;
+
+  &:hover { background: var(--ds-background-neutral-subtle-hovered); }
+  &:active { background: var(--ds-background-neutral-subtle-pressed); }
+  &:focus-visible { @include focus-ring(-2px); }
+  &[aria-checked="true"] {
+    background: var(--ds-background-selected);
+    color: var(--ds-text-selected);
+    box-shadow: inset 2px 0 0 var(--ds-border-selected);
+  }
+  .menu-item__check { margin-inline-start: auto; }
+}
+
+// ---------------------------------------------------------------- Tabs
+.tablist {
+  display: flex;
+  gap: var(--ds-space-050);
+  box-shadow: inset 0 -2px 0 var(--ds-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.tab {
+  position: relative;
+  flex: none;
+  padding: var(--ds-space-075) var(--ds-space-100);
+  border: 0;
+  border-radius: var(--ds-radius-small);
+  background: transparent;
+  color: var(--ds-text-subtle);
+  font: var(--ds-font-body);
+  font-weight: var(--ds-font-weight-medium);
+  cursor: pointer;
+
+  &:hover { color: var(--ds-text); background: var(--ds-background-neutral-subtle-hovered); }
+  &:focus-visible { @include focus-ring(-2px); }
+  &[aria-selected="true"] {
+    color: var(--ds-text-selected);
+    &::after {
+      content: "";
+      position: absolute;
+      left: var(--ds-space-100);
+      right: var(--ds-space-100);
+      bottom: 0;
+      height: 2px;
+      background: var(--ds-border-selected);
+    }
+  }
+}
+
+// ---------------------------------------------------------------- Text field
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-050);
+  padding-inline-start: var(--ds-space-100);
+  background: var(--ds-background-input);
+  border: 1px solid var(--ds-border-input);
+  border-radius: var(--ds-radius-medium);
+  color: var(--ds-icon-subtle);
+  transition: background-color var(--ds-duration-short), border-color var(--ds-duration-short);
+
+  &:hover { background: var(--ds-background-input-hovered); }
+  &:focus-within {
+    border-color: var(--ds-border-focused);
+    box-shadow: inset 0 0 0 1px var(--ds-border-focused);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+    color: var(--ds-text);
+    // 16px stops iOS Safari from zooming the page when the field gets focus.
+    font: var(--ds-font-body-large);
+    padding: var(--ds-space-050) var(--ds-space-075) var(--ds-space-050) 0;
+    -webkit-appearance: none;
+    appearance: none;
+    &::placeholder { color: var(--ds-text-subtlest); }
+    @include up(m) { font: var(--ds-font-body); padding-block: var(--ds-space-075); }
+  }
+}
+
+kbd {
+  display: inline-block;
+  padding: 0 var(--ds-space-050);
+  border-radius: var(--ds-radius-xsmall);
+  background: var(--ds-background-neutral);
+  color: var(--ds-text-subtle);
+  font: var(--ds-font-body-small);
+  font-family: var(--ds-font-family-code);
+}
+
+// ---------------------------------------------------------------- Code
+// Shiki uses the css-variables theme; these map its token colours onto ADS accents.
+:root {
+  --shiki-foreground: var(--ds-text);
+  --shiki-background: var(--ds-surface-sunken);
+  --shiki-token-keyword: var(--ds-text-accent-purple);
+  --shiki-token-constant: var(--ds-text-accent-orange);
+  --shiki-token-string: var(--ds-text-accent-green);
+  --shiki-token-string-expression: var(--ds-text-accent-green);
+  --shiki-token-comment: var(--ds-text-subtlest);
+  --shiki-token-function: var(--ds-text-accent-blue);
+  --shiki-token-parameter: var(--ds-text-accent-teal);
+  --shiki-token-punctuation: var(--ds-text-subtle);
+  --shiki-token-link: var(--ds-link);
+}
+
+pre.astro-code {
+  margin: 0;
+  padding: var(--ds-space-200);
+  overflow-x: auto;
+  font: var(--ds-font-code);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  tab-size: 4;
+  -webkit-overflow-scrolling: touch;
+  code { font: inherit; }
+}
+
+.code-block {
+  position: relative;
+  margin: 0;
+  background: var(--ds-surface-sunken);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-large);
+  overflow: hidden;
+
+  pre.astro-code { background: transparent !important; }
+
+  &__copy {
+    position: absolute;
+    top: var(--ds-space-100);
+    right: var(--ds-space-100);
+    background: var(--ds-surface);
+    opacity: 0;
+    transition: opacity var(--ds-duration-short) var(--ds-easing-out-practical);
+    @media (hover: none) { opacity: 1; }
+  }
+  &:hover &__copy, &__copy:focus-visible, &__copy[data-copied] { opacity: 1; }
+}
+
+// Terminal-style output panel (trace output and diagnostics).
+.terminal {
+  margin: 0;
+  padding: var(--ds-space-200);
+  background: var(--ds-surface-sunken);
+  color: var(--ds-text);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-large);
+  font: var(--ds-font-code);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  white-space: pre;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .t-prompt { color: var(--ds-text-subtlest); -webkit-user-select: none; user-select: none; }
+  .t-error { color: var(--ds-text-danger); }
+  .t-code { font-weight: var(--ds-font-weight-bold); }
+  .t-caret { color: var(--ds-text-danger); font-weight: var(--ds-font-weight-bold); }
+  .t-help { color: var(--ds-text-success); }
+}
+

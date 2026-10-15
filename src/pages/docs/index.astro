@@ -1,0 +1,96 @@
+---
+import { getCollection } from "astro:content";
+import Docs from "../../layouts/Docs.astro";
+import Icon, { type IconName } from "../../components/Icon.astro";
+
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+const guide = docs.filter((d) => d.data.section === "Guide");
+
+const shortcuts: { href: string; icon: IconName; tone: string; title: string; body: string }[] = [
+  { href: "/docs/getting-started", icon: "play", tone: "blue", title: "Getting started", body: "Build the CLI and run your first program." },
+  { href: "/docs/spec", icon: "layers", tone: "purple", title: "Language specification", body: "The grammar and rules, each with its implementation status." },
+  { href: "/docs/diagnostics", icon: "crosshair", tone: "magenta", title: "Diagnostics", body: "Every error code the compiler and runtime can report." },
+  { href: "/examples", icon: "code", tone: "teal", title: "Examples", body: "Complete programs with their real output." },
+];
+---
+
+<Docs
+  title="RuneScript documentation"
+  description="A practical tour of every RuneScript feature that exists today, plus the language specification, diagnostics reference, and roadmap."
+  slug=""
+>
+  <p>
+    A practical tour of the RuneScript features that exist <strong>today</strong>. Every complete program in these pages is
+    compiled by the test suite, so if one stops compiling, the build fails.
+  </p>
+
+  <ul class="shortcuts">
+    {shortcuts.map((s) => (
+      <li>
+        <a class="shortcut" href={s.href}>
+          <span class={`icon-tile icon-tile--${s.tone}`}><Icon name={s.icon} size={20} /></span>
+          <span>
+            <span class="shortcut__title">{s.title}</span>
+            <span class="shortcut__body">{s.body}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2 id="guide">The guide</h2>
+  <ol class="guide-list">
+    {guide.map((d) => (
+      <li>
+        <a href={`/docs/${d.id}`}>{d.data.title}</a>
+        <span>{d.data.summary || d.data.description}</span>
+      </li>
+    ))}
+  </ol>
+
+  <blockquote>
+    <p>
+      <strong>Not yet available:</strong> classes, structs, arrays, floats, <code>char</code>, string concatenation, using
+      files and non-standard packages, and type conversions. Their keywords are reserved, and using them gives a clear
+      “not implemented yet” error. See the <a href="/docs/roadmap">roadmap</a>.
+    </p>
+  </blockquote>
+</Docs>
+
+<style lang="scss">
+  @use "../../styles/mixins" as *;
+
+  .shortcuts {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--ds-space-150);
+    @include up(s) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    li + li { margin-top: 0; }
+  }
+
+  .shortcut {
+    display: flex;
+    gap: var(--ds-space-200);
+    height: 100%;
+    padding: var(--ds-space-200);
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-large);
+    color: var(--ds-text);
+    font: var(--ds-font-body);
+    transition: background-color var(--ds-duration-short) var(--ds-easing-out-practical);
+    &:hover { background: var(--ds-background-neutral-subtle-hovered); text-decoration: none; }
+    > span:last-child { display: grid; gap: var(--ds-space-050); }
+  }
+  .shortcut__title { font: var(--ds-font-heading-xsmall); }
+  .shortcut__body { color: var(--ds-text-subtle); }
+
+  .guide-list {
+    display: grid;
+    gap: var(--ds-space-150);
+    li { padding-inline-start: var(--ds-space-050); }
+    li + li { margin-top: 0; }
+    a { font-weight: var(--ds-font-weight-semibold); }
+    span { display: block; font: var(--ds-font-body); color: var(--ds-text-subtle); }
+  }
+</style>

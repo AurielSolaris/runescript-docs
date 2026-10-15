@@ -1,0 +1,180 @@
+---
+import Base from "../layouts/Base.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import Terminal from "../components/Terminal.astro";
+import Icon from "../components/Icon.astro";
+import examples from "../data/examples.json";
+import { site } from "../lib/site";
+
+// Working programs first, then the two the compiler rejects on purpose.
+const order = ["hello", "variables", "conditionals", "loops", "functions", "fizzbuzz", "strings", "callbacks", "primes"];
+const ordered = [...examples].sort((a, b) => {
+  if (a.rejected !== b.rejected) return Number(a.rejected) - Number(b.rejected);
+  const ia = order.indexOf(a.name), ib = order.indexOf(b.name);
+  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+});
+
+// Inline `code` in descriptions.
+const md = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/`([^`]+)`/g, "<code>$1</code>");
+
+const jsonLd = [
+  {
+    "@type": "CollectionPage",
+    name: "RuneScript examples",
+    url: `${site.url}/examples`,
+    hasPart: ordered.map((e) => ({
+      "@type": "SoftwareSourceCode",
+      name: e.file,
+      description: e.description.replace(/`/g, ""),
+      programmingLanguage: site.name,
+      codeRepository: `${site.repo}/blob/main/examples/${e.file}`,
+    })),
+  },
+];
+---
+
+<Base
+  title="Examples"
+  description="Complete RuneScript programs with their real output: variables, loops, functions, callbacks and lambdas, std:string, and two programs the compiler rejects on purpose."
+  jsonLd={jsonLd}
+>
+  <div class="container examples">
+    <header class="examples__head">
+      <h1>Examples</h1>
+      <p>
+        Every program here is in the <a href={`${site.repo}/tree/main/examples`} rel="noopener">examples folder</a>, and the
+        test suite checks its output, so what you see is what the compiler does today.
+      </p>
+    </header>
+
+    <div class="examples__layout">
+      <nav class="examples__index" aria-label="Examples">
+        <h2 class="examples__group">Programs</h2>
+        <ul>
+          {ordered.filter((e) => !e.rejected).map((e) => (
+            <li><a href={`#${e.name}`}>{e.file}</a></li>
+          ))}
+        </ul>
+        <h2 class="examples__group">Rejected on purpose</h2>
+        <ul>
+          {ordered.filter((e) => e.rejected).map((e) => (
+            <li><a href={`#${e.name}`}>{e.file}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="examples__list">
+        {ordered.map((e) => (
+          <section class="example" id={e.name} aria-labelledby={`${e.name}-title`}>
+            <header class="example__head">
+              <h2 id={`${e.name}-title`}>
+                <code>{e.file}</code>
+                {e.rejected
+                  ? <span class="lozenge lozenge--removed">Rejected</span>
+                  : <span class="lozenge lozenge--success">Runs</span>}
+              </h2>
+              <p set:html={md(e.description)} />
+            </header>
+            <CodeBlock code={e.code} filename={`examples/${e.file}`} />
+            {e.output && (
+              <div class="example__out">
+                <h3><Icon name="terminal" /> {e.rejected ? "Diagnostics" : "Output"}</h3>
+                <Terminal
+                  command={`runescript ${e.rejected ? "check" : "run"} examples/${e.file}`}
+                  output={e.output}
+                  label={`${e.rejected ? "Diagnostics" : "Output"} of ${e.file}`}
+                />
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style lang="scss">
+  @use "../styles/mixins" as *;
+
+  .examples { padding-block: var(--ds-space-400) var(--ds-space-600); @include up(m) { padding-top: var(--ds-space-600); } }
+
+  .examples__head {
+    display: grid;
+    gap: var(--ds-space-100);
+    max-width: 44rem;
+    margin-bottom: var(--ds-space-500);
+    h1 { font: var(--ds-font-heading-xlarge); }
+    p { font: var(--ds-font-body-large); color: var(--ds-text-subtle); }
+  }
+
+  .examples__layout {
+    display: grid;
+    gap: var(--ds-space-400);
+    @include up(m) { grid-template-columns: 12rem minmax(0, 1fr); gap: var(--ds-space-600); }
+    @include up(wuxga) { grid-template-columns: 14rem minmax(0, 1fr); }
+  }
+
+  .examples__index {
+    display: none;
+    @include up(m) {
+      display: block;
+      position: sticky;
+      top: calc(var(--nav-height) + var(--ds-space-300));
+      align-self: start;
+    }
+    ul { list-style: none; margin: 0 0 var(--ds-space-300); padding: 0; display: grid; gap: var(--ds-space-025); }
+    a {
+      display: block;
+      padding: var(--ds-space-050) var(--ds-space-100);
+      border-radius: var(--ds-radius-medium);
+      color: var(--ds-text-subtle);
+      font: var(--ds-font-body);
+      font-family: var(--ds-font-family-code);
+      font-size: 0.8125rem;
+      &:hover { background: var(--ds-background-neutral-subtle-hovered); color: var(--ds-text); text-decoration: none; }
+    }
+  }
+
+  .examples__group {
+    font: var(--ds-font-heading-xxsmall);
+    color: var(--ds-text-subtlest);
+    padding: 0 var(--ds-space-100);
+    margin-bottom: var(--ds-space-100);
+  }
+
+  .examples__list { display: grid; gap: var(--ds-space-800); min-width: 0; }
+
+  .example {
+    display: grid;
+    gap: var(--ds-space-200);
+    min-width: 0;
+    // WUXGA has the width for code and output side by side.
+    @include up(wuxga) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      align-items: start;
+      .example__head { grid-column: 1 / -1; }
+    }
+  }
+
+  .example__head {
+    display: grid;
+    gap: var(--ds-space-075);
+    h2 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--ds-space-100);
+      font: var(--ds-font-heading-medium);
+      code { font: inherit; font-family: var(--ds-font-family-code); }
+    }
+    p { color: var(--ds-text-subtle); font: var(--ds-font-body-large); }
+    p :global(code) { font: var(--ds-font-code); background: var(--ds-background-neutral); padding: 0.125em var(--ds-space-050); border-radius: var(--ds-radius-small); }
+  }
+
+  .example__out {
+    display: grid;
+    gap: var(--ds-space-100);
+    min-width: 0;
+    h3 { display: flex; align-items: center; gap: var(--ds-space-075); font: var(--ds-font-heading-xxsmall); color: var(--ds-text-subtlest); }
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+import { Code } from "astro:components";
+import Icon from "./Icon.astro";
+import { runescript } from "../lib/runescript.grammar";
+import { adsTheme } from "../lib/shiki";
+
+interface Props {
+  code: string;
+  lang?: "runescript" | "sh" | "text" | "actionscript-3";
+  filename?: string;
+  class?: string;
+}
+
+const { code, lang = "runescript", filename, class: className } = Astro.props;
+---
+
+<figure class:list={["code-block", "cb", className]} x-data="copy">
+  {filename && (
+    <figcaption class="cb__title">
+      <Icon name="file" />
+      <span>{filename}</span>
+    </figcaption>
+  )}
+  <div x-ref="code">
+    <Code code={code} lang={lang === "runescript" ? runescript : lang} theme={adsTheme} />
+  </div>
+  <button
+    class="btn btn--default btn--compact code-block__copy"
+    type="button"
+    aria-label="Copy code"
+    :aria-label="copied ? 'Copied' : 'Copy code'"
+    :data-copied="copied ? '' : null"
+    @click="run()"
+  >
+    <span x-show="!copied"><Icon name="copy" /></span>
+    <span x-show="copied" x-cloak><Icon name="check" /></span>
+  </button>
+</figure>
+
+<style lang="scss">
+  .cb__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-075);
+    padding: var(--ds-space-100) var(--ds-space-200);
+    border-bottom: 1px solid var(--ds-border);
+    color: var(--ds-text-subtle);
+    font: var(--ds-font-body-small);
+    font-family: var(--ds-font-family-code);
+  }
+  .cb:has(.cb__title) .code-block__copy { top: var(--ds-space-075); }
+</style>

@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Open Graph card, 1200×630. Colours are the ADS light-theme token values. -->
+<html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; }
+  body {
+    box-sizing: border-box; padding: 72px 80px;
+    background: #FFFFFF; color: #292A2E; font-family: Inter, "Segoe UI Variable Display", "Segoe UI", sans-serif;
+    display: grid; grid-template-columns: 1fr 470px; gap: 56px; align-items: center;
+    border-bottom: 12px solid #1868DB;
+  }
+  .brand { display: flex; align-items: center; gap: 16px; font-size: 32px; font-weight: 653; }
+  .brand img { width: 64px; height: 64px; }
+  h1 { margin: 40px 0 20px; font-size: 52px; line-height: 60px; font-weight: 653; letter-spacing: -0.01em; }
+  p { margin: 0; font-size: 24px; line-height: 34px; color: #505258; }
+  .loz { display: inline-block; margin-top: 32px; padding: 2px 8px; border-radius: 4px; background: #E9F2FE; color: #1558BC; font-size: 18px; font-weight: 653; }
+  pre {
+    margin: 0; padding: 28px; border-radius: 12px; background: #F8F8F8; border: 1px solid #0B120E24;
+    font: 19px/30px "JetBrains Mono", "Cascadia Mono", Consolas, monospace; color: #292A2E; white-space: pre;
+  }
+  .k { color: #803FA5; } .t { color: #803FA5; } .f { color: #1558BC; } .s { color: #4C6B1F; } .n { color: #A54800; }
+</style></head>
+<body>
+  <div>
+    <div class="brand"><img src="../../public/favicon.svg" alt="">RuneScript</div>
+    <h1>A strict, statically typed language with ActionScript roots</h1>
+    <p>C-family syntax, located diagnostics, and no silent overflow. Implemented in Go.</p>
+    <span class="loz">v0.2 in progress</span>
+  </div>
+<pre><span class="k">package</span> main;
+
+<span class="k">public</span> <span class="t">void</span> <span class="f">sayHi</span>(<span class="t">string</span> msg, <span class="t">int</span> n) {
+    <span class="k">for</span> (<span class="t">int</span> i = <span class="n">0</span>; i &lt; n; i++) {
+        <span class="f">trace</span>(msg);
+    }
+}
+
+<span class="k">protected</span> <span class="t">int</span> <span class="f">main</span>() {
+    <span class="f">sayHi</span>(<span class="s">"Hello world"</span>, <span class="n">3</span>);
+    <span class="k">return</span> <span class="n">0</span>;
+}</pre>
+</body></html>

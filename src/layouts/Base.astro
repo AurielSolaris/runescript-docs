@@ -1,0 +1,114 @@
+---
+import "../styles/global.scss";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Extra JSON-LD objects for this page. */
+  jsonLd?: Record<string, unknown>[];
+  ogType?: "website" | "article";
+  noindex?: boolean;
+}
+
+const { title, description = site.description, jsonLd = [], ogType = "website", noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name}: ${site.tagline}`;
+// Pages build as name.html (served without the extension), so strip it from the canonical URL.
+const cleanPath = Astro.url.pathname.replace(/(\/?index)?\.html$/, "").replace(/\/$/, "") || "/";
+const canonical = new URL(cleanPath, Astro.site ?? site.url).href;
+const ogImage = new URL("/og.png", Astro.site ?? site.url).href;
+
+const graph = [
+  {
+    "@type": "WebSite",
+    "@id": `${site.url}/#website`,
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    inLanguage: site.locale,
+  },
+  ...jsonLd,
+];
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <!-- viewport-fit=cover lets the layout run under the notch; safe-area insets pad it back. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Theme before first paint, so a forced theme never flashes. -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem("runescript:theme");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    </script>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content={site.themeColor.light} data-scheme="light" data-light={site.themeColor.light} data-dark={site.themeColor.dark} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content={site.themeColor.dark} data-scheme="dark" data-light={site.themeColor.light} data-dark={site.themeColor.dark} />
+
+    <!-- Icons: SVG for modern browsers, PNG for Apple home screens and older Safari. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#1868DB" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Apple -->
+    <meta name="apple-mobile-web-app-title" content={site.name} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="RuneScript: a statically typed language with ActionScript roots" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? site.name} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;700&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": graph })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <slot name="before-main" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style lang="scss" is:global>
+  html.is-locked { overflow: hidden; }
+  main:focus { outline: none; }
+</style>

@@ -1,0 +1,45 @@
+@use "sass:map";
+
+// Breakpoints follow the ADS layout grid (viewport widths), plus WUXGA.
+$breakpoints: (
+  xs: 480px,
+  s: 768px,
+  m: 1024px,
+  l: 1440px,
+  xl: 1768px,
+  wuxga: 1920px,
+);
+
+@mixin up($bp) {
+  @media (min-width: map.get($breakpoints, $bp)) { @content; }
+}
+
+@mixin down($bp) {
+  @media (max-width: calc(#{map.get($breakpoints, $bp)} - 0.02px)) { @content; }
+}
+
+// WUXGA (1920×1200, 16:10). A browser on that screen has a viewport of about
+// 1920×1050–1130, while 1080p screens stay under ~1000px, so height tells them apart.
+@mixin wuxga {
+  @media (min-width: 1920px) and (min-height: 1000px) { @content; }
+}
+
+@mixin focus-ring($offset: 2px) {
+  // At least 2px, so focus is easy to see (WCAG 2.4.7, and 2.4.13 at AAA).
+  outline: max(2px, var(--ds-border-width-focused, 2px)) solid var(--ds-border-focused);
+  outline-offset: $offset;
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+// Horizontal page gutter that clears the iPhone notch / Dynamic Island in landscape.
+@mixin gutter-inline($size: var(--page-margin)) {
+  padding-inline-start: max(#{$size}, env(safe-area-inset-left));
+  padding-inline-end: max(#{$size}, env(safe-area-inset-right));
+}
