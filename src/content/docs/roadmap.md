@@ -95,6 +95,23 @@ conditionals, loops, and basic functions.
 - [ ] Objects, arrays, and callbacks across the boundary (need classes and arrays first)
 - [ ] Source maps
 
+### DOM interop (owner decisions, 2026-10-16; started)
+- [x] Internal list of HTML4 and HTML5 elements (`internal/dom`): void and obsolete elements with hints, typed attributes per element (string, url, bool, int, uint, float, keywords, id references, tokens, events), global attributes and event handlers, `data-*`/`aria-*`, and obsolete HTML4 presentational attributes; cross-checked against independent element lists
+- [x] SVG 1.1 and SVG 2 elements in their own namespace (case-sensitive names; SVG 1.1 elements SVG 2 removed are obsolete with hints), typed attributes including lengths, presentation attributes with CSS-wide keywords, `href` with obsolete `xlink:href`
+- [ ] Declarative, component-based UI like React's, but without JSX and without a virtual DOM: state changes update the affected DOM nodes directly
+- [ ] Templates in `.rsc` files, in the style of Vue/Svelte components and Laravel Blade: `$if` and `$foreach` directives, `{{ }}` interpolation that escapes HTML by default; `Element` is a type imported with `use "rune:dom";`
+- [ ] Reactivity through explicit SolidJS-style signals, called runes: `Signal<int> count = signal(0);`, read `count()`, written `count.set(n)`; setting one updates only the DOM nodes that read it
+- [ ] Elements: HTML4 (obsolete ones warn), HTML5, and SVG; attributes typed per element
+- [ ] Mounting without a router: `use "./App.rsc";` then `dom.renderApp(app.App, "#app");` renders one component into the element the selector names; any CSS selector works, with a warning unless it is an id selector
+- [ ] Templates switch to SVG inside `<svg>` (and back to HTML inside `foreignObject`)
+- [ ] Needs first: a signal type (generics or opaque types), arrays, and callbacks across the JavaScript boundary; classes are not required
+
+### Live reload (owner request, 2026-10-16)
+- [x] `runescript dev`: serves the entry file's folder on 127.0.0.1 (port 5173, or the next free one), compiles in memory, rebuilds when a program file changes, reloads the browser over Server-Sent Events, and shows compile errors in an overlay; the user's `index.html` or a generated page
+- [x] `runescript run --watch`: runs a command-line program again whenever one of its files changes
+- [x] Polling file watcher (`internal/watch`), standard library only; tests for the server, the watcher, and watch mode, and a check in Edge of reload and the overlay
+- [ ] Hot module replacement for `rune:dom` components, keeping their runes' values (needs components)
+
 ### Bundled JavaScript runtime (planned, not started)
 - [ ] A small ES2015-compatible JavaScript engine shipped with RuneScript, so compiled programs run without Node.js or Bun. It supports the extras above (`BigInt`, `??`, modules)
 - [ ] Conformance: its output is compared against Node.js (ES2022), the reference host

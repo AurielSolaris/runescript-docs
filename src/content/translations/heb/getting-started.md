@@ -110,7 +110,12 @@ Hello, RuneScript!
 |---|---|
 | `runescript run <file>` | בודקת את התוכנית ואז מריצה אותה |
 | `runescript check <file>` | מדווחת על שגיאות הידור בלי להריץ |
+| `runescript run --watch <file>` | מריצה את התוכנית, ושוב בכל פעם שאחד הקבצים שלה משתנה (Ctrl+C עוצר) |
 | `runescript build [-o out.js] <file>` | מהדרת למודול JavaScript ([פרק 11](/heb/docs/javascript)) |
+| `runescript dev [--port 5173] [--open] <file>` | מגישה את התוכנית ב-localhost וטוענת מחדש את הדפדפן בכל שינוי ([פרק 11](/heb/docs/javascript)) |
+
+`run`, `check`, `build` ו-`dev` מקבלות גם `-Werror` ו-`--allow <codes>` עבור אזהרות
+(ראו [פרק 8](/heb/docs/diagnostics)).
 | `runescript version` | מדפיסה את הגרסה |
 
 ## קוד היציאה
