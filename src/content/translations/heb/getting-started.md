@@ -1,7 +1,7 @@
 ---
 title: "מתחילים"
-description: "בניית ה-CLI והרצת תוכנית. RuneScript נבנית מקוד המקור, ולכן צריך Go 1.25 ומעלה (go.dev/dl)."
-summary: "בניית ה-CLI והרצת תוכנית."
+description: "בניית ה-CLI, הרצת תוכנית ו-run --watch. RuneScript נבנית מקוד המקור, ולכן צריך Go 1.25 ומעלה (go.dev/dl)."
+summary: "בניית ה-CLI, הרצת תוכנית ו-run --watch."
 order: 1
 page: "getting-started"
 source: "localization/heb/docs/guide/01-getting-started.md"

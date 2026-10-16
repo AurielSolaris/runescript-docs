@@ -1,7 +1,7 @@
 ---
 title: "শুরু করা"
-description: "CLI তৈরি করা, একটি প্রোগ্রাম চালানো। RuneScript সোর্স থেকে তৈরি করা হয়, তাই আপনার Go 1.25 বা নতুনতর লাগবে (go.dev/dl)।"
-summary: "CLI তৈরি করা, একটি প্রোগ্রাম চালানো।"
+description: "CLI তৈরি করা, একটি প্রোগ্রাম চালানো, run --watch। RuneScript সোর্স থেকে তৈরি করা হয়, তাই আপনার Go 1.25 বা নতুনতর লাগবে (go.dev/dl)।"
+summary: "CLI তৈরি করা, একটি প্রোগ্রাম চালানো, run --watch।"
 order: 1
 page: "getting-started"
 source: "localization/bn/docs/guide/01-getting-started.md"

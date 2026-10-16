@@ -13,17 +13,17 @@ source: "localization/heb/docs/guide/README.md"
 מתקמפלת בחבילת הבדיקות (`tests/docs_test.go`). אם אחת מהן מפסיקה להתקמפל,
 הבנייה נכשלת.
 
-1. [מתחילים](/heb/docs/getting-started): בניית ה-CLI והרצת תוכנית
+1. [מתחילים](/heb/docs/getting-started): בניית ה-CLI, הרצת תוכנית ו-`run --watch`
 2. [מבנה התוכנית](/heb/docs/program-structure): חבילות, הערות, `main`
 3. [טיפוסים ומשתנים](/heb/docs/types-and-variables): `int`, `uint`, `bool`, `string`, השמה
 4. [אופרטורים](/heb/docs/operators): חשבון, השוואה, לוגיקה
 5. [בקרת זרימה](/heb/docs/control-flow): `if`, `while`, `for`, `break`, `continue`
 6. [פונקציות](/heb/docs/functions): פרמטרים, ערכי החזרה, רקורסיה
 7. [פלט עם `trace`](/heb/docs/trace)
-8. [מדריך הודעות האבחון](/heb/docs/diagnostics): כל קודי השגיאה
+8. [מדריך הודעות האבחון](/heb/docs/diagnostics): כל קודי השגיאה והאזהרה, `-Werror`, `--allow`
 9. [למי שמגיע מ-ActionScript 3](/heb/docs/coming-from-actionscript)
 10. [הספרייה הסטנדרטית: `std:string`](/heb/docs/std-string): ה-`strings` של Go, ב-RuneScript
-11. [הידור ל-JavaScript](/heb/docs/javascript): `runescript build`, ואיך הקפדת הטיפוסים נשמרת
+11. [הידור ל-JavaScript](/heb/docs/javascript): `runescript build`, איך הקפדת הטיפוסים נשמרת, קריאה ל-JavaScript עם `extern`, וטעינה מחדש חיה עם `runescript dev`
 12. [חבילות וקבצים](/heb/docs/packages-and-files): `use`, תוכניות מרובות קבצים, נראות
 13. [מספרים עשרוניים והמרות](/heb/docs/floats-and-conversions): `float`, `float32`, `float64`, `(int) x`
 14. [שגיאות](/heb/docs/errors): `throw`, `try`, `catch`, `finally`, ותפיסת שגיאות זמן ריצה
@@ -33,4 +33,5 @@ source: "localization/heb/docs/guide/README.md"
 
 > **עדיין לא זמין:** מחלקות, מבנים (structs), מערכים, `char`, ושרשור מחרוזות.
 > מילות המפתח שלהם שמורות, ושימוש בהן מניב שגיאה ברורה של "עדיין לא מומש".
+> גם אובייקטים ו-callbacks עדיין לא יכולים לחצות את הגבול עם JavaScript.
 

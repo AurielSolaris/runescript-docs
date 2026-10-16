@@ -1,7 +1,7 @@
 ---
 title: "Getting started"
-description: "Getting started in RuneScript: Build the CLI, run a program. RuneScript is built from source, so you need Go 1.25 or newer…"
-summary: "Build the CLI, run a program."
+description: "Getting started in RuneScript: Build the CLI, run a program, run --watch. RuneScript is built from source, so you need Go 1.25 or newer…"
+summary: "Build the CLI, run a program, run --watch."
 section: Guide
 order: 1
 source: "docs/guide/01-getting-started.md"

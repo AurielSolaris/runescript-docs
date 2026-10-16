@@ -1,7 +1,7 @@
 ---
 title: "הידור ל-JavaScript"
-description: "runescript build, ואיך הקפדת הטיפוסים נשמרת. runescript build מהדר תוכנית למודול JavaScript שרץ בדפדפן או ב-Node.js."
-summary: "runescript build, ואיך הקפדת הטיפוסים נשמרת."
+description: "runescript build, איך הקפדת הטיפוסים נשמרת, קריאה ל-JavaScript עם extern, וטעינה מחדש חיה עם runescript dev."
+summary: "runescript build, איך הקפדת הטיפוסים נשמרת, קריאה ל-JavaScript עם extern, וטעינה מחדש חיה עם runescript dev."
 order: 11
 page: "javascript"
 source: "localization/heb/docs/guide/11-javascript.md"

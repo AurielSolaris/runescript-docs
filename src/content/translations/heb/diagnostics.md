@@ -1,7 +1,7 @@
 ---
 title: "מדריך הודעות האבחון"
-description: "כל קודי השגיאה. כל שגיאה מצביעה על המיקום המדויק בקוד המקור:"
-summary: "כל קודי השגיאה."
+description: "כל קודי השגיאה והאזהרה, -Werror, --allow. כל שגיאה מצביעה על המיקום המדויק בקוד המקור:"
+summary: "כל קודי השגיאה והאזהרה, -Werror, --allow."
 order: 8
 page: "diagnostics"
 source: "localization/heb/docs/guide/08-diagnostics.md"

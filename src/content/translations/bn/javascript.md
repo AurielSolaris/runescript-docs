@@ -1,7 +1,7 @@
 ---
 title: "JavaScript-এ কম্পাইল"
-description: "runescript build, এবং কঠোর টাইপিং কীভাবে বজায় থাকে। runescript build একটি প্রোগ্রামকে এমন একটি JavaScript মডিউলে কম্পাইল করে, যা ব্রাউজারে বা Node.js-এ…"
-summary: "runescript build, এবং কঠোর টাইপিং কীভাবে বজায় থাকে।"
+description: "runescript build, কঠোর টাইপিং কীভাবে বজায় থাকে, extern দিয়ে JavaScript কল করা, এবং runescript dev দিয়ে লাইভ রিলোড।"
+summary: "runescript build, কঠোর টাইপিং কীভাবে বজায় থাকে, extern দিয়ে JavaScript কল করা, এবং runescript dev দিয়ে লাইভ রিলোড।"
 order: 11
 page: "javascript"
 source: "localization/bn/docs/guide/11-javascript.md"

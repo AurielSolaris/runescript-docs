@@ -1,7 +1,7 @@
 ---
 title: "Diagnostics reference"
-description: "Diagnostics reference in RuneScript: Every error code. The ASX prefix is provisional and may be renamed. The numbers stay the same."
-summary: "Every error code."
+description: "Diagnostics reference in RuneScript: Every error and warning code, -Werror, --allow. The ASX prefix is provisional and may be renamed."
+summary: "Every error and warning code, -Werror, --allow."
 section: Guide
 order: 8
 source: "docs/guide/08-diagnostics.md"

@@ -1,7 +1,7 @@
 ---
 title: "Compiling to JavaScript"
-description: "Compiling to JavaScript in RuneScript: Runescript build, and how strict typing is kept."
-summary: "Runescript build, and how strict typing is kept."
+description: "Compiling to JavaScript in RuneScript: Runescript build, how strict typing is kept, calling JavaScript with extern, and live reload with runescript dev."
+summary: "Runescript build, how strict typing is kept, calling JavaScript with extern, and live reload with runescript dev."
 section: Guide
 order: 11
 source: "docs/guide/11-javascript.md"

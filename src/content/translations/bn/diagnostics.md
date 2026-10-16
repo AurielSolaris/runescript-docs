@@ -1,7 +1,7 @@
 ---
 title: "ডায়াগনস্টিক তালিকা"
-description: "প্রতিটি এরর কোড। প্রতিটি এরর সোর্সের ঠিক কোন জায়গায় সমস্যা, তা দেখিয়ে দেয়:"
-summary: "প্রতিটি এরর কোড।"
+description: "প্রতিটি এরর ও সতর্কবার্তার কোড, -Werror, --allow। প্রতিটি এরর সোর্সের ঠিক কোন জায়গায় সমস্যা, তা দেখিয়ে দেয়:"
+summary: "প্রতিটি এরর ও সতর্কবার্তার কোড, -Werror, --allow।"
 order: 8
 page: "diagnostics"
 source: "localization/bn/docs/guide/08-diagnostics.md"
