@@ -4,8 +4,10 @@ The website uses the following open-source material. Everything else (the
 design tokens' names and scales, the components, the layout, and the text) is
 the site's own; see [LICENSE](LICENSE) and [LICENSE-CONTENT.md](LICENSE-CONTENT.md).
 
-The site does not use the Atlassian Design System: none of its tokens, fonts,
-icons, or components.
+The components are inspired by the look of the Atlassian Design System:
+calm, dense, and work-focused. They are the site's own implementations, not
+1:1 Atlassian components. The site uses none of Atlassian's code, tokens,
+fonts, or icons, and is not affiliated with or endorsed by Atlassian.
 
 ## Colours: Primer Primitives (GitHub Light, GitHub Dark Dimmed)
 
