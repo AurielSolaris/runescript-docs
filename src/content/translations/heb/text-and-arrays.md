@@ -121,7 +121,7 @@ public void main() {
 
 
 פונקציות התווים של `std:string` מקבלות תווים: ראו
-[תווים ו-callbacks](/heb/docs/std-string#characters-and-callbacks).
+[תווים ו-callbacks](/heb/docs/std-string).
 
 ## מערכים: `Array<T>`
 
@@ -221,7 +221,7 @@ public void main() {
 
 
 אי אפשר להעביר מערכים ישירות ל-trace. חברו אותם למחרוזת אחת עם `string.join`
-([פרק 10](/heb/docs/std-string#splitting-and-joining)):
+([פרק 10](/heb/docs/std-string)):
 
 
 ```actionscript

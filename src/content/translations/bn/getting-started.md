@@ -101,10 +101,10 @@ Hello, RuneScript!
 | `runescript run --watch <file>` | প্রোগ্রামটি চালায়, তারপর এর কোনো ফাইল বদলালেই আবার চালায় (Ctrl+C থামায়) |
 | `runescript build [-o out.js] <file>` | একটি JavaScript মডিউলে কম্পাইল করে ([অধ্যায় ১১](/bn/docs/javascript)) |
 | `runescript dev [--port 5173] [--open] <file>` | localhost-এ পরিবেশন করে এবং প্রতিটি পরিবর্তনে ব্রাউজার রিলোড করে ([অধ্যায় ১১](/bn/docs/javascript)) |
+| `runescript version` | সংস্করণ দেখায় |
 
 `run`, `check`, `build` ও `dev` সতর্কবার্তার জন্য `-Werror` ও `--allow <codes>`-ও নেয়
 (দেখুন [অধ্যায় ৮](/bn/docs/diagnostics))।
-| `runescript version` | সংস্করণ দেখায় |
 
 ## এক্সিট স্ট্যাটাস
 

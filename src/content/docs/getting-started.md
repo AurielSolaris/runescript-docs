@@ -99,10 +99,10 @@ Hello, RuneScript!
 | `runescript run --watch <file>` | Run it, then run it again whenever one of its files changes (Ctrl+C stops) |
 | `runescript build [-o out.js] <file>` | Compile to a JavaScript module ([chapter 11](/docs/javascript)) |
 | `runescript dev [--port 5173] [--open] <file>` | Serve it on localhost and reload the browser on every change ([chapter 11](/docs/javascript#live-reload-runescript-dev)) |
+| `runescript version` | Print the version |
 
 `run`, `check`, `build`, and `dev` also take `-Werror` and `--allow <codes>`
 for warnings (see [chapter 8](/docs/diagnostics#warnings)).
-| `runescript version` | Print the version |
 
 ## Exit status
 
