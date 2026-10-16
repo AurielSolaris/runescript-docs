@@ -101,9 +101,11 @@ From tightest to loosest binding:
 
 All binary operators are left-associative: `10 - 4 - 3` is `(10 - 4) - 3`.
 
+`+` also joins two strings, and `==`, `!=`, `<`, `<=`, `>`, `>=` compare
+two `char`s. Neither converts anything: `"n=" + 5` is an error
+([chapter 16](/docs/text-and-arrays)).
+
 ## Not available yet
 
-String concatenation with `+`, bitwise operators, shifts, `?:`, `?.`, and
-`??`. To print several values together, pass them all to `trace` (see
-[Output with `trace`](/docs/trace)).
+Bitwise operators, shifts, `?:`, `?.`, and `??`.
 

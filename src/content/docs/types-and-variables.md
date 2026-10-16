@@ -35,6 +35,8 @@ implicit default values in v0.1.
 | `float`, `float32`, `float64` | Floating-point numbers ([chapter 13](/docs/floats-and-conversions)) | |
 | `bool` | `true` or `false` | |
 | `string` | Text, e.g. `"hello\n"` | |
+| `char` | One character, e.g. `'a'` ([chapter 16](/docs/text-and-arrays)) | any Unicode code point |
+| `Array<T>` | A list of `T` values, e.g. `["a", "b"]` ([chapter 16](/docs/text-and-arrays)) | |
 | `Error` and its kinds | Errors ([chapter 14](/docs/errors)) | |
 | `void` | No value; used only as a function's return type | |
 
@@ -51,7 +53,9 @@ public void main() {
 }
 ```
 
-String escapes: `\n` (newline), `\t` (tab), `\r`, `\\`, and `\"`.
+String escapes: `\n` (newline), `\t` (tab), `\r`, `\\`, and `\"`. Strings are
+joined with `+`, and `$"total: {n}"` builds one from values
+([chapter 16](/docs/text-and-arrays)).
 
 ## Assignment
 

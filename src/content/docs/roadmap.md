@@ -40,7 +40,8 @@ conditionals, loops, and basic functions.
 - [x] `use "std:<name>";` declarations and qualified calls (`string.toUpper(s)`)
 - [x] Native-package registry in `stdlib/`: Go-implemented functions with checked RuneScript signatures
 - [x] `std:string`: all 25 functions from Go's `strings` package expressible with
-  `string`/`int`/`bool`, camelCase names, byte offsets
+  `string`/`int`/`bool`, camelCase names, byte offsets (now 43, with `char`,
+  callbacks, and arrays)
 - [x] Docs (`docs/guide/10-std-string.md`) and an example (`examples/strings.rsc`)
 
 ### Functions <span class="done-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Done</span>
@@ -172,8 +173,9 @@ with paths relative to the current working directory. (`std:` works since v0.2.)
 
 ## v0.4: Strings and output
 
-- [ ] String concatenation / interpolation (design first)
-- [ ] `string` length and indexing; `char` design
+- [x] String concatenation `+` (strings only) and interpolation `$"…{x}…"` (2026-10-16)
+- [x] `string.len`, `string.slice`, `string.runeCount` in bytes; `char` as a Unicode scalar with `'a'` literals (2026-10-16)
+- [x] `std:string` functions that take `char` and callbacks: `containsRune`, `indexRune`, `indexFunc`, `trimFunc`, `map`, … (2026-10-16)
 - [ ] Escape sequences: Unicode escapes
 
 ## v0.5: Numbers
@@ -187,7 +189,8 @@ with paths relative to the current working directory. (`std:` works since v0.2.)
 
 ## v0.6: Aggregates
 
-- [ ] `array` / `Array<T>` (needs a generics syntax decision)
+- [x] `Array<T>`: literals, bounds-checked indexing, `length`, `push`, `pop`, reference semantics (2026-10-16, details provisional)
+- [ ] For-each loops, slicing, sorting; `main(Array<string> args)`
 - [ ] `struct`: value semantics, copy rules
 - [ ] `matrix` (design first)
 
@@ -211,8 +214,8 @@ Depends on: `use` (v0.3), floats (v0.5), and structs for colours and vectors (v0
 - [ ] `class` declarations, fields, methods, constructors
 - [ ] Visibility enforcement
 - [ ] Inheritance / interfaces (design first)
-- [ ] `std:string` additions that need arrays, multiple returns, or classes
-  (`split`, `fields`, `join`, `cut`, builder/replacer)
+- [x] `std:string` additions that need arrays: `split`, `splitN`, `splitAfter`, `splitAfterN`, `fields`, `fieldsFunc`, `join` (2026-10-16)
+- [ ] `std:string` additions that need multiple returns or classes (`cut`, builder/replacer)
 
 ## v0.9: `std:symrs` (symbolic mathematics)
 

@@ -40,6 +40,8 @@ public void main() {
 | `float`, `float32`, `float64` | מספרים עשרוניים (נקודה צפה) ([פרק 13](/heb/docs/floats-and-conversions)) | |
 | `bool` | `true` או `false` | |
 | `string` | טקסט, למשל `"hello\n"` | |
+| `char` | תו אחד, למשל `'a'` ([פרק 16](/heb/docs/text-and-arrays)) | כל נקודת קוד של Unicode |
+| `Array<T>` | רשימה של ערכי `T`, למשל `["a", "b"]` ([פרק 16](/heb/docs/text-and-arrays)) | |
 | `Error` וסוגיו | שגיאות ([פרק 14](/heb/docs/errors)) | |
 | `void` | אין ערך; משמש רק כטיפוס ההחזרה של פונקציה | |
 
@@ -58,7 +60,8 @@ public void main() {
 ```
 
 
-תווי בריחה במחרוזות: `\n` (שורה חדשה), `\t` (טאב), `\r`, `\\` ו-`\"`.
+תווי בריחה במחרוזות: `\n` (שורה חדשה), `\t` (טאב), `\r`, `\\` ו-`\"`. מחרוזות
+מחוברות עם `+`, ו-`$"total: {n}"` בונה מחרוזת מערכים ([פרק 16](/heb/docs/text-and-arrays)).
 
 ## השמה
 

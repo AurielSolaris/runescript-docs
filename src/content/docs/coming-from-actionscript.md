@@ -49,6 +49,8 @@ public void main() {
 | `String`, `Boolean` | `string`, `bool` |
 | Semicolons optional | Semicolons required |
 | `*` / missing types allowed | Every variable, parameter, and function is explicitly typed; there is no `any` |
+| `Array`, `Vector.<String>` | `Array<string>`: every element has the declared type |
+| `"n=" + 5` | `"n=" + (string) 5` or `$"n={5}"`: `+` never converts numbers |
 
 ## Stricter integers
 
@@ -100,8 +102,7 @@ top-level `main()` function, and no class is needed.
 
 ## Not yet available
 
-Classes, interfaces, `static`, `Vector.<T>`/arrays, string
-concatenation, casts, `null`, `use` for files and non-standard packages,
-metadata, E4X XML, and graphics (a native graphics package is planned). See the
-[roadmap](/docs/roadmap).
+Classes, interfaces, `static`, `null`, array methods beyond `push` and
+`pop`, metadata, E4X XML, and graphics (a native graphics package is
+planned). See the [roadmap](/docs/roadmap).
 

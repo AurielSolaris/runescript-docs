@@ -62,6 +62,7 @@ package use return if else while for break continue true false
 public protected private
 int sint uint bool string void
 float float32 float64                 [v0.3]
+char                                  [2026-10-16]
 try catch finally throw new           [v0.3]
 extern                                [2026-10-16]
 ```
@@ -76,7 +77,7 @@ Reserved for planned features **[v0.1, provisional]**. They are rejected
 with `ASX-PARSE-002`:
 
 ```
-class struct char array matrix
+class struct array matrix
 int8 int16 int32 int64 uint8 uint16 uint32 uint64
 ```
 
@@ -90,13 +91,23 @@ redeclared.
   `-5` is unary minus applied to `5`.
 - **String [v0.1]**: `"…"` on one line. Escapes: `\n \t \r \\ \"`. Any other
   escape is an error **[provisional]**.
+- **Interpolated string [decided 2026-10-16]**: `$"text {expr} text"` on one
+  line. Each `{expr}` hole holds one expression, which may contain strings
+  and other interpolated strings; braces inside a hole nest. In the text,
+  `{{` and `}}` stand for `{` and `}`, a single `}` is `ASX-LEX-003`, and
+  escapes are those of strings. A hole's value is converted to text as
+  `(string) x` converts it (§5.6), so it must be a number, `bool`, or
+  `string` (`ASX-TYPE-017`). Without holes, `$"…"` is an ordinary string.
+  Format specifiers (`{x:5}`) are **[undecided]**.
 - **Boolean [v0.1]**: `true`, `false`.
 - **Float [v0.3]**: digits, then optionally `.` and digits, then
   optionally an exponent: `64.3`, `1e10`, `2.5E-3`. Both sides of the `.`
   need digits (`.5` and `5.` are not literals). A literal stands for the
   nearest float64 to its decimal value; one too large for float64, or so
   small it would round to zero, is `ASX-LEX-005`.
-- **Char [undecided]**: `'a'` is rejected with `ASX-LEX-006`.
+- **Char [decided 2026-10-16]**: exactly one character between single
+  quotes: `'a'`, `'é'`, `'😀'`. Escapes are those of strings plus `\'`.
+  Anything other than one character (`''`, `'ab'`) is `ASX-LEX-006`.
 
 ### 2.5 Operators and punctuation **[v0.1]**
 ```
@@ -135,7 +146,7 @@ Stmt         = FuncDecl                 (* nested function or prototype *)
              | TemplateStmt ;                               (* §13 *)
 SimpleStmt   = VarDecl | Assignment | IncDec | Call ;
 VarDecl      = Type Ident "=" Expr ;
-Assignment   = Ident ( "=" | "+=" | "-=" | "*=" | "/=" | "%=" ) Expr ;
+Assignment   = ( Ident | Postfix "[" Expr "]" ) ( "=" | "+=" | "-=" | "*=" | "/=" | "%=" ) Expr ;
 IncDec       = Ident ( "++" | "--" ) ;
 
 IfStmt       = "if" "(" Expr ")" Block [ "else" ( IfStmt | Block ) ] ;
@@ -154,10 +165,12 @@ AddExpr      = MulExpr { ( "+" | "-" ) MulExpr } ;
 MulExpr      = Unary   { ( "*" | "/" | "%" ) Unary } ;
 Unary        = ( "-" | "!" ) Unary | Cast | Postfix ;
 Cast         = "(" CastType ")" Unary ;
-CastType     = "int" | "sint" | "uint" | "float" | "float32" | "float64" | "string" | "bool" ;
-Postfix      = Primary { "(" [ Expr { "," Expr } ] ")" | "." Ident } ;   (* calls, fields *)
-Primary      = IntLit | FloatLit | StringLit | "true" | "false"
-             | Ident | Call | Lambda | New | "(" Expr ")" ;
+CastType     = "int" | "sint" | "uint" | "float" | "float32" | "float64" | "string" | "bool" | "char" ;
+Postfix      = Primary { "(" [ Expr { "," Expr } ] ")" | "." Ident | "[" Expr "]" } ;   (* calls, fields, elements *)
+Primary      = IntLit | FloatLit | StringLit | InterpString | CharLit | "true" | "false"
+             | Ident | Call | Lambda | New | "(" Expr ")"
+             | "[" [ Expr { "," Expr } ] "]" ;   (* array literal, §5.1c *)
+InterpString = '$"' { Text | "{" Expr "}" } '"' ;   (* §2.4 *)
 New          = "new" Ident "(" [ Expr { "," Expr } ] ")" ;
 Lambda       = "(" [ Type Ident { "," Type Ident } ] ")" "=>" ( Expr | Block ) ;
 Call         = [ Qualifier "." ] Ident "(" [ Expr { "," Expr } ] ")" ;
@@ -330,6 +343,7 @@ three is accepted.
 | `sint` | [v0.1] | **The same type as `int`**, written differently. It has no separate representation. |
 | `uint` | [v0.1, provisional width] | Unsigned integer. v0.1 representation: 32-bit (0 … 4294967295). |
 | `bool` | [v0.1] | `true`, `false`. |
+| `char` | [2026-10-16] | One Unicode scalar value: U+0000 … U+10FFFF except the surrogates U+D800 … U+DFFF. Not a number: `==`, `!=`, `<`, `<=`, `>`, `>=` compare code points; there is no arithmetic. **[provisional]** chars cannot cross the JavaScript boundary or be held in a rune. |
 | `string` | [v0.1] | Immutable UTF-8 text. **[v0.2, decided]** Positions and lengths are byte offsets, as in Go. |
 | `float` | [v0.3, provisional] | Generic floating point (§5.1b). Default representation float32, widening to float64. |
 | `float32`, `float64` | [v0.3, provisional] | IEEE 754 binary32 and binary64. Explicit widths: they never widen. |
@@ -383,9 +397,34 @@ this:
   precision for `float32`), plain from 1e-6 to below 1e21 (`64`, `0.5`,
   `0.000001`) and in exponent form otherwise (`1e+21`, `1.5e-7`).
 
+### 5.1c Arrays **[decided 2026-10-16, details provisional]**
+`Array<T>` is a growable list of `T`, where `T` is any value type: a
+number, `bool`, `string`, `char`, a function type, an error type, or
+another array (not `Element` or `Signal`).
+
+- **Reference semantics [provisional]:** assigning or passing an array
+  shares it; changes through one name are seen through every other.
+- **Literals:** `[a, b, c]`. The element type is the declared type of the
+  destination (`Array<uint> u = [1, 2];`); without one, it is the first
+  element's type, and every other element must be assignable to it. An
+  empty `[]` needs a destination type.
+- `a[i]` reads element `i` (an `int` or `uint`); `a[i] = v` and
+  `a[i] op= v` write it. `a`, then `i`, are evaluated once. An index
+  outside `0 … a.length - 1` throws a `RangeError` (`ASX-RUN-011`).
+  For `a[i] op= v`, the element is read before `v` is evaluated, and the
+  index is checked again when storing.
+- `a.length` is the number of elements (`int`). `a.push(v)` appends `v`;
+  `a.pop()` removes and returns the last element (`ASX-RUN-011` when
+  empty).
+- Arrays cannot be compared, traced, converted, interpolated, held in a
+  rune, or passed across the JavaScript boundary **[provisional]**. Use
+  `string.join` to show them.
+- **[undecided]** for-each loops, slicing, sorting, `a[i]++`, `Array<T>`
+  for user generic types, and whether `array` (reserved) means the same.
+
 ### 5.2 Planned types **[planned/undecided]**
-`char`, `int8 int16 int32`, plus probably `int64` and `uint8 … uint64`.
-Also `array`, `matrix`, `struct`, `class`, and generic type parameters.
+`int8 int16 int32`, plus probably `int64` and `uint8 … uint64`.
+Also `matrix`, `struct`, `class`, and generic type parameters.
 None of these are implemented. Their names are reserved.
 
 ### 5.3 Integer constants **[v0.1, provisional]**
@@ -432,7 +471,7 @@ There are no implicit conversions between numbers, `bool`, and `string`.
 ### 5.6 Conversions **[v0.3, decided syntax]**
 `(T) x` converts `x` to `T`, C style (owner decision; this settles
 OQ-CONV-01). `T` is `int`, `sint`, `uint`, `float`, `float32`, `float64`,
-`string`, or `bool`. Conversions are **checked**: they never wrap, and a
+`string`, `bool`, or `char`. Conversions are **checked**: they never wrap, and a
 value that can't be converted throws instead (`ASX-RUN-006` if nothing
 catches it).
 
@@ -446,6 +485,11 @@ catches it).
 | `string` → integer | an optional sign and decimal digits, nothing else: `"-42"` | not of that form: `TypeError`; out of range: `RangeError` |
 | `string` → float | sign, digits, optional fraction and exponent (`"64.7"`, `"1e5"`), or `"NaN"`, `"Infinity"`, `"-Infinity"`; parsed to the nearest float64 (`Infinity` if too large), then rounded for `float32` | not of that form: `TypeError` |
 | `string` → `bool` | exactly `"true"` or `"false"` | otherwise: `TypeError` |
+| `char` → integer | its code point: `(int) 'a'` is `97` | never |
+| integer → `char` | the character with that code point | not a Unicode scalar value: `RangeError` |
+| `char` → `string` | a one-character string | never |
+| `string` → `char` | its one character | not exactly one character: `TypeError` |
+| `char` ↔ float, `bool` | not allowed: `ASX-TYPE-017` | |
 | `bool` ↔ number, errors, functions | not allowed: `ASX-TYPE-017` | |
 
 A conversion of a constant happens at compile time, and its failure is a
@@ -461,9 +505,10 @@ compile-time error: `(uint) -2.5` is `ASX-TYPE-007`, `(int) 3e10` is
 |---|---|---|
 | `+ - * / %` | two integers of the same signedness | the same integer type |
 | `+ - * /` [v0.3] | two floats of the same type | that type (§5.1b) |
+| `+` [2026-10-16] | two `string`s | `string`: the two joined |
 | unary `-` | a signed integer or a float | the same type (`uint` is rejected) |
-| `< <= > >=` | two integers of the same signedness, or two floats of the same type | `bool` |
-| `== !=` | two numbers as above, two `bool`s, or two `string`s | `bool` |
+| `< <= > >=` | two integers of the same signedness, two floats of the same type, or two `char`s | `bool` |
+| `== !=` | two numbers as above, two `bool`s, two `char`s, or two `string`s | `bool` |
 | `&& \|\|` | `bool` | `bool`; short-circuit evaluation |
 | `!` | `bool` | `bool` |
 
@@ -471,8 +516,10 @@ compile-time error: `(uint) -2.5` is `ASX-TYPE-007`, `(int) 3e10` is
   (`ASX-TYPE-011`).
 - **[v0.1, provisional]** `/` truncates toward zero. `%` takes the sign of
   the dividend. Division by zero is a runtime error (`ASX-RUN-003`).
-- **[undecided]** String concatenation (`"a" + "b"` is rejected), bitwise
-  operators, shifts, `?:`, `?.`, `??`.
+- **[decided 2026-10-16]** `+` joins two strings and converts nothing:
+  `"n=" + 5` is `ASX-TYPE-012`; write `"n=" + (string) 5` or `$"n={5}"`.
+  `s += t` works on a `string` variable.
+- **[undecided]** Bitwise operators, shifts, `?:`, `?.`, `??`.
 - Operands are evaluated left to right.
 
 ### 6.2 Calls **[v0.1]**
@@ -582,7 +629,7 @@ error (`ASX-RUN-004`).
 
 | Package | Contents |
 |---|---|
-| `std:string` | The 25 functions of Go's `strings` that can be expressed with `string`/`int`/`bool` (see `docs/guide/10-std-string.md`) |
+| `std:string` | 43 functions: Go's `strings` functions expressible with `string`, `int`, `bool`, `char`, callbacks, and `Array<string>`, plus `len`, `runeCount`, and `slice` (see `docs/guide/10-std-string.md`) |
 | `std:math` | [planned] Go's `math`, once floating-point types exist |
 | `std:symrs` | [planned] Symbolic mathematics, a port of the owner's SympJS library; needs objects, floats, and arrays |
 
