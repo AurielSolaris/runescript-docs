@@ -10,7 +10,8 @@ source: "docs/guide/11-javascript.md"
 a browser or in Node.js. The program keeps RuneScript's rules: anything
 the type checker rejects is still rejected, and anything that would be a
 runtime error in the interpreter is the same runtime error in JavaScript,
-with the same code, message, and source position.
+with the same code, message, and source position. To build web pages from
+components and templates, see [chapter 15](/docs/web-pages).
 
 ```sh
 runescript build examples/fizzbuzz.rsc            # writes examples/fizzbuzz.js

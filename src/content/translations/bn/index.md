@@ -27,6 +27,7 @@ RuneScript-এর যেসব বৈশিষ্ট্য **আজ** আছে,
 12. [প্যাকেজ ও ফাইল](/bn/docs/packages-and-files): `use`, একাধিক ফাইলের প্রোগ্রাম, দৃশ্যমানতা
 13. [ফ্লোট ও রূপান্তর](/bn/docs/floats-and-conversions): `float`, `float32`, `float64`, `(int) x`
 14. [এরর](/bn/docs/errors): `throw`, `try`, `catch`, `finally`, এবং রানটাইম এরর ধরা
+15. [`rune:dom` দিয়ে ওয়েব পেজ](/bn/docs/web-pages): কম্পোনেন্ট, যাচাই করা HTML ও SVG টেমপ্লেট, রুন, ইভেন্ট, `$if`, `renderApp`
 
 সূক্ষ্ম নিয়মের জন্য দেখুন [ভাষার স্পেসিফিকেশন](/docs/spec) (ইংরেজিতে)।
 সামনে কী আসছে তা জানতে দেখুন [রোডম্যাপ](/docs/roadmap) (ইংরেজিতে)।

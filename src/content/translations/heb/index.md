@@ -27,6 +27,7 @@ source: "localization/heb/docs/guide/README.md"
 12. [חבילות וקבצים](/heb/docs/packages-and-files): `use`, תוכניות מרובות קבצים, נראות
 13. [מספרים עשרוניים והמרות](/heb/docs/floats-and-conversions): `float`, `float32`, `float64`, `(int) x`
 14. [שגיאות](/heb/docs/errors): `throw`, `try`, `catch`, `finally`, ותפיסת שגיאות זמן ריצה
+15. [דפי רשת עם `rune:dom`](/heb/docs/web-pages): רכיבים, תבניות HTML ו-SVG בדוקות, runes, אירועים, `$if`, `renderApp`
 
 לכללים המדויקים, ראו את [מפרט השפה](/docs/spec) (באנגלית).
 למה שמתוכנן בהמשך, ראו את [מפת הדרכים](/docs/roadmap) (באנגלית).

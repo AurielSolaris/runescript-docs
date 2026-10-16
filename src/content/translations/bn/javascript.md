@@ -13,6 +13,7 @@ source: "localization/bn/docs/guide/11-javascript.md"
 ব্রাউজারে বা Node.js-এ চলে। প্রোগ্রামটি RuneScript-এর নিয়মগুলো বজায় রাখে: টাইপ
 চেকার যা প্রত্যাখ্যান করে তা এখনো প্রত্যাখ্যাত, আর ইন্টারপ্রেটারে যা রানটাইম এরর
 হতো, JavaScript-এও তা একই রানটাইম এরর, একই কোড, বার্তা ও সোর্স-অবস্থানসহ।
+কম্পোনেন্ট ও টেমপ্লেট দিয়ে ওয়েব পেজ তৈরি করতে দেখুন [অধ্যায় ১৫](/bn/docs/web-pages)।
 
 ```sh
 runescript build examples/fizzbuzz.rsc            # writes examples/fizzbuzz.js
