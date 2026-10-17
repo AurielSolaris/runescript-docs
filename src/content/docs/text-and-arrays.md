@@ -230,4 +230,3 @@ public void main() {
 > comparing arrays, and passing arrays to JavaScript `extern` functions.
 > `main` can't take command-line arguments yet.
 
-Next: back to the [guide index](/docs)

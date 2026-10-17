@@ -63,8 +63,11 @@ public protected private
 int sint uint bool string void
 float float32 float64                 [v0.3]
 char                                  [2026-10-16]
+int8 int16 int32 int64                [2026-10-17]
+uint8 uint16 uint32 uint64            [2026-10-17]
 try catch finally throw new           [v0.3]
 extern                                [2026-10-16]
+struct                                [2026-10-17]
 ```
 
 `as` is a keyword only after a `use` path (§4.2). `Error`, `RangeError`,
@@ -77,8 +80,7 @@ Reserved for planned features **[v0.1, provisional]**. They are rejected
 with `ASX-PARSE-002`:
 
 ```
-class struct array matrix
-int8 int16 int32 int64 uint8 uint16 uint32 uint64
+class array matrix
 ```
 
 `trace` is not a keyword. It is a built-in function name and can't be
@@ -86,10 +88,17 @@ redeclared.
 
 ### 2.4 Literals
 - **Integer [v0.1]**: decimal digits. `0` is valid, but other numbers with
-  leading zeros (`007`) are rejected **[provisional]**. Hex, binary, digit
-  separators, and suffixes are **[undecided]**. Literals are non-negative;
-  `-5` is unary minus applied to `5`.
-- **String [v0.1]**: `"…"` on one line. Escapes: `\n \t \r \\ \"`. Any other
+  leading zeros (`007`) are rejected **[provisional]**. **[2026-10-17]**
+  Also hex `0xFF`, binary `0b1010`, and octal `0o17` (lower-case prefixes
+  only), and `_` between two digits as a separator: `1_000_000`, `0xFFFF_0000`.
+  The largest literal is 2^64 - 1. Suffixes are **[undecided]**. Literals are
+  non-negative; `-5` is unary minus applied to `5`. Any malformed literal is
+  `ASX-LEX-005`.
+- **String [v0.1]**: `"…"` on one line. Escapes: `\n \t \r \\ \" \'`, `\0`
+  (U+0000), and **[2026-10-17]** `\u{X…}`: 1 to 6 hex digits naming a
+  Unicode scalar value, e.g. `\u{E9}` or `\u{1F600}`. A surrogate
+  (`\u{D800}`–`\u{DFFF}`) or a value above `\u{10FFFF}` is `ASX-LEX-003`, so
+  every string is valid UTF-8. There are no byte escapes (`\x41`). Any other
   escape is an error **[provisional]**.
 - **Interpolated string [decided 2026-10-16]**: `$"text {expr} text"` on one
   line. Each `{expr}` hole holds one expression, which may contain strings
@@ -102,18 +111,19 @@ redeclared.
 - **Boolean [v0.1]**: `true`, `false`.
 - **Float [v0.3]**: digits, then optionally `.` and digits, then
   optionally an exponent: `64.3`, `1e10`, `2.5E-3`. Both sides of the `.`
-  need digits (`.5` and `5.` are not literals). A literal stands for the
+  need digits (`.5` and `5.` are not literals). `_` may separate digits:
+  `1_000.5`. There are no hex floats. A literal stands for the
   nearest float64 to its decimal value; one too large for float64, or so
   small it would round to zero, is `ASX-LEX-005`.
 - **Char [decided 2026-10-16]**: exactly one character between single
-  quotes: `'a'`, `'é'`, `'😀'`. Escapes are those of strings plus `\'`.
+  quotes: `'a'`, `'é'`, `'😀'`. Escapes are those of strings.
   Anything other than one character (`''`, `'ab'`) is `ASX-LEX-006`.
 
 ### 2.5 Operators and punctuation **[v0.1]**
 ```
 ( ) { } , ; .
-=  +=  -=  *=  /=  %=  ++  --
-+  -  *  /  %
+=  +=  -=  *=  /=  %=  &=  |=  ^=  <<=  >>=  ++  --
++  -  *  /  %  &  |  ^  ~  <<  >>
 == != <  <= >  >=
 && || !
 ```
@@ -146,7 +156,8 @@ Stmt         = FuncDecl                 (* nested function or prototype *)
              | TemplateStmt ;                               (* §13 *)
 SimpleStmt   = VarDecl | Assignment | IncDec | Call ;
 VarDecl      = Type Ident "=" Expr ;
-Assignment   = ( Ident | Postfix "[" Expr "]" ) ( "=" | "+=" | "-=" | "*=" | "/=" | "%=" ) Expr ;
+Assignment   = ( Ident | Postfix "[" Expr "]" ) AssignOp Expr ;
+AssignOp     = "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | ">>=" ;
 IncDec       = Ident ( "++" | "--" ) ;
 
 IfStmt       = "if" "(" Expr ")" Block [ "else" ( IfStmt | Block ) ] ;
@@ -158,14 +169,20 @@ TryStmt      = "try" Block { "catch" "(" Type Ident ")" Block } [ "finally" Bloc
 
 Expr         = OrExpr ;
 OrExpr       = AndExpr { "||" AndExpr } ;
-AndExpr      = EqExpr  { "&&" EqExpr } ;
+AndExpr      = BitOr   { "&&" BitOr } ;
+BitOr        = BitXor  { "|" BitXor } ;
+BitXor       = BitAnd  { "^" BitAnd } ;
+BitAnd       = EqExpr  { "&" EqExpr } ;
 EqExpr       = RelExpr { ( "==" | "!=" ) RelExpr } ;
-RelExpr      = AddExpr { ( "<" | "<=" | ">" | ">=" ) AddExpr } ;
+RelExpr      = Shift   { ( "<" | "<=" | ">" | ">=" ) Shift } ;
+Shift        = AddExpr { ( "<<" | ">>" ) AddExpr } ;
 AddExpr      = MulExpr { ( "+" | "-" ) MulExpr } ;
 MulExpr      = Unary   { ( "*" | "/" | "%" ) Unary } ;
-Unary        = ( "-" | "!" ) Unary | Cast | Postfix ;
+Unary        = ( "-" | "!" | "~" ) Unary | Cast | Postfix ;
 Cast         = "(" CastType ")" Unary ;
-CastType     = "int" | "sint" | "uint" | "float" | "float32" | "float64" | "string" | "bool" | "char" ;
+CastType     = "int" | "sint" | "uint" | "int8" | "int16" | "int32" | "int64"
+             | "uint8" | "uint16" | "uint32" | "uint64"
+             | "float" | "float32" | "float64" | "string" | "bool" | "char" ;
 Postfix      = Primary { "(" [ Expr { "," Expr } ] ")" | "." Ident | "[" Expr "]" } ;   (* calls, fields, elements *)
 Primary      = IntLit | FloatLit | StringLit | InterpString | CharLit | "true" | "false"
              | Ident | Call | Lambda | New | "(" Expr ")"
@@ -311,7 +328,8 @@ use "go:<package>";           // Go package                 [planned]
   argument, return) and the parameter types match, the lambda takes that
   type's result type. Otherwise its result type is the expression's type, or
   that of the first `return` (or `void`). Lambdas take no access modifier.
-- **[undecided]** Default arguments, variadic parameters, generic functions,
+- **[decided 2026-10-17]** No generic functions (see §5.1).
+- **[undecided]** Default arguments, variadic parameters,
   overloading, capturing closures.
 
 ### 4.4 Entry point **[v0.1, provisional]**
@@ -342,6 +360,8 @@ three is accepted.
 | `int` | [v0.1] | Signed integer. v0.1 representation: 32-bit (−2147483648 … 2147483647). |
 | `sint` | [v0.1] | **The same type as `int`**, written differently. It has no separate representation. |
 | `uint` | [v0.1, provisional width] | Unsigned integer. v0.1 representation: 32-bit (0 … 4294967295). |
+| `int8`, `int16`, `int32`, `int64` | [2026-10-17] | Signed integers of exactly that many bits, e.g. `int8` is −128 … 127. They never widen. |
+| `uint8`, `uint16`, `uint32`, `uint64` | [2026-10-17] | Unsigned integers of exactly that many bits, e.g. `uint64` is 0 … 18446744073709551615. |
 | `bool` | [v0.1] | `true`, `false`. |
 | `char` | [2026-10-16] | One Unicode scalar value: U+0000 … U+10FFFF except the surrogates U+D800 … U+DFFF. Not a number: `==`, `!=`, `<`, `<=`, `>`, `>=` compare code points; there is no arithmetic. **[provisional]** chars cannot cross the JavaScript boundary or be held in a rune. |
 | `string` | [v0.1] | Immutable UTF-8 text. **[v0.2, decided]** Positions and lengths are byte offsets, as in Go. |
@@ -350,7 +370,12 @@ three is accepted.
 | `Error`, `RangeError`, `TypeError`, `ArgumentError` | [v0.3] | Error values (§7.6). The last three are subtypes of `Error`. |
 | `void` | [v0.1] | Means "no value". Valid only as a return type; you can't store it, pass it, or trace it. |
 
-There is no `any` type and never will be (CLAUDE.md §4).
+There is no `any` type and never will be (CLAUDE.md §4). **[decided
+2026-10-17]** There is no `null` either: every value is a real value of its
+type, and absence is expressed with a `bool` (guide, chapter 17). And there
+are no user-defined generics: functions and types cannot take type
+parameters (`ASX-PARSE-001`); `Array<T>` and `Signal<T>` are built-in
+type constructors, not a generics feature.
 
 ### 5.1a Function types **[v0.2]**
 `R(P1, P2, …)` is the type of functions taking `P1, P2, …` and returning
@@ -422,9 +447,56 @@ another array (not `Element` or `Signal`).
 - **[undecided]** for-each loops, slicing, sorting, `a[i]++`, `Array<T>`
   for user generic types, and whether `array` (reserved) means the same.
 
+### 5.1d Explicit-width integers **[decided 2026-10-17, details provisional]**
+- Every integer type is a distinct type. `int32` is **not** `int`: the
+  generic `int` may widen one day (CLAUDE.md §4.4), an `int32` never does.
+  `sint` remains a spelling of `int`.
+- Nothing converts implicitly between integer types, not even to a wider
+  one: `int16 b = a;` with `a` an `int8` is `ASX-TYPE-001`, and `a + b` with
+  different integer types is `ASX-TYPE-012` (`ASX-TYPE-011` if the
+  signedness differs). Write `(int16) a`. **[provisional]** Implicit
+  lossless widening could be allowed later without breaking programs.
+- Integer constants take the destination's type when they fit
+  (`uint64 h = 18446744073709551615;`), as in §5.3.
+- Arithmetic is exact and checked in every width: a result outside the
+  type's range is `ASX-RUN-002`, never a wrapped value.
+- On the JavaScript target, `int64` and `uint64` are `BigInt`s; the other
+  widths are numbers. **[provisional]** Explicit widths cannot cross the
+  `extern` boundary yet (`ASX-TYPE-023`).
+
+### 5.1e Structs **[decided 2026-10-17, details provisional]**
+```ebnf
+StructDecl = Visibility "struct" Ident "{" { Type Ident ";" } "}" ;
+StructLit  = [ Ident "." ] Ident "{" [ Ident ":" Expr { "," Ident ":" Expr } ] "}" ;
+```
+- A struct is a **value type**: assigning, passing, returning, or storing
+  one copies it, so a change through one name is never seen through
+  another. (Implementations share unchanged structs and copy on write;
+  that is not observable.)
+- It is declared at the top level with an access modifier, like a
+  function: `private` (this file), `protected` (this package), `public`.
+  Another package's struct is named with its qualifier: `geom.Point`.
+- Each struct declaration is its own type, even if another has the same
+  fields. Field types are any value type; a struct may not contain itself
+  by value, directly or through other structs (`ASX-TYPE-027`), but may
+  through an `Array`.
+- A literal gives **every field exactly once**, in any order; there are
+  no default values (`ASX-TYPE-026`). Fields are evaluated in the order
+  written.
+- `p.x` reads a field. `p.x = v` and `p.x op= v` write one where `p` is a
+  variable, an array element, or a field of either (`shapes[i].origin.x`).
+  A field of a parameter is read-only, like the parameter
+  (`ASX-NAME-006`), and so is a field of a temporary value such as `f().x`.
+- `==` and `!=` compare every field; a struct with an array, function, or
+  error field cannot be compared. `trace` shows `Point{x: 1, name: "a"}`,
+  with strings and chars quoted.
+- Arrays held in a struct stay references: copying the struct shares the
+  array.
+- **[undecided]** Methods, constructors, field visibility, and passing
+  structs across the JavaScript boundary.
+
 ### 5.2 Planned types **[planned/undecided]**
-`int8 int16 int32`, plus probably `int64` and `uint8 … uint64`.
-Also `matrix`, `struct`, `class`, and generic type parameters.
+`matrix` and `class`.
 None of these are implemented. Their names are reserved.
 
 ### 5.3 Integer constants **[v0.1, provisional]**
@@ -470,8 +542,9 @@ There are no implicit conversions between numbers, `bool`, and `string`.
 
 ### 5.6 Conversions **[v0.3, decided syntax]**
 `(T) x` converts `x` to `T`, C style (owner decision; this settles
-OQ-CONV-01). `T` is `int`, `sint`, `uint`, `float`, `float32`, `float64`,
-`string`, `bool`, or `char`. Conversions are **checked**: they never wrap, and a
+OQ-CONV-01). `T` is any number type (`int`, `sint`, `uint`, the explicit
+widths `int8` … `uint64`, `float`, `float32`, `float64`), `string`, `bool`,
+or `char`. Conversions are **checked**: they never wrap, and a
 value that can't be converted throws instead (`ASX-RUN-006` if nothing
 catches it).
 
@@ -506,6 +579,9 @@ compile-time error: `(uint) -2.5` is `ASX-TYPE-007`, `(int) 3e10` is
 | `+ - * / %` | two integers of the same signedness | the same integer type |
 | `+ - * /` [v0.3] | two floats of the same type | that type (§5.1b) |
 | `+` [2026-10-16] | two `string`s | `string`: the two joined |
+| `& \| ^` [2026-10-17] | two integers of the same type | that type: bitwise and, or, xor |
+| `~` [2026-10-17] | an integer | that type: the bitwise complement in the type's width |
+| `<< >>` [2026-10-17] | an integer and an integer count of any type | the left operand's type |
 | unary `-` | a signed integer or a float | the same type (`uint` is rejected) |
 | `< <= > >=` | two integers of the same signedness, two floats of the same type, or two `char`s | `bool` |
 | `== !=` | two numbers as above, two `bool`s, two `char`s, or two `string`s | `bool` |
@@ -519,7 +595,19 @@ compile-time error: `(uint) -2.5` is `ASX-TYPE-007`, `(int) 3e10` is
 - **[decided 2026-10-16]** `+` joins two strings and converts nothing:
   `"n=" + 5` is `ASX-TYPE-012`; write `"n=" + (string) 5` or `$"n={5}"`.
   `s += t` works on a `string` variable.
-- **[undecided]** Bitwise operators, shifts, `?:`, `?.`, `??`.
+- **[decided 2026-10-17, details provisional]** Shifts: the count must be
+  from 0 to the left operand's width minus 1 (`ASX-TYPE-006` for a
+  constant, otherwise a `RangeError`, `ASX-RUN-012`). `>>` is arithmetic on
+  signed types and logical on unsigned ones. **[provisional]** `<<` is
+  checked like `*`: a result that doesn't fit the type is an overflow
+  (`ASX-RUN-002`), never silently truncated; mask first to drop bits on
+  purpose. A constant shifted by a variable count is an `int`. Constants
+  are folded exactly: `(int64) (1 << 40)`.
+- **[provisional]** Precedence follows C and ActionScript 3 (below). Since
+  `x & mask == 0` is then `x & (mask == 0)`, it is a type error, with a
+  hint to write `(x & mask) == 0`.
+- `&= |= ^= <<= >>=` work like the other compound assignments.
+- **[undecided]** `?:`, `?.`, `??`.
 - Operands are evaluated left to right.
 
 ### 6.2 Calls **[v0.1]**
@@ -627,10 +715,26 @@ camelCase **[decided]**. Integer results are range-checked against their
 declared RuneScript type. A failure inside a library function is a runtime
 error (`ASX-RUN-004`).
 
+**[2026-10-17]** A standard library name may be **overloaded**: `math.max`
+takes two `int`s or two `float64`s. A call uses the first version whose
+parameters accept every argument: an integer constant fits an integer or a
+float parameter, a float constant only a float one, and a typed value only
+its exact type. So `math.max(3, 7)` is an `int`, `math.max(1.5, 2)` a
+`float64`, and `math.max(x, n)` with a `float64` and an `int` is
+`ASX-TYPE-001`. User functions cannot be overloaded.
+
+Library functions on floats give bit-identical results on both targets
+and on every processor: the JavaScript runtime computes exactly what Go
+computes, never an approximation from the host. The transcendental
+functions run one shared algorithm, Go's pure-Go code (`internal/fmath`),
+with every multiply-add kept unfused, and a line-by-line JavaScript port
+of it. A NaN's sign is not observable:
+`math.signbit(NaN)` is `false`.
+
 | Package | Contents |
 |---|---|
 | `std:string` | 43 functions: Go's `strings` functions expressible with `string`, `int`, `bool`, `char`, callbacks, and `Array<string>`, plus `len`, `runeCount`, and `slice` (see `docs/guide/10-std-string.md`) |
-| `std:math` | [planned] Go's `math`, once floating-point types exist |
+| `std:math` | [2026-10-17] Go's `math` on `float64`: `abs ceil floor trunc round roundToEven sqrt min max mod remainder dim nextafter copysign signbit isInf inf nan ldexp`, and `sin cos tan asin acos atan atan2 sinh cosh tanh asinh acosh atanh exp exp2 expm1 log log10 log2 log1p cbrt pow hypot`; the int helpers `abs min max clamp`; untyped constants `pi e phi sqrt2 sqrtE sqrtPi sqrtPhi ln2 log2E ln10 log10E maxFloat64 smallestNonzeroFloat64 maxFloat32 smallestNonzeroFloat32` and `minInt/maxInt` … `maxUint64` for every integer type. |
 | `std:symrs` | [planned] Symbolic mathematics, a port of the owner's SympJS library; needs objects, floats, and arrays |
 
 ## 9. Diagnostics and runtime errors
@@ -838,7 +942,7 @@ If           = "$if" "(" Expr ")" Content { "$elseif" "(" Expr ")" Content }
 ### 13.2 Runes
 
 - `Signal<T>` is a built-in type for a number, `bool`, or `string` `T`
-  (`ASX-TYPE-025` otherwise); general generics are open (OQ-TYPE-01).
+  (`ASX-TYPE-025` otherwise). There are no user generics (§5.1).
 - `signal(v)` creates one; with a declared `Signal<T>`, `v` must be
   assignable to `T`, otherwise `T` is `v`'s type.
 - `r()` and `r.get()` read a rune; `r.set(v)` stores `v`, which must be

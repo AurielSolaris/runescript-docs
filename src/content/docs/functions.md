@@ -349,6 +349,6 @@ value is evaluated first, then the arguments.
 ## Not yet available
 
 Overloading (two functions with the same name), default arguments,
-variadic parameters, generic functions, and closures that capture
-variables.
+variadic parameters, and closures that capture variables. Generic
+functions are left out on purpose ([chapter 17](/docs/no-null-any-generics)).
 

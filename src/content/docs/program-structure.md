@@ -102,6 +102,5 @@ appear in any order. Functions can also be nested inside other functions.
 Identifiers are made of ASCII letters, digits, and `_`, and can't start
 with a digit. They are case-sensitive. Keywords such as `if`, `int`, `use`,
 and `return` can't be used as names. Words reserved for future features
-(`class`, `struct`, `char`, `array`, `matrix`, and the sized integer types
-like `int64`) can't be used either.
+(`class`, `array`, and `matrix`) can't be used either.
 
