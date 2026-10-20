@@ -33,6 +33,7 @@ source: "localization/heb/docs/guide/README.md"
 18. [מספרים לעומק](/heb/docs/numbers): `int8` … `uint64`, ליטרלים הקסדצימליים ובינאריים, פעולות על סיביות, `std:math`
 19. [מבנים](/heb/docs/structs): הצהרה, בנייה והעתקה של טיפוסי ערך
 20. [קבצים, קלט ופלט](/heb/docs/files-and-input): `std:io`, `std:process`, `std:fs`, `std:path`, ומפרש Brainfuck
+21. [JSON](/heb/docs/json): ‏`std:json`: פענוח JSON, קריאה בפונקציות בדוקות, בנייה וכתיבה
 
 לכללים המדויקים, ראו את [מפרט השפה](/docs/spec) (באנגלית).
 למה שמתוכנן בהמשך, ראו את [מפת הדרכים](/docs/roadmap) (באנגלית).
