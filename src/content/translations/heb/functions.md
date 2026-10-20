@@ -34,9 +34,10 @@ private void greet(string name) {
     trace("hello", name);
 }
 
-public void main() {
+protected int main() {
     greet("rune");
     trace(add(2, 3));
+    return 0;
 }
 ```
 
@@ -61,8 +62,9 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     trace(square(12));     // defined below: fine
+    return 0;
 }
 
 public int square(int n) {
@@ -82,8 +84,9 @@ public int logAndCount(string message) {
     return 1;
 }
 
-public void main() {
+protected int main() {
     logAndCount("result ignored");
+    return 0;
 }
 ```
 
@@ -108,8 +111,9 @@ public uint gcd(uint a, uint b) {
     return x;
 }
 
-public void main() {
+protected int main() {
     trace(gcd(84, 36));   // 12
+    return 0;
 }
 ```
 
@@ -127,8 +131,9 @@ public int factorial(int n) {
     return n * factorial(n - 1);
 }
 
-public void main() {
+protected int main() {
     trace(factorial(10));   // 3628800
+    return 0;
 }
 ```
 
@@ -147,8 +152,9 @@ package main;
 
 public int twice(int);          // prototype
 
-public void main() {
+protected int main() {
     trace(twice(21));           // 42
+    return 0;
 }
 
 public int twice(int x) {       // definition
@@ -172,7 +178,7 @@ public int twice(int x) {       // definition
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     private int fib(int n) {
         if (n < 2) {
             return n;
@@ -180,6 +186,7 @@ public void main() {
         return fib(n - 1) + fib(n - 2);
     }
     trace(fib(15));   // 610
+    return 0;
 }
 ```
 
@@ -190,7 +197,7 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     private bool isEven(int n);
 
     private bool isOdd(int n) {
@@ -208,6 +215,7 @@ public void main() {
     }
 
     trace(isEven(10), isOdd(7));   // true true
+    return 0;
 }
 ```
 
@@ -230,11 +238,12 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int count = 0;
     private void bump() {
         count++;      // error: ASX-NAME-009
     }
+    return 0;
 }
 ```
 
@@ -245,13 +254,14 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     private int bump(int count) {
         return count + 1;
     }
     int count = 0;
     count = bump(count);
     trace(count);   // 1
+    return 0;
 }
 ```
 
@@ -291,10 +301,11 @@ public int multiply(int a, int b) {
     return a * b;
 }
 
-public void main() {
+protected int main() {
     int(int, int) f = multiply;
     trace(f(6, 7));                   // 42
     trace(apply(multiply, 3, 4));     // 12
+    return 0;
 }
 ```
 
@@ -317,7 +328,7 @@ public void repeat(int times, void(int) body) {
     }
 }
 
-public void main() {
+protected int main() {
     int(int, int) add = (int a, int b) => a + b;
     trace(add(2, 3));                                 // 5
 
@@ -330,6 +341,7 @@ public void main() {
         return x;
     };
     trace(abs(-4));                                   // 4
+    return 0;
 }
 ```
 
@@ -357,8 +369,9 @@ public int(int) pick(string op) {
     return (int n) => n * n;
 }
 
-public void main() {
+protected int main() {
     trace(pick("double")(5), pick("square")(5));   // 10 25
+    return 0;
 }
 ```
 

@@ -16,17 +16,51 @@ source: "localization/bn/docs/guide/03-types-and-variables.md"
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int count = 10;
     uint total = 250;
     bool ready = true;
     string name = "Ada";
     trace(name, count, total, ready);   // Ada 10 250 true
+    return 0;
 }
 ```
 
-প্রতিটি ভেরিয়েবল ঘোষণার সময়েই **অবশ্যই** একটি প্রাথমিক মান পাবে। v0.1-এ নিজে থেকে
-কোনো ডিফল্ট মান বসে না।
+প্রাথমিক মান ছাড়া ঘোষিত ভেরিয়েবল তার টাইপের **শূন্য মান (zero value)** দিয়ে শুরু হয়:
+
+```actionscript
+package main;
+
+public struct Point {
+    int x;
+    int y;
+}
+
+protected int main() {
+    int count;            // 0
+    float ratio;          // 0
+    string name;          // ""
+    bool ready;           // false
+    char initial;         // the character U+0000
+    Array<string> names;  // a new, empty array
+    Point origin;         // Point{x: 0, y: 0}: every field at its zero value
+    trace(count, ratio, "[" + name + "]", ready, names.length, origin);
+    return 0;                            // 0 0 [] false 0 Point{x: 0, y: 0}
+}
+```
+
+ফাংশন টাইপ, এরর এবং রুনের কোনো শূন্য মান নেই: "এখনো সেট হয়নি" বোঝানোর জন্য
+RuneScript-এ কোনো `null` নেই ([অধ্যায় ১৭](/bn/docs/no-null-any-generics))। এগুলোকে মান ছাড়া
+ঘোষণা করা একটি এরর (`ASX-TYPE-028`):
+
+```actionscript
+package main;
+
+protected int main() {
+    int(int) twice; // error: ASX-TYPE-028
+    return 0;
+}
+```
 
 ## মৌলিক টাইপগুলো
 
@@ -50,11 +84,12 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     sint a = -5;
     int b = a;      // fine: same type
     sint c = b;     // fine
     trace(a, b, c);
+    return 0;
 }
 ```
 
@@ -68,7 +103,7 @@ Unicode অক্ষরের জন্য `\u{...}`, যেমন `\u{E9}` (é)
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 1;
     x = 10;     // 10
     x += 5;     // 15
@@ -79,6 +114,7 @@ public void main() {
     x++;        // 2
     x--;        // 1
     trace(x);
+    return 0;
 }
 ```
 
@@ -96,7 +132,7 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     if (true) {
         int inner = 1;
         trace(inner);
@@ -109,20 +145,39 @@ public void main() {
     for (int i = 0; i < 2; i++) {   // fine: the first 'i' is gone
         trace(i);
     }
+    return 0;
 }
 ```
 
-v0.1 **শ্যাডোইং** অনুমোদন করে না। নতুন ভেরিয়েবল কোনো দৃশ্যমান ভেরিয়েবল, প্যারামিটার
-বা ফাংশনের নাম আবার ব্যবহার করতে পারে না:
+**নেস্টেড ব্লকের** একটি ভেরিয়েবল বাইরের কোনো ব্লকের ভেরিয়েবল বা প্যারামিটারের নাম আবার
+ব্যবহার করতে পারে। একে **শ্যাডোইং** বলে: ব্লকের ভেতরে নামটি নতুন ভেরিয়েবলকে বোঝায়, আর
+ব্লক শেষ হলে বাইরেরটি ফিরে আসে। কম্পাইলার এ নিয়ে সতর্ক করে (`ASX-WARN-009`), কারণ
+ভুল করে এটা করে ফেলা সহজ:
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 1;
     if (true) {
-        int x = 2; // error: ASX-NAME-002
+        int x = x + 10;   // warning ASX-WARN-009; the initializer still reads the outer x
+        trace(x);         // 11
     }
+    trace(x);             // 1
+    return 0;
+}
+```
+
+**একই ব্লকে** কোনো নাম আবার ব্যবহার করা এখনো একটি এরর, এবং কোনো ফাংশন, স্ট্রাক্ট,
+অথবা ফাংশনের নিজস্ব সবচেয়ে বাইরের ব্লকে কোনো প্যারামিটারের নাম আবার ব্যবহার করাও:
+
+```actionscript
+package main;
+
+protected int main() {
+    int x = 1;
+    int x = 2; // error: ASX-NAME-002
+    return 0;
 }
 ```
 
@@ -135,7 +190,7 @@ RuneScript কোনো সাইনড পূর্ণসংখ্যাকে 
 ```actionscript
 package main;
 
-public int main() {
+protected int main() {
     sint signedValue = -10;
     uint unsignedValue = signedValue; // error: ASX-TYPE-004
     return 0;
@@ -155,27 +210,30 @@ main.rsc:5:26: error ASX-TYPE-004: Cannot assign signed integer 'sint' to unsign
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     uint a = 42;            // fine: 42 fits in uint
     uint b = 6 * 7;         // fine: constants are computed at compile time
     int c = -2147483648;    // fine: the smallest int
     trace(a, b, c);
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     uint u = -1;            // error: ASX-TYPE-007
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int big = 3000000000;   // error: ASX-TYPE-006
+    return 0;
 }
 ```
 

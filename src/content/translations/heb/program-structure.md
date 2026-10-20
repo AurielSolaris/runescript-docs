@@ -17,8 +17,7 @@ source: "localization/heb/docs/guide/02-program-structure.md"
 ```actionscript
 package games.puzzle.solver;
 
-public void main() {
-}
+protected int main() { return 0; }
 ```
 
 
@@ -36,8 +35,9 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     trace(string.toUpper("hello"));   // HELLO
+    return 0;
 }
 ```
 
@@ -61,8 +61,9 @@ package main;
 /* A block comment
    can span several lines. */
 
-public void main() {
+protected int main() {
     trace("comments are ignored"); // trailing comments too
+    return 0;
 }
 ```
 
@@ -77,8 +78,7 @@ public void main() {
 
 ## נקודת הכניסה: `main`
 
-הרצת תוכנית קוראת לפונקציה `main` שברמה העליונה. `main` אינה מקבלת פרמטרים
-ומחזירה `int` או `void`:
+הרצת תוכנית קוראת לפונקציה `main` שברמה העליונה, שתמיד מוצהרת בדיוק כך:
 
 
 ```actionscript
@@ -91,20 +91,13 @@ protected int main() {
 ```
 
 
-- אם `main` מחזירה `int`, הערך הופך לקוד היציאה של התהליך.
-- אם `main` היא `void`, קוד היציאה הוא 0.
-- כמו כל פונקציה, `main` מתחילה במשנה גישה: `public`, `protected` או `private`
-  (ראו [פונקציות](/heb/docs/functions)).
-
-
-```actionscript
-package main;
-
-public void main() {
-    trace("no return value needed");
-}
-```
-
+- ה-`int` שהיא מחזירה הופך לקוד היציאה של התהליך: `0` פירושו הצלחה.
+- היא `protected`, אינה מקבלת פרמטרים ומחזירה `int`. כל צורה אחרת, כמו
+  `public int main()` או `protected void main()`, היא השגיאה `ASX-ENTRY-002`, והעזרה
+  שלה אומרת מה לשנות.
+- לתוכנית יש בדיוק `main` אחת, באחד מהקבצים שלה.
+- ארגומנטים משורת הפקודה מגיעים מ-`process.args()` שב-`std:process`
+  ([פרק 20](/heb/docs/files-and-input)).
 
 אין צורך במחלקה. תוכניות בנויות מפונקציות ברמה העליונה, שיכולות להופיע בכל סדר.
 אפשר גם לקנן פונקציות בתוך פונקציות אחרות.

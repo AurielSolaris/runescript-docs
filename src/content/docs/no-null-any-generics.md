@@ -22,16 +22,18 @@ explains why that makes the type system stronger, and shows how to say
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     string name = null;   // error: ASX-NAME-001
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     any value = 5;   // error: ASX-TYPE-010
+    return 0;
 }
 ```
 
@@ -40,9 +42,11 @@ public void main() {
 **Without `null`, a type means what it says.** In a language with `null`,
 a `string` variable really means "a string, or nothing", and every use is a
 place the program can crash. Its inventor, Tony Hoare, called it his
-"billion-dollar mistake". In RuneScript a `string` is always a string: every
-variable must be initialised when it's declared, there are no default
-values, and no operation produces an empty reference. When a value really
+"billion-dollar mistake". In RuneScript a `string` is always a string: a
+variable declared without a value starts at its type's zero value (`""`
+for a string, [chapter 3](/docs/types-and-variables)), types without a
+zero value must be initialised, and no operation produces an empty
+reference. When a value really
 can be missing, the program says so with a separate `bool` you can see and
 check.
 
@@ -81,7 +85,7 @@ Declare the flag and a placeholder value together, and set both at once:
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     bool hasWinner = false;   // false plays the role of null
     string winner = "";       // a placeholder; never read while hasWinner is false
 
@@ -96,6 +100,7 @@ public void main() {
     } else {
         trace("no winner yet");
     }
+    return 0;
 }
 ```
 
@@ -119,7 +124,7 @@ public Array<string> findUser(Array<string> users, string prefix) {
     return [];   // nothing found: the empty array is the "null"
 }
 
-public void main() {
+protected int main() {
     Array<string> users = ["ada", "grace", "linus"];
     Array<string> found = findUser(users, "gr");
     bool ok = found.length > 0;
@@ -127,6 +132,7 @@ public void main() {
         trace("found", found[0]);   // found grace
     }
     trace(findUser(users, "zz").length > 0);   // false
+    return 0;
 }
 ```
 
@@ -141,12 +147,13 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     string line = "key=value";
     if (string.contains(line, "=")) {
         int at = string.index(line, "=");
         trace(string.slice(line, 0, at));   // key
     }
+    return 0;
 }
 ```
 
@@ -170,13 +177,14 @@ public int parsePort(string text) {
     return port;
 }
 
-public void main() {
+protected int main() {
     try {
         trace(parsePort("8080"));   // 8080
         trace(parsePort("99999"));
     } catch (RangeError e) {
         trace(e.message);   // port out of range: 99999
     }
+    return 0;
 }
 ```
 

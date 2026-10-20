@@ -27,8 +27,9 @@ public string classify(int n) {
     }
 }
 
-public void main() {
+protected int main() {
     trace(classify(-5), classify(0), classify(9));   // negative zero positive
+    return 0;
 }
 ```
 
@@ -37,13 +38,14 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int n = 3;
     while (n > 0) {
         trace(n);
         n--;
     }
     trace("liftoff");
+    return 0;
 }
 ```
 
@@ -60,8 +62,9 @@ public void sayHi(string message, int times) {
     }
 }
 
-public void main() {
+protected int main() {
     sayHi("Hello world", 3);
+    return 0;
 }
 ```
 
@@ -71,7 +74,7 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int tries = 0;
     for (;;) {
         tries++;
@@ -80,6 +83,7 @@ public void main() {
         }
     }
     trace("stopped after", tries);
+    return 0;
 }
 ```
 
@@ -95,7 +99,7 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     for (int i = 0; i < 10; i++) {
         if (i % 2 == 0) {
             continue;       // skip even numbers
@@ -105,6 +109,7 @@ public void main() {
         }
         trace(i);           // 1 3 5 7
     }
+    return 0;
 }
 ```
 
@@ -129,8 +134,9 @@ public int sign(int n) {
     }
 }
 
-public void main() {
+protected int main() {
     trace(sign(-8), sign(0), sign(8));
+    return 0;
 }
 ```
 
@@ -149,8 +155,9 @@ public int firstSquareAbove(int limit) {
     return -1;
 }
 
-public void main() {
+protected int main() {
     trace(firstSquareAbove(50));   // 8
+    return 0;
 }
 ```
 

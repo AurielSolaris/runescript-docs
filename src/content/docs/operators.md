@@ -20,9 +20,10 @@ source: "docs/guide/04-operators.md"
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 7;
     trace(x + 2, x - 9, x * 3, x / 2, x % 4, -x);   // 9 -2 21 3 3 -7
+    return 0;
 }
 ```
 
@@ -33,22 +34,45 @@ operand, so `u + 1` works when `u` is a `uint`. The same operators (except
 
 ### Overflow never wraps silently
 
-If an integer result doesn't fit its type, the program stops with a runtime
+If an integer value doesn't fit its type, the program stops with a runtime
 error that points at the operation. It never wraps around:
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 2147483647;
     x = x + 1;          // runtime error: ASX-RUN-002 integer overflow
+    return 0;
 }
 ```
 
-The language design calls for numbers to *widen* automatically. Integer
-widening isn't designed yet, so RuneScript stops instead of guessing.
-Dividing an integer by zero is also a runtime error (`ASX-RUN-003`). Both are
-`RangeError`s, which a `try` statement can catch (see [Errors](/docs/errors)).
+Inside a longer expression, `int` and `uint` **widen**: every result that
+feeds another operation, a comparison, or a conversion such as `(int64)` is
+computed exactly, up to 64 bits. Only the final value has to fit its type.
+So the middle of a calculation can go past the limits, as long as the
+answer comes back:
+
+```actionscript
+package main;
+
+protected int main() {
+    int big = 100000;
+    trace(big * big / big);         // 100000: the product only exists in between
+    trace(big * big > 2147483647);  // true: comparisons see the exact value
+    int64 exact = (int64) (big * big);
+    trace(exact);                   // 10000000000
+    return 0;
+}
+```
+
+Variables, parameters, array elements, and struct fields keep their
+declared type: `int x = big * big;` still stops with `ASX-RUN-002`, because
+`x` is an `int`. A value never shrinks to a narrower type behind your back.
+The explicit widths (`int8` … `uint64`, [chapter 18](/docs/numbers)) never
+widen. Dividing an integer by zero is also a runtime error (`ASX-RUN-003`).
+Both are `RangeError`s, which a `try` statement can catch (see
+[Errors](/docs/errors)).
 
 ## Comparison
 
@@ -58,11 +82,12 @@ floats of the same type, and produce a `bool`. `==` and `!=` also work on two `b
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int a = 1;
     int b = 2;
     string s = "rune";
     trace(a < b, a == b, s == "rune", true != false);   // true false true true
+    return 0;
 }
 ```
 
@@ -79,10 +104,11 @@ Both operands must be `bool`. Numbers are never treated as true or false.
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int age = 30;
     bool adult = age >= 18 && !(age > 120);
     trace(adult);   // true
+    return 0;
 }
 ```
 

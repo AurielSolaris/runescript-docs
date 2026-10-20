@@ -1,5 +1,5 @@
 ---
-title: "המדריך ל-RuneScript (גרסה 0.3)"
+title: "המדריך ל-RuneScript (גרסה 0.6)"
 description: "סיור מעשי בתכונות של RuneScript שקיימות היום. כל תוכנית שלמה בדפים האלה מתקמפלת בחבילת הבדיקות (tests/docs_test.go)."
 summary: ""
 order: 0
@@ -32,6 +32,7 @@ source: "localization/heb/docs/guide/README.md"
 17. [בלי `null`, בלי `any`, בלי גנריות](/heb/docs/no-null-any-generics): למה, ואיך להשתמש ב-`false` במקום שבו שפות אחרות משתמשות ב-`null`
 18. [מספרים לעומק](/heb/docs/numbers): `int8` … `uint64`, ליטרלים הקסדצימליים ובינאריים, פעולות על סיביות, `std:math`
 19. [מבנים](/heb/docs/structs): הצהרה, בנייה והעתקה של טיפוסי ערך
+20. [קבצים, קלט ופלט](/heb/docs/files-and-input): `std:io`, `std:process`, `std:fs`, `std:path`, ומפרש Brainfuck
 
 לכללים המדויקים, ראו את [מפרט השפה](/docs/spec) (באנגלית).
 למה שמתוכנן בהמשך, ראו את [מפת הדרכים](/docs/roadmap) (באנגלית).

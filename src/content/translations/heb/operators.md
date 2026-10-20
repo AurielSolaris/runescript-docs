@@ -24,9 +24,10 @@ source: "localization/heb/docs/guide/04-operators.md"
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 7;
     trace(x + 2, x - 9, x * 3, x / 2, x % 4, -x);   // 9 -2 21 3 3 -7
+    return 0;
 }
 ```
 
@@ -38,22 +39,44 @@ public void main() {
 
 ### גלישה לעולם אינה "מתגלגלת" בשקט
 
-אם התוצאה של פעולה על מספרים שלמים אינה נכנסת בטיפוס שלה, התוכנית נעצרת עם שגיאת
-זמן ריצה שמצביעה על הפעולה. הערך לעולם אינו מתגלגל:
+אם ערך של מספר שלם אינו נכנס בטיפוס שלו, התוכנית נעצרת עם שגיאת זמן ריצה שמצביעה על
+הפעולה. הערך לעולם אינו מתגלגל:
 
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 2147483647;
     x = x + 1;          // runtime error: ASX-RUN-002 integer overflow
+    return 0;
 }
 ```
 
 
-תכנון השפה קובע שמספרים *יתרחבו* אוטומטית. ההרחבה של מספרים שלמים עדיין לא
-תוכננה, ולכן RuneScript נעצרת במקום לנחש. גם חלוקה של מספר שלם באפס היא שגיאת זמן
+בתוך ביטוי ארוך, `int` ו-`uint` **מתרחבים**: כל תוצאה שעוברת לפעולה נוספת, להשוואה או
+להמרה כמו `(int64)` מחושבת במדויק, עד 64 סיביות. רק הערך הסופי צריך להיכנס בטיפוס
+שלו. כך אמצע החישוב יכול לחרוג מהגבולות, כל עוד התשובה חוזרת לתוכם:
+
+
+```actionscript
+package main;
+
+protected int main() {
+    int big = 100000;
+    trace(big * big / big);         // 100000: the product only exists in between
+    trace(big * big > 2147483647);  // true: comparisons see the exact value
+    int64 exact = (int64) (big * big);
+    trace(exact);                   // 10000000000
+    return 0;
+}
+```
+
+
+משתנים, פרמטרים, איברי מערך ושדות של מבנים שומרים על הטיפוס המוצהר שלהם:
+`int x = big * big;` עדיין נעצר עם `ASX-RUN-002`, כי `x` הוא `int`. ערך לעולם אינו
+מתכווץ לטיפוס צר יותר מאחורי הגב שלכם. הרוחבים המפורשים (`int8` … `uint64`,
+[פרק 18](/heb/docs/numbers)) לעולם אינם מתרחבים. גם חלוקה של מספר שלם באפס היא שגיאת זמן
 ריצה (`ASX-RUN-003`). שתיהן הן `RangeError`, שהוראת `try` יכולה לתפוס (ראו
 [שגיאות](/heb/docs/errors)).
 
@@ -67,11 +90,12 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int a = 1;
     int b = 2;
     string s = "rune";
     trace(a < b, a == b, s == "rune", true != false);   // true false true true
+    return 0;
 }
 ```
 
@@ -90,10 +114,11 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int age = 30;
     bool adult = age >= 18 && !(age > 120);
     trace(adult);   // true
+    return 0;
 }
 ```
 

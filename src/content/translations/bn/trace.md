@@ -16,11 +16,12 @@ source: "localization/bn/docs/guide/07-trace.md"
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     trace("Hello");                 // Hello
     trace("x =", 42);               // x = 42
     trace(1, -2, true, "three");    // 1 -2 true three
     trace();                        // (empty line)
+    return 0;
 }
 ```
 

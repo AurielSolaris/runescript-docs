@@ -14,8 +14,7 @@ in `;`, not a block:
 ```actionscript
 package games.puzzle.solver;
 
-public void main() {
-}
+protected int main() { return 0; }
 ```
 
 Package names are dotted identifiers. A program can span several files
@@ -31,8 +30,9 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     trace(string.toUpper("hello"));   // HELLO
+    return 0;
 }
 ```
 
@@ -54,8 +54,9 @@ package main;
 /* A block comment
    can span several lines. */
 
-public void main() {
+protected int main() {
     trace("comments are ignored"); // trailing comments too
+    return 0;
 }
 ```
 
@@ -69,8 +70,8 @@ Block comments don't nest.
 
 ## The entry point: `main`
 
-Running a program calls its top-level `main` function. `main` takes no
-parameters and returns either `int` or `void`:
+Running a program calls its top-level `main` function, which is always
+declared exactly like this:
 
 ```actionscript
 package main;
@@ -81,18 +82,13 @@ protected int main() {
 }
 ```
 
-- If `main` returns `int`, the value becomes the process exit status.
-- If `main` is `void`, the exit status is 0.
-- Like every function, `main` starts with an access modifier: `public`,
-  `protected`, or `private` (see [Functions](/docs/functions)).
-
-```actionscript
-package main;
-
-public void main() {
-    trace("no return value needed");
-}
-```
+- The `int` it returns becomes the process exit status: `0` means success.
+- It is `protected`, takes no parameters, and returns `int`. Anything
+  else, such as `public int main()` or `protected void main()`, is the
+  error `ASX-ENTRY-002`, whose help says what to change.
+- A program has exactly one `main`, in any of its files.
+- Command-line arguments come from `process.args()` in `std:process`
+  ([chapter 20](/docs/files-and-input)).
 
 No class is needed. Programs are made of top-level functions, which can
 appear in any order. Functions can also be nested inside other functions.

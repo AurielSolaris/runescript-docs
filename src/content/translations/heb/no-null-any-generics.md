@@ -25,16 +25,18 @@ RuneScript משמיטה שלושה דברים שיש ברוב השפות: ערך
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     string name = null;   // error: ASX-NAME-001
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     any value = 5;   // error: ASX-TYPE-010
+    return 0;
 }
 ```
 
@@ -43,8 +45,9 @@ public void main() {
 
 **בלי `null`, טיפוס אומר את מה שהוא אומר.** בשפה עם `null`, משתנה `string` פירושו בעצם
 "מחרוזת, או כלום", וכל שימוש בו הוא מקום שבו התוכנית יכולה לקרוס. הממציא שלו, טוני הואר,
-כינה אותו "הטעות של מיליארד הדולר". ב-RuneScript, `string` הוא תמיד מחרוזת: כל משתנה חייב
-לקבל ערך התחלתי כשמצהירים עליו, אין ערכי ברירת מחדל, ושום פעולה לא מייצרת הפניה ריקה. כשערך
+כינה אותו "הטעות של מיליארד הדולר". ב-RuneScript, `string` הוא תמיד מחרוזת: משתנה שמוצהר
+בלי ערך מתחיל בערך האפס של הטיפוס שלו (`""` למחרוזת, [פרק 3](/heb/docs/types-and-variables)), טיפוסים
+בלי ערך אפס חייבים אתחול, ושום פעולה לא מייצרת הפניה ריקה. כשערך
 באמת יכול לחסור, התוכנית אומרת זאת עם `bool` נפרד שאפשר לראות ולבדוק.
 
 **בלי `any`, המהדר בודק הכול.** `any` הוא חור במערכת הטיפוסים: מה שנכנס יוצא בלי בדיקה,
@@ -76,7 +79,7 @@ TypeScript נכנסים ערכים שגויים לתוכניות "עם טיפו�
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     bool hasWinner = false;   // false plays the role of null
     string winner = "";       // a placeholder; never read while hasWinner is false
 
@@ -91,6 +94,7 @@ public void main() {
     } else {
         trace("no winner yet");
     }
+    return 0;
 }
 ```
 
@@ -115,7 +119,7 @@ public Array<string> findUser(Array<string> users, string prefix) {
     return [];   // nothing found: the empty array is the "null"
 }
 
-public void main() {
+protected int main() {
     Array<string> users = ["ada", "grace", "linus"];
     Array<string> found = findUser(users, "gr");
     bool ok = found.length > 0;
@@ -123,6 +127,7 @@ public void main() {
         trace("found", found[0]);   // found grace
     }
     trace(findUser(users, "zz").length > 0);   // false
+    return 0;
 }
 ```
 
@@ -138,12 +143,13 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     string line = "key=value";
     if (string.contains(line, "=")) {
         int at = string.index(line, "=");
         trace(string.slice(line, 0, at));   // key
     }
+    return 0;
 }
 ```
 
@@ -168,13 +174,14 @@ public int parsePort(string text) {
     return port;
 }
 
-public void main() {
+protected int main() {
     try {
         trace(parsePort("8080"));   // 8080
         trace(parsePort("99999"));
     } catch (RangeError e) {
         trace(e.message);   // port out of range: 99999
     }
+    return 0;
 }
 ```
 

@@ -1,6 +1,6 @@
 ---
 title: "Types and variables"
-description: "Types and variables in RuneScript: Int, uint, bool, string, assignment. Every variable must be initialised when it's declared."
+description: "Types and variables in RuneScript: Int, uint, bool, string, assignment. String escapes: \\n (newline), \\t (tab), \\r, \\0, \\\\, \\\", \\', and \\u{...} for any…"
 summary: "Int, uint, bool, string, assignment."
 section: Guide
 order: 3
@@ -13,17 +13,52 @@ Write the type first, then the name, then an initial value:
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int count = 10;
     uint total = 250;
     bool ready = true;
     string name = "Ada";
     trace(name, count, total, ready);   // Ada 10 250 true
+    return 0;
 }
 ```
 
-Every variable **must** be initialised when it's declared. There are no
-implicit default values in v0.1.
+A declaration without an initial value starts at the type's **zero
+value**:
+
+```actionscript
+package main;
+
+public struct Point {
+    int x;
+    int y;
+}
+
+protected int main() {
+    int count;            // 0
+    float ratio;          // 0
+    string name;          // ""
+    bool ready;           // false
+    char initial;         // the character U+0000
+    Array<string> names;  // a new, empty array
+    Point origin;         // Point{x: 0, y: 0}: every field at its zero value
+    trace(count, ratio, "[" + name + "]", ready, names.length, origin);
+    return 0;                            // 0 0 [] false 0 Point{x: 0, y: 0}
+}
+```
+
+Function types, errors, and runes have no zero value: RuneScript has no
+`null` to stand for "not set yet" ([chapter 17](/docs/no-null-any-generics)).
+Declaring one without a value is an error (`ASX-TYPE-028`):
+
+```actionscript
+package main;
+
+protected int main() {
+    int(int) twice; // error: ASX-TYPE-028
+    return 0;
+}
+```
 
 ## The basic types
 
@@ -47,11 +82,12 @@ implicit default values in v0.1.
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     sint a = -5;
     int b = a;      // fine: same type
     sint c = b;     // fine
     trace(a, b, c);
+    return 0;
 }
 ```
 
@@ -65,7 +101,7 @@ joined with `+`, and `$"total: {n}"` builds one from values
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 1;
     x = 10;     // 10
     x += 5;     // 15
@@ -76,6 +112,7 @@ public void main() {
     x++;        // 2
     x--;        // 1
     trace(x);
+    return 0;
 }
 ```
 
@@ -94,7 +131,7 @@ A variable declared in a `for` header exists only inside that loop.
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     if (true) {
         int inner = 1;
         trace(inner);
@@ -107,20 +144,41 @@ public void main() {
     for (int i = 0; i < 2; i++) {   // fine: the first 'i' is gone
         trace(i);
     }
+    return 0;
 }
 ```
 
-v0.1 doesn't allow **shadowing**. A new variable can't reuse the name of a
-visible variable, parameter, or function:
+A variable in a **nested block** may reuse the name of a variable or
+parameter from an enclosing block. This is called **shadowing**: inside the
+block, the name means the new variable, and the outer one comes back when
+the block ends. The compiler warns about it (`ASX-WARN-009`), because it's
+easy to do by accident:
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int x = 1;
     if (true) {
-        int x = 2; // error: ASX-NAME-002
+        int x = x + 10;   // warning ASX-WARN-009; the initializer still reads the outer x
+        trace(x);         // 11
     }
+    trace(x);             // 1
+    return 0;
+}
+```
+
+Reusing a name **in the same block** is still an error, and so is reusing
+the name of a function, a struct, or a parameter in the function's own
+outermost block:
+
+```actionscript
+package main;
+
+protected int main() {
+    int x = 1;
+    int x = 2; // error: ASX-NAME-002
+    return 0;
 }
 ```
 
@@ -134,7 +192,7 @@ error even when it happens to be positive:
 ```actionscript
 package main;
 
-public int main() {
+protected int main() {
     sint signedValue = -10;
     uint unsignedValue = signedValue; // error: ASX-TYPE-004
     return 0;
@@ -154,27 +212,30 @@ receives it, as long as the value fits:
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     uint a = 42;            // fine: 42 fits in uint
     uint b = 6 * 7;         // fine: constants are computed at compile time
     int c = -2147483648;    // fine: the smallest int
     trace(a, b, c);
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     uint u = -1;            // error: ASX-TYPE-007
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     int big = 3000000000;   // error: ASX-TYPE-006
+    return 0;
 }
 ```
 

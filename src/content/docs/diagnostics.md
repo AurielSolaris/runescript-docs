@@ -1,6 +1,6 @@
 ---
 title: "Diagnostics reference"
-description: "Diagnostics reference in RuneScript: Every error and warning code, -Werror, --allow. The ASX prefix is provisional and may be renamed."
+description: "Diagnostics reference in RuneScript: Every error and warning code, -Werror, --allow."
 summary: "Every error and warning code, -Werror, --allow."
 section: Guide
 order: 8
@@ -15,8 +15,10 @@ prog.rsc:9:26: error ASX-TYPE-004: Cannot assign signed integer 'sint' to unsign
   help: Use an explicit checked conversion, (uint) x, or change the destination type.
 ```
 
-The `ASX` prefix is provisional and may be renamed. The numbers stay the
-same.
+On a terminal, `error` and its carets are shown in red, `warning` in yellow,
+and `help:` in cyan. `--color=never` turns that off, `--color=always` keeps
+it when the output goes to a file or a pipe, and the `NO_COLOR` environment
+variable turns it off for `auto`, the default.
 
 ## Lexical errors
 
@@ -35,7 +37,7 @@ same.
 
 | Code | Meaning |
 |---|---|
-| `ASX-PARSE-001` | Something unexpected, e.g. a missing `;`, a missing `package`, a function without an access modifier, an AS3-style `function` keyword, a missing initializer |
+| `ASX-PARSE-001` | Something unexpected, e.g. a missing `;`, a missing `package`, a function without an access modifier, an AS3-style `function` keyword, a declaration without `=` or `;` |
 | `ASX-PARSE-002` | A reserved word for a feature that isn't implemented yet (`class`, `char`, …) |
 
 The parser stops at the first syntax error.
@@ -45,7 +47,7 @@ The parser stops at the first syntax error.
 | Code | Meaning |
 |---|---|
 | `ASX-NAME-001` | Undefined variable or function |
-| `ASX-NAME-002` | Name already declared: redeclaration, shadowing, or a duplicate function |
+| `ASX-NAME-002` | Name already declared: a redeclaration in the same block, a variable named like a function or struct, or a duplicate function |
 | `ASX-NAME-003` | Calling something that is a variable, not a function |
 | `ASX-NAME-004` | Using the built-in `trace` as a value |
 | `ASX-NAME-005` | Declaring a function named `trace` |
@@ -101,6 +103,7 @@ The parser stops at the first syntax error.
 | `ASX-TYPE-025` | Wrong type arguments: `Array` takes one element type (`Array<string>`), `Signal` takes one number, `bool`, or `string` type (`Signal<int>`); other types take none |
 | `ASX-TYPE-026` | A struct literal that misses a field, names one twice, or names one the struct doesn't have: `Point{x: 1}` |
 | `ASX-TYPE-027` | A struct that contains itself by value, directly or through other structs; hold it in an `Array` instead |
+| `ASX-TYPE-028` | A declaration without a value (`T x;`) of a type that has no zero value: a function type, an error, a rune, or a struct with such a field |
 
 ## Template errors
 
@@ -122,7 +125,7 @@ Templates belong to `rune:dom` ([chapter 15](/docs/web-pages)).
 |---|---|
 | `ASX-FLOW-001` | `break` or `continue` outside a loop |
 | `ASX-ENTRY-001` | No `main` function |
-| `ASX-ENTRY-002` | `main` has parameters, or returns something other than `int`/`void` |
+| `ASX-ENTRY-002` | `main` isn't declared exactly `protected int main()`: it has parameters, isn't `protected`, or doesn't return `int` |
 | `ASX-ENTRY-003` | More than one file defines `main`; a program has exactly one |
 | `ASX-TARGET-002` | `runescript run` was given a program that only the JavaScript target can run: it has extern functions, or uses `rune:dom` |
 
@@ -158,6 +161,7 @@ cause follow-on warnings that disappear once the errors are fixed.
 | `ASX-WARN-006` | An extern names one host's own module, e.g. `"node:fs"`; prefer a host-neutral `rune:` module |
 | `ASX-WARN-007` | An element or attribute that HTML5 or SVG 2 made obsolete, e.g. `<center>`, `bgcolor`, `xlink:href`; the help names the replacement |
 | `ASX-WARN-008` | `dom.renderApp` with a selector that isn't a single id, e.g. `".app"`: it may match several elements, or none |
+| `ASX-WARN-009` | A variable in a nested block has the name of a variable or parameter of an enclosing block, which it hides until the block ends |
 
 ## Runtime errors
 

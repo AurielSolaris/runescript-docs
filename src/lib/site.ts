@@ -6,7 +6,7 @@ export const site = {
   // From astro.config.mjs: SITE_URL, else the Vercel production domain.
   url: import.meta.env.SITE.replace(/\/$/, ""),
   repo: "https://github.com/AurielSolaris/runescript",
-  version: "0.3",
+  version: "0.6",
   themeColor: { light: "#FFFFFF", dark: "#1F1F21" },
 };
 

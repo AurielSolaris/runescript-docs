@@ -17,8 +17,7 @@ source: "localization/bn/docs/guide/02-program-structure.md"
 ```actionscript
 package games.puzzle.solver;
 
-public void main() {
-}
+protected int main() { return 0; }
 ```
 
 প্যাকেজের নাম হলো বিন্দু দিয়ে যুক্ত আইডেন্টিফায়ার। একটি প্রোগ্রাম একাধিক ফাইলে
@@ -34,8 +33,9 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     trace(string.toUpper("hello"));   // HELLO
+    return 0;
 }
 ```
 
@@ -57,8 +57,9 @@ package main;
 /* A block comment
    can span several lines. */
 
-public void main() {
+protected int main() {
     trace("comments are ignored"); // trailing comments too
+    return 0;
 }
 ```
 
@@ -72,8 +73,8 @@ public void main() {
 
 ## প্রবেশবিন্দু: `main`
 
-প্রোগ্রাম চালালে এর টপ-লেভেল `main` ফাংশনটি ডাকা হয়। `main` কোনো প্যারামিটার নেয়
-না এবং `int` অথবা `void` ফেরত দেয়:
+প্রোগ্রাম চালালে এর টপ-লেভেল `main` ফাংশনটি ডাকা হয়, যা সবসময় হুবহু এভাবে
+ঘোষণা করা হয়:
 
 ```actionscript
 package main;
@@ -84,18 +85,13 @@ protected int main() {
 }
 ```
 
-- `main` যদি `int` ফেরত দেয়, সেই মানটি প্রসেসের এক্সিট স্ট্যাটাস হয়।
-- `main` যদি `void` হয়, এক্সিট স্ট্যাটাস 0।
-- প্রতিটি ফাংশনের মতো `main`-ও একটি অ্যাক্সেস মডিফায়ার দিয়ে শুরু হয়: `public`,
-  `protected` অথবা `private` (দেখুন [ফাংশন](/bn/docs/functions))।
-
-```actionscript
-package main;
-
-public void main() {
-    trace("no return value needed");
-}
-```
+- এটি যে `int` ফেরত দেয়, সেটি প্রসেসের এক্সিট স্ট্যাটাস হয়: `0` মানে সফল।
+- এটি `protected`, কোনো প্যারামিটার নেয় না, এবং `int` ফেরত দেয়। অন্য যেকোনো রূপ,
+  যেমন `public int main()` বা `protected void main()`, হলো `ASX-ENTRY-002` এরর, যার
+  সাহায্য-বার্তা বলে দেয় কী বদলাতে হবে।
+- একটি প্রোগ্রামে ঠিক একটি `main` থাকে, এর যেকোনো ফাইলে।
+- কমান্ড-লাইন আর্গুমেন্ট আসে `std:process`-এর `process.args()` থেকে
+  ([অধ্যায় ২০](/bn/docs/files-and-input))।
 
 কোনো ক্লাস লাগে না। প্রোগ্রাম তৈরি হয় টপ-লেভেল ফাংশন দিয়ে, যেগুলো যেকোনো ক্রমে
 থাকতে পারে। ফাংশনের ভেতরেও ফাংশন রাখা (নেস্ট করা) যায়।

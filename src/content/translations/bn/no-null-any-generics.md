@@ -24,16 +24,18 @@ source: "localization/bn/docs/guide/17-no-null-any-generics.md"
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     string name = null;   // error: ASX-NAME-001
+    return 0;
 }
 ```
 
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     any value = 5;   // error: ASX-TYPE-010
+    return 0;
 }
 ```
 
@@ -42,9 +44,10 @@ public void main() {
 **`null` না থাকলে একটি টাইপের মানে ঠিক যা লেখা আছে তাই।** `null`-ওয়ালা ভাষায় একটি
 `string` ভেরিয়েবলের আসল মানে "একটি স্ট্রিং, অথবা কিছুই না", আর প্রতিটি ব্যবহার এমন একটি
 জায়গা যেখানে প্রোগ্রাম ক্র্যাশ করতে পারে। এর উদ্ভাবক টনি হোর একে তাঁর "বিলিয়ন ডলারের
-ভুল" বলেছিলেন। RuneScript-এ একটি `string` সবসময় একটি স্ট্রিং: প্রতিটি ভেরিয়েবল ঘোষণার
-সময়েই ইনিশিয়ালাইজ করতে হয়, কোনো ডিফল্ট মান নেই, এবং কোনো অপারেশন খালি রেফারেন্স তৈরি
-করে না। যখন সত্যিই একটি মান অনুপস্থিত থাকতে পারে, প্রোগ্রাম সেটি আলাদা একটি `bool` দিয়ে
+ভুল" বলেছিলেন। RuneScript-এ একটি `string` সবসময় একটি স্ট্রিং: মান ছাড়া ঘোষিত ভেরিয়েবল
+তার টাইপের শূন্য মান দিয়ে শুরু হয় (স্ট্রিংয়ের জন্য `""`, [অধ্যায় ৩](/bn/docs/types-and-variables)),
+যেসব টাইপের শূন্য মান নেই সেগুলো ইনিশিয়ালাইজ করতেই হয়, এবং কোনো অপারেশন খালি রেফারেন্স
+তৈরি করে না। যখন সত্যিই একটি মান অনুপস্থিত থাকতে পারে, প্রোগ্রাম সেটি আলাদা একটি `bool` দিয়ে
 বলে, যা আপনি দেখতে ও যাচাই করতে পারেন।
 
 **`any` না থাকলে কম্পাইলার সবকিছু যাচাই করে।** `any` হলো টাইপ সিস্টেমের একটি ফুটো: যা
@@ -78,7 +81,7 @@ public void main() {
 ```actionscript
 package main;
 
-public void main() {
+protected int main() {
     bool hasWinner = false;   // false plays the role of null
     string winner = "";       // a placeholder; never read while hasWinner is false
 
@@ -93,6 +96,7 @@ public void main() {
     } else {
         trace("no winner yet");
     }
+    return 0;
 }
 ```
 
@@ -116,7 +120,7 @@ public Array<string> findUser(Array<string> users, string prefix) {
     return [];   // nothing found: the empty array is the "null"
 }
 
-public void main() {
+protected int main() {
     Array<string> users = ["ada", "grace", "linus"];
     Array<string> found = findUser(users, "gr");
     bool ok = found.length > 0;
@@ -124,6 +128,7 @@ public void main() {
         trace("found", found[0]);   // found grace
     }
     trace(findUser(users, "zz").length > 0);   // false
+    return 0;
 }
 ```
 
@@ -137,12 +142,13 @@ package main;
 
 use "std:string";
 
-public void main() {
+protected int main() {
     string line = "key=value";
     if (string.contains(line, "=")) {
         int at = string.index(line, "=");
         trace(string.slice(line, 0, at));   // key
     }
+    return 0;
 }
 ```
 
@@ -165,13 +171,14 @@ public int parsePort(string text) {
     return port;
 }
 
-public void main() {
+protected int main() {
     try {
         trace(parsePort("8080"));   // 8080
         trace(parsePort("99999"));
     } catch (RangeError e) {
         trace(e.message);   // port out of range: 99999
     }
+    return 0;
 }
 ```
 
