@@ -34,6 +34,8 @@ RuneScript-এর যেসব বৈশিষ্ট্য **আজ** আছে,
 19. [স্ট্রাক্ট](/bn/docs/structs): মান-টাইপ ঘোষণা, তৈরি ও কপি করা
 20. [ফাইল, ইনপুট ও আউটপুট](/bn/docs/files-and-input): `std:io`, `std:process`, `std:fs`, `std:path`, এবং একটি Brainfuck ইন্টারপ্রেটার
 21. [JSON](/bn/docs/json): `std:json`: JSON পার্স করা, যাচাই করা ফাংশন দিয়ে পড়া, তৈরি ও লেখা
+22. [CSV, ম্যাট্রিক্স ও ভার্সন](/bn/docs/csv-matrix-semver): `std:csv`, `std:matrix` আর `std:semver`
+23. [এডিটর](/bn/docs/editors): VS Code, Vim, Neovim ও Emacs, আর ল্যাঙ্গুয়েজ সার্ভার `runescript lsp`
 
 সূক্ষ্ম নিয়মের জন্য দেখুন [ভাষার স্পেসিফিকেশন](/docs/spec) (ইংরেজিতে)।
 সামনে কী আসছে তা জানতে দেখুন [রোডম্যাপ](/docs/roadmap) (ইংরেজিতে)।

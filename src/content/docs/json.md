@@ -231,4 +231,3 @@ protected int main() {
   same parser, so a text is accepted or rejected, and every error reads,
   the same way on both.
 
-Next: back to the [guide index](/docs)

@@ -34,6 +34,8 @@ source: "localization/heb/docs/guide/README.md"
 19. [מבנים](/heb/docs/structs): הצהרה, בנייה והעתקה של טיפוסי ערך
 20. [קבצים, קלט ופלט](/heb/docs/files-and-input): `std:io`, `std:process`, `std:fs`, `std:path`, ומפרש Brainfuck
 21. [JSON](/heb/docs/json): ‏`std:json`: פענוח JSON, קריאה בפונקציות בדוקות, בנייה וכתיבה
+22. [CSV, מטריצות וגרסאות](/heb/docs/csv-matrix-semver): ‏`std:csv`, ‏`std:matrix` ו-`std:semver`
+23. [עורכים](/heb/docs/editors): ‏VS Code, ‏Vim, ‏Neovim ו-Emacs, ושרת השפה `runescript lsp`
 
 לכללים המדויקים, ראו את [מפרט השפה](/docs/spec) (באנגלית).
 למה שמתוכנן בהמשך, ראו את [מפת הדרכים](/docs/roadmap) (באנגלית).
