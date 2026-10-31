@@ -56,6 +56,8 @@ export const runescript: LanguageRegistration = {
       patterns: [
         { name: "keyword.control.runescript", match: re(/\b(return|if|else|while|for|break|continue|use|try|catch|finally|throw)\b/) },
         { name: "keyword.operator.new.runescript", match: re(/\bnew\b/) },
+        { name: "variable.language.this.runescript", match: re(/\bthis\b/) },
+        { name: "storage.type.class.runescript", match: re(/\b(class|struct)\b/) },
         { name: "storage.modifier.runescript", match: re(/\b(public|protected|private)\b/) },
         { name: "keyword.other.package.runescript", match: re(/\bpackage\b/) },
         { name: "storage.type.runescript", match: re(/\b(int|sint|uint|bool|string|void|float|float32|float64)\b/) },
@@ -63,7 +65,7 @@ export const runescript: LanguageRegistration = {
         { name: "constant.language.runescript", match: re(/\b(true|false|NaN|Infinity)\b/) },
         {
           name: "invalid.deprecated.reserved.runescript",
-          match: re(/\b(class|struct|char|array|matrix|u?int(8|16|32|64))\b/),
+          match: re(/\b(char|array|matrix|u?int(8|16|32|64))\b/),
         },
       ],
     },

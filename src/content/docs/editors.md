@@ -81,4 +81,3 @@ adjusted for code that is still being written:
 - **Warnings** appear once the program has no errors, as on the command
   line.
 
-Next: back to the [guide index](/docs)
