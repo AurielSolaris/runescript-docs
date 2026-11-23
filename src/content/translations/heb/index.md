@@ -1,5 +1,5 @@
 ---
-title: "המדריך ל-RuneScript (גרסה 0.6)"
+title: "המדריך ל-RuneScript (גרסה 0.7)"
 description: "סיור מעשי בתכונות של RuneScript שקיימות היום. כל תוכנית שלמה בדפים האלה מתקמפלת בחבילת הבדיקות (tests/docs_test.go)."
 summary: ""
 order: 0

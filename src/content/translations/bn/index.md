@@ -1,5 +1,5 @@
 ---
-title: "RuneScript গাইড (v0.6)"
+title: "RuneScript গাইড (v0.7)"
 description: "RuneScript-এর যেসব বৈশিষ্ট্য আজ আছে, তার একটি ব্যবহারিক পরিচয়। এই পাতাগুলোর প্রতিটি সম্পূর্ণ প্রোগ্রাম টেস্ট-সংগ্রহ (tests/docs_test.go) কম্পাইল করে…"
 summary: ""
 order: 0
