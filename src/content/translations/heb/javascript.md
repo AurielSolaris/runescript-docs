@@ -9,6 +9,36 @@ source: "localization/heb/docs/guide/11-javascript.md"
 > זהו תרגום של [המקור באנגלית](/docs/javascript). אם יש הבדל, הגרסה האנגלית היא הקובעת. התרגום נעשה בעזרת בינה מלאכותית ונבדק בידי המחבר.
 
 
+## בניית אתר מרובה דפים
+
+`runescript build --target web` בונה אתר סטטי עם תוכנית RuneScript נפרדת
+לכל דף HTML. דפים עם אותן דרישות זמן ריצה משתפים מודול JavaScript.
+שמים את הדפים והקבצים הסטטיים ב-`public/`, מוסיפים סמן אחד
+`<!-- runescript -->` בראש כל דף ומגדירים את נקודות הכניסה בקובץ
+`runescript.web.json` בשורש הפרויקט.
+
+
+```json
+{
+  "pages": {
+    "index.html": "home.rsc",
+    "about/index.html": "about.rsc"
+  }
+}
+```
+
+```sh
+runescript build --target web --source-map --extract-css -o site-dist examples/multi-page
+python -m http.server --bind 127.0.0.1 --directory site-dist 8000
+```
+
+
+`--extract-css` מעביר מאפייני `style` סטטיים פשוטים מתוך התבניות לקובץ CSS.
+כריכות דינמיות וערכים מורכבים נשארים בתוך האלמנט. אם הדף זקוק לעדיפות
+של סגנון מוטבע, משאירים את האפשרות כבויה.
+
+## בניית מודול JavaScript יחיד
+
 `runescript build` מהדר תוכנית למודול JavaScript שרץ בדפדפן או ב-Node.js. התוכנית
 שומרת על הכללים של RuneScript: כל מה שבודק הטיפוסים דוחה עדיין נדחה, וכל מה שהיה
 שגיאת זמן ריצה במפרש הוא אותה שגיאת זמן ריצה ב-JavaScript, עם אותו קוד, אותה הודעה
@@ -22,7 +52,7 @@ node examples/fizzbuzz.js a b                     # runs it with arguments; main
 ```
 
 
-`--target js` הוא ברירת המחדל, וכרגע היעד היחיד. תוכנית של כמה קבצים (ראו
+`--target js` הוא ברירת המחדל. תוכנית של כמה קבצים (ראו
 [חבילות וקבצים](/heb/docs/packages-and-files)) הופכת למודול אחד, ושגיאות זמן ריצה
 מציינות את הקובץ שבו קרו.
 
