@@ -107,9 +107,11 @@ top-level `protected int main()` function, and no class is needed.
 
 ## Not yet available
 
-Inheritance, interfaces, `static`, metadata, E4X XML, and graphics (a
-native graphics package is planned). Classes exist, without inheritance
-([chapter 24](/docs/classes)); unlike AS3, `this` is required to reach a
-field or method, and the constructor is written without `function`:
-`public Point(int x, int y) { ... }`. See the [roadmap](/docs/roadmap).
+Class inheritance, interfaces, `static`, AS3 annotations, and E4X XML
+remain on the [roadmap](/docs/roadmap). In RuneScript classes, use `this`
+to reach a field or method. Constructors look like
+`public Point(int x, int y) { ... }`. [Classes](/docs/classes)
+
+Desktop games use `rune.gfx` and `rune.gui`. To run the same game in a
+browser, build it with `--target wasm`. [Graphics guide](/docs/native-graphics)
 
